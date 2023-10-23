@@ -1,7 +1,15 @@
 import pygame
 import settings
-from Vec2 import Vec2
+from Vec2 import Vector2
+import Vec2
 import random
+from typing import List
+
+
+
+
+
+
 
 class Canvas():
     def __init__(self,game,pixelAmountX: int = settings.PIXELXAMOUNT,pixelAmountY: int = settings.PIXELYAMOUNT) -> None:
@@ -22,7 +30,7 @@ class Canvas():
         for x in range(self.pixelAmountX):
             pixelRowList = []
             for y in range(self.pixelAmountY):
-                pixelRowList.append(Pixel(self,x * self.pixelStepX,y * self.pixelStepY,(0,0,0))) # multiply the pixels positions with the step value
+                pixelRowList.append(Pixel(self,x * self.pixelStepX,y * self.pixelStepY,color=(0,0,0),yCoord=settings.PIXELYAMOUNT-y,xCoord=x)) # multiply the pixels positions with the step value
             self.pixelList.append(pixelRowList)
 
     def Refresh(self,displaySurface):
@@ -33,31 +41,64 @@ class Canvas():
         self.updatedPixelList.clear()
 
     def getPixel(self,xpos,ypos):
-        return(self.pixelList[xpos][-ypos])
+        return(self.pixelList[xpos][-ypos]) # negative ypos so that increases in y value results in an increase in "altitude"
+    
+    def getPixelsBetween(self, point1: Vector2, point2: Vector2) -> List:
+        """returns a linear list of all pixels between point 1 and point 2"""
+
+        returnList = []
+
+        rowList = self.pixelList[point1.x:point2.x]
+        for yList in rowList:
+            AppendPixels = yList[-point2.y:-point1.y] # negative so that y=0 will be at the bottom of the screen
+            for pixel in AppendPixels:
+                returnList.append(pixel)
+
+        return returnList
 
 
 
+
+    def DrawCircle(self, position: Vector2, radius: float, color: str = "red"):
+        bottomLeftCorner = Vector2(position.x - radius, position.y - radius)
+        topRightcorner = Vector2(position.x + radius, position.y + radius)
+
+        pixelList = self.getPixelsBetween(bottomLeftCorner,topRightcorner)
+        for pixel in pixelList:
+
+            if Vec2.Distance(pixel.coordinates,position) <= radius:
+
+            
+                pixel.color = (255,0,0)
+                self.updatedPixelList.append(pixel)
+
+        
 
 class Pixel():
-    def __init__(self,canvas: Canvas,xpos,ypos,color=(0,0,0)):
+    def __init__(self,canvas: Canvas,xpos,ypos,xCoord: int, yCoord: int,color=(0,0,0)):
 
         self.canvas = canvas
 
         pixelSizeX = settings.WIDTH / canvas.pixelAmountX
         pixelSizeY = settings.HEIGHT / canvas.pixelAmountY
 
+
     
 
-        self.pos = Vec2(xpos,ypos)
+        self.pos = Vector2(xpos,ypos)
         self.rect = pygame.rect.Rect(self.pos.x,self.pos.y,pixelSizeX,pixelSizeY)
         self.color = color
+
+        self.coordinates = Vector2(xCoord,yCoord)
 
     def Render(self,displaySurface):
         pygame.draw.rect(displaySurface,self.color,self.rect)
 
+
+
 class Vertex():
     def __init__(self,xpos,ypos):
-        self.pos = Vec2(xpos,ypos)
+        self.pos = Vector2(xpos,ypos)
         
 
 class Polygon():
@@ -85,8 +126,8 @@ class Polygon():
 
         
 
-    def GetBounds(self) -> Vec2:
-        """Returns a list of the bounds of the polygon, [Vec2(minX,minY),Vec2(maxX,maxY)]"""
+    def GetBounds(self) -> Vector2:
+        """Returns a list of the bounds of the polygon, [Vector2(minX,minY),Vector2(maxX,maxY)]"""
 
         # create the bounds of the polygon
         minY = settings.PIXELYAMOUNT
@@ -102,7 +143,7 @@ class Polygon():
                 minX = vertex.pos.x
             if vertex.pos.x > maxX:
                 maxX = vertex.pos.x
-        return [Vec2(minX,minY),Vec2(maxX,maxY)]
+        return [Vector2(minX,minY),Vector2(maxX,maxY)]
 
 
             
@@ -118,10 +159,10 @@ class Polygon():
             deltaX = nextVertex.pos.x - vertex.pos.x
             deltaY = nextVertex.pos.y - vertex.pos.y
 
-            movementVec = Vec2(deltaX,deltaY)
+            movementVec = Vector2(deltaX,deltaY)
             movementVec.Normalize()
 
-            penPos = Vec2(vertex.pos.x,vertex.pos.y)
+            penPos = Vector2(vertex.pos.x,vertex.pos.y)
             
             if nextVertex.pos.x > vertex.pos.x:
                 while penPos.x < nextVertex.pos.x:
@@ -228,7 +269,7 @@ class SlopeEquation():
 
         if x >= self.minXLimit and x <= self.maxXLimit and x >= otherSlopeEquation.minXLimit and x <= otherSlopeEquation.maxXLimit:
 
-            return Vec2(x,y)
+            return Vector2(x,y)
         
         else:
             return None

@@ -3,6 +3,7 @@ import time
 import settings
 import sys
 from canvas import Canvas,Vertex,Polygon,SlopeEquation
+from Vec2 import Vector2
 
 class Game():
     def __init__(self):
@@ -42,6 +43,7 @@ class Game():
 
             self.displaySurface.fill('black')
             self.polygon.DrawFilled()
+            self.canvas.DrawCircle(Vector2(100,100),10)
 
             self.canvas.Refresh(self.displaySurface)
             
@@ -53,8 +55,7 @@ class Game():
 
             #updatera skärmen och med intervaller bestämda av spelets fps
             pygame.display.update()
-test = range(10)            
-print(test)
+
 
 if __name__ == "__main__":
     game = Game()
