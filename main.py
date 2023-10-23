@@ -2,7 +2,9 @@ import pygame
 import time
 import settings
 import sys
-from canvas import Canvas,Vertex,Polygon,SlopeEquation
+from canvas import Canvas
+from slopeEquation import SlopeEquation
+from polygon import Polygon,Vertex
 from Vec2 import Vector2
 
 class Game():
