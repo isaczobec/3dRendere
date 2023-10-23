@@ -6,11 +6,7 @@ import random
 from typing import List
 from pixel import Pixel
 from slopeEquation import SlopeEquation
-
-
-
-
-
+from massPoint import MassPoint, Spring
 
 
 class Canvas():
@@ -50,9 +46,12 @@ class Canvas():
 
         returnList = []
 
-        rowList = self.pixelList[point1.x:point2.x]
+        x1,x2 = int(point1.x),int(point2.x)
+        y1,y2 = int(point1.y),int(point2.y)
+
+        rowList = self.pixelList[x1:x2]
         for yList in rowList:
-            AppendPixels = yList[-point2.y:-point1.y] # negative so that y=0 will be at the bottom of the screen
+            AppendPixels = yList[-y2:-y1] # negative so that y=0 will be at the bottom of the screen
             for pixel in AppendPixels:
                 returnList.append(pixel)
 
@@ -71,8 +70,27 @@ class Canvas():
             if Vec2.Distance(pixel.coordinates,position) <= radius:
 
             
-                pixel.color = (255,0,0)
+                pixel.color = color
                 self.updatedPixelList.append(pixel)
+
+
+    def CreateSprings(self):
+
+        self.massPointList = [MassPoint(Vector2(200,200)),MassPoint(Vector2(200,250))]
+        self.massPointList[0].Connect(self.massPointList[1])
+
+    def RenderSprings(self,radius: float = 10):
+        for massPoint in self.massPointList:
+            self.DrawCircle(massPoint.position,radius=10)
+
+    def UpdateSpring(self,deltaTime):
+
+        for massPoint in self.massPointList:
+            massPoint.Update(deltaTime) # placeholder 1 until i figure out how to use deltatime
+
+        self.RenderSprings()
+
+
 
         
 

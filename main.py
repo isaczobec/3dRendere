@@ -34,6 +34,9 @@ class Game():
             #self.slopeEquation.DrawSlopeLine(self.canvas)
 
 
+            self.canvas.CreateSprings()
+
+
     def run(self):
 
         #Spel-loopen
@@ -47,12 +50,14 @@ class Game():
             self.polygon.DrawFilled()
             self.canvas.DrawCircle(Vector2(100,100),10)
 
+            self.canvas.UpdateSpring(self.deltaTime)
+
             self.canvas.Refresh(self.displaySurface)
             
             self.deltaTime = (time.time() - self.lastFrameTime)
             self.lastFrameTime = time.time()
 
-            print("FPS:",1/self.deltaTime)
+            # print("FPS:",1/self.deltaTime)
             self.clock.tick(60)
 
             #updatera skärmen och med intervaller bestämda av spelets fps
