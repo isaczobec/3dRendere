@@ -5,7 +5,7 @@ import sys
 from canvas import Canvas
 from slopeEquation import SlopeEquation
 from polygon import Polygon,Vertex
-from Vec2 import Vector2
+from Vec import Vector2
 
 class Game():
     def __init__(self):
@@ -24,7 +24,7 @@ class Game():
 
             self.canvas = Canvas(self)
             
-            self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(400,200)],self.canvas)
+            self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
             #self.polygon.DrawOutlines()
             print(self.polygon.bounds[0].x,self.polygon.bounds[0].y,self.polygon.bounds[1].x,self.polygon.bounds[1].y)
@@ -34,7 +34,6 @@ class Game():
             #self.slopeEquation.DrawSlopeLine(self.canvas)
 
 
-            self.canvas.CreateSprings()
 
 
     def run(self):
@@ -50,7 +49,9 @@ class Game():
             self.polygon.DrawFilled()
             self.canvas.DrawCircle(Vector2(100,100),10)
 
-            self.canvas.UpdateSpring(self.deltaTime)
+
+
+            
 
             self.canvas.Refresh(self.displaySurface)
             

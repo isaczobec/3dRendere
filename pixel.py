@@ -1,5 +1,5 @@
 import settings
-from Vec2 import Vector2
+from Vec import Vector2
 import pygame
 
 class Pixel():

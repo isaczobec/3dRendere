@@ -1,12 +1,11 @@
 import pygame
 import settings
-from Vec2 import Vector2
-import Vec2
+from Vec import Vector2
+import Vec
 import random
 from typing import List
 from pixel import Pixel
 from slopeEquation import SlopeEquation
-from massPoint import MassPoint, Spring
 
 
 class Canvas():
@@ -67,28 +66,13 @@ class Canvas():
         pixelList = self.getPixelsBetween(bottomLeftCorner,topRightcorner)
         for pixel in pixelList:
 
-            if Vec2.Distance(pixel.coordinates,position) <= radius:
+            if Vec.Distance(pixel.coordinates,position) <= radius:
 
             
                 pixel.color = color
                 self.updatedPixelList.append(pixel)
 
 
-    def CreateSprings(self):
-
-        self.massPointList = [MassPoint(Vector2(200,200)),MassPoint(Vector2(200,250))]
-        self.massPointList[0].Connect(self.massPointList[1])
-
-    def RenderSprings(self,radius: float = 10):
-        for massPoint in self.massPointList:
-            self.DrawCircle(massPoint.position,radius=10)
-
-    def UpdateSpring(self,deltaTime):
-
-        for massPoint in self.massPointList:
-            massPoint.Update(deltaTime) # placeholder 1 until i figure out how to use deltatime
-
-        self.RenderSprings()
 
 
 

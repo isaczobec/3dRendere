@@ -1,4 +1,4 @@
-from Vec2 import Vector2
+from Vec import Vector2
 from slopeEquation import SlopeEquation
 import settings
 
