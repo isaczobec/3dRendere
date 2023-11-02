@@ -129,10 +129,17 @@ class Renderer():
             for polygon in object.faceList:
 
                 newVertexList = []
+                oneVertInClipVolume = False
                 for vertex in polygon.vertexList:
+                    
+                    if oneVertInClipVolume == False:
+                        if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
+                            oneVertInClipVolume = True
+
                     newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
 
-                self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color))
+                if oneVertInClipVolume == True:
+                    self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color))
 
         self.canvas.RenderAllPolygons()
 
