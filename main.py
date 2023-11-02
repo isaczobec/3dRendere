@@ -6,6 +6,7 @@ from canvas import Canvas
 from slopeEquation import SlopeEquation
 from polygon import Polygon,Vertex
 from Vec import Vector2
+from  renderer import Renderer
 
 class Game():
     def __init__(self):
@@ -23,14 +24,16 @@ class Game():
             self.lastFrameTime = time.time()
 
             self.canvas = Canvas(self)
+
+            self.renderer = Renderer(self.canvas)
             
-            self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
+            #self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
             #self.polygon.DrawOutlines()
-            print(self.polygon.bounds[0].x,self.polygon.bounds[0].y,self.polygon.bounds[1].x,self.polygon.bounds[1].y)
-            print(self.polygon.equationList)
+            #print(self.polygon.bounds[0].x,self.polygon.bounds[0].y,self.polygon.bounds[1].x,self.polygon.bounds[1].y)
+            #print(self.polygon.equationList)
 
-            self.slopeEquation = SlopeEquation(0.5,100,100,200)
+            #self.slopeEquation = SlopeEquation(0.5,100,100,200)
             #self.slopeEquation.DrawSlopeLine(self.canvas)
 
 
@@ -46,8 +49,10 @@ class Game():
                     sys.exit()
 
             self.displaySurface.fill('black')
-            self.polygon.DrawFilled()
-            self.canvas.DrawCircle(Vector2(100,100),10)
+
+            #self.polygon.DrawFilled()
+
+            #self.canvas.DrawCircle(Vector2(100,100),10)
 
 
 

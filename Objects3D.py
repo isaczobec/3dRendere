@@ -1,14 +1,16 @@
 from Vec import Vector3 as V3
+import numpy
 from typing import List
 
 class Vertex():
     def __init__(self,
-            position = V3(0,0,0)) -> None:
+            position: numpy.array = numpy.array([0,0,0])) -> None:
         
         self.position = position
+        
 
 class Face():
-    def __init__(self,vertexList: List[Vertex]) -> None:
+    def __init__(self,vertexList: List[numpy.array]) -> None:
 
         self.vertexList = vertexList;
 
@@ -33,14 +35,14 @@ class R3Object():
         
         
 
-def CreateTetrahedron(p1: V3,
-                   p2: V3,
-                   p3: V3,
-                   p4: V3) -> R3Object:
-    V1 = Vertex(p1)
-    V2 = Vertex(p2)
-    V3 = Vertex(p3)
-    V4 = Vertex(p4)
+def CreateTetrahedron(p1: numpy.array,
+                   p2: numpy.array,
+                   p3: numpy.array,
+                   p4: numpy.array) -> R3Object:
+    V1 = p1
+    V2 = p2
+    V3 = p3
+    V4 = p4
     vertexList = [V1,V2,V3,V4]
     
     faceList = []

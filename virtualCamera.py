@@ -5,7 +5,7 @@ class VirtualCamera():
     def __init__(self,
             aspectRatio = (16,9),
             nearClipPlaneDistance: float = 1,
-            farClipPlaneDistance: float = 100,
+            farClipPlaneDistance: float = 10,
             position = V3(0,0,0),
             pitch = 0,
             yaw = 0) -> None:
@@ -27,6 +27,11 @@ class VirtualCamera():
         returnVector = V3(x,y,z)
         returnVector.Normalize()
         return returnVector
+    
+        
+    
+virtualCamera = VirtualCamera()
+print(virtualCamera.GetViewDirectionVector())
         
 
         
