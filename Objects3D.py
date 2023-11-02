@@ -10,9 +10,10 @@ class Vertex():
         
 
 class Face():
-    def __init__(self,vertexList: List[numpy.array]) -> None:
+    def __init__(self,vertexList: List[numpy.array],color: (float,float,float) = (255,255,255)) -> None:
 
         self.vertexList = vertexList;
+        self.color = color
 
 class R3Object():
     """three-dimensional object consisting of a bunch of vertexes. Created by inputting a list of Faces."""
@@ -47,7 +48,7 @@ def CreateTetrahedron(p1: numpy.array,
     
     faceList = []
     for i in range(len(vertexList)):
-        faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]]))
+        faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]],color=(50+i*50,50+i*50,50+i*50)))
     
     return R3Object(faceList)
         

@@ -39,7 +39,10 @@ class Canvas():
 
     def getPixel(self,xpos,ypos) -> Pixel:
         if (xpos >= 0 and xpos <= self.pixelAmountX) and (ypos >= 0 and ypos <= self.pixelAmountY):
-            return(self.pixelList[xpos][-ypos]) # negative ypos so that increases in y value results in an increase in "altitude"
+            try:
+                return(self.pixelList[xpos][-ypos]) # negative ypos so that increases in y value results in an increase in "altitude"
+            except IndexError:
+                return None
         else:
             return None
     

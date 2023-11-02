@@ -57,16 +57,15 @@ class Game():
             self.renderer.RenderScene()
 
 
-
+            print(self.renderer.GetNearClipCenter())
             
 
             self.canvas.Refresh(self.displaySurface)
             
             self.deltaTime = (time.time() - self.lastFrameTime)
-            print("FPS:",1/self.deltaTime)
             self.lastFrameTime = time.time()
 
-            # print("FPS:",1/self.deltaTime)
+            print("FPS:",1/self.deltaTime)
             self.clock.tick(60)
 
             #updatera skärmen och med intervaller bestämda av spelets fps

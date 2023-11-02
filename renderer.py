@@ -15,7 +15,7 @@ from Vec import Vector2
 class Renderer():
     def __init__(self,
                  canvas: canvas.Canvas, # the canvas this renderer will render on
-                 camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,15,0))
+                 camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,0,0))
                 ) -> None:
         
         self.canvas = canvas
@@ -78,6 +78,7 @@ class Renderer():
         
         # might be some errors here based on order of multiplication maybe
         M = scalingMatrix @ rotateToZAxisArray @ rotateXAxisArray @ rotateYAxisArray @ moveMatrix
+        #M = moveMatrix @ rotateXAxisArray @ rotateYAxisArray @ rotateToZAxisArray @ scalingMatrix
 
 
         return M
@@ -131,7 +132,7 @@ class Renderer():
                 for vertex in polygon.vertexList:
                     newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
 
-                self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas))
+                self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color))
 
         self.canvas.RenderAllPolygons()
 

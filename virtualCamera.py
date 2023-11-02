@@ -4,9 +4,9 @@ import inputHandler
 
 class VirtualCamera():
     def __init__(self,
-            aspectRatio = (16,9),
+            aspectRatio = (8,4.5),
             nearClipPlaneDistance: float = 1,
-            farClipPlaneDistance: float = 10,
+            farClipPlaneDistance: float = 100,
             position = V3(0,0,0),
             pitch = 0,
             yaw = 0) -> None:

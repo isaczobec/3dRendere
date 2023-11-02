@@ -8,9 +8,11 @@ class Vertex():
         
 
 class Polygon():
-    def __init__(self,vertexList,canvas):
+    def __init__(self,vertexList,canvas,color = (255,255,255)):
         self.vertexList = vertexList
         self.canvas = canvas
+
+        self.color = color
 
         self.equationList = []
 
@@ -119,5 +121,5 @@ class Polygon():
                 if draw:
                     touchedPixel = self.canvas.getPixel(x,y)
                     if touchedPixel != None:
-                        touchedPixel.color = (255,255,255)
+                        touchedPixel.color = self.color
                         self.canvas.updatedPixelList.append(touchedPixel)
