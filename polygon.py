@@ -118,5 +118,6 @@ class Polygon():
 
                 if draw:
                     touchedPixel = self.canvas.getPixel(x,y)
-                    touchedPixel.color = (255,255,255)
-                    self.canvas.updatedPixelList.append(touchedPixel)
+                    if touchedPixel != None:
+                        touchedPixel.color = (255,255,255)
+                        self.canvas.updatedPixelList.append(touchedPixel)

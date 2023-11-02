@@ -38,7 +38,10 @@ class Canvas():
         self.updatedPixelList.clear()
 
     def getPixel(self,xpos,ypos) -> Pixel:
-        return(self.pixelList[xpos][-ypos]) # negative ypos so that increases in y value results in an increase in "altitude"
+        if (xpos >= 0 and xpos <= self.pixelAmountX) and (ypos >= 0 and ypos <= self.pixelAmountY):
+            return(self.pixelList[xpos][-ypos]) # negative ypos so that increases in y value results in an increase in "altitude"
+        else:
+            return None
     
     def getPixelsBetween(self, point1: Vector2, point2: Vector2) -> List[Pixel]:
         """returns a linear list of all pixels between point 1 and point 2"""

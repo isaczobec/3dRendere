@@ -63,6 +63,7 @@ class Game():
             self.canvas.Refresh(self.displaySurface)
             
             self.deltaTime = (time.time() - self.lastFrameTime)
+            print("FPS:",1/self.deltaTime)
             self.lastFrameTime = time.time()
 
             # print("FPS:",1/self.deltaTime)

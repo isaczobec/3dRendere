@@ -15,7 +15,7 @@ from Vec import Vector2
 class Renderer():
     def __init__(self,
                  canvas: canvas.Canvas, # the canvas this renderer will render on
-                 camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,0,0))
+                 camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,15,0))
                 ) -> None:
         
         self.canvas = canvas
@@ -117,6 +117,8 @@ class Renderer():
 
 
     def RenderScene(self):
+
+        self.camera.MoveCamera() # move around the camera
 
         self.canvas.polygonList = []
 

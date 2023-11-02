@@ -1,5 +1,6 @@
 from Vec import Vector3 as V3
 import math
+import inputHandler
 
 class VirtualCamera():
     def __init__(self,
@@ -27,6 +28,18 @@ class VirtualCamera():
         returnVector = V3(x,y,z)
         returnVector.Normalize()
         return returnVector
+    
+
+
+    def MoveCamera(self):
+        moveInputVector = inputHandler.GetMoveInputVector() * 0.1
+        self.position.z -= moveInputVector.x
+        self.position.x -= moveInputVector.y
+
+        turnInputVector = inputHandler.GetTurnInputVector() * 0.03
+        self.yaw += turnInputVector.x
+        self.pitch += turnInputVector.y
+        
     
         
     

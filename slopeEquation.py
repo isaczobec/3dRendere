@@ -63,9 +63,11 @@ class SlopeEquation():
             y = self.GetY(x)
             return Vector2(x,y)
 
-            
-        x = (otherSlopeEquation.offset - self.offset)/(self.slope - otherSlopeEquation.slope)
-        y = self.GetY(x)
+        try:
+            x = (otherSlopeEquation.offset - self.offset)/(self.slope - otherSlopeEquation.slope)
+            y = self.GetY(x)
+        except ZeroDivisionError:
+            return None
 
         if x >= self.minXLimit and x <= self.maxXLimit and x >= otherSlopeEquation.minXLimit and x <= otherSlopeEquation.maxXLimit:
 
