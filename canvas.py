@@ -55,6 +55,10 @@ class Canvas():
                 returnList.append(pixel)
 
         return returnList
+    
+    def RenderAllPolygons(self):
+        for polygon in self.polygonList:
+            polygon.DrawFilled()
 
 
 
@@ -71,6 +75,8 @@ class Canvas():
             
                 pixel.color = color
                 self.updatedPixelList.append(pixel)
+
+    
 
 
 

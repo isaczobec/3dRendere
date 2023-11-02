@@ -6,7 +6,7 @@ from canvas import Canvas
 from slopeEquation import SlopeEquation
 from polygon import Polygon,Vertex
 from Vec import Vector2
-from  renderer import Renderer
+from renderer import Renderer
 
 class Game():
     def __init__(self):
@@ -53,6 +53,8 @@ class Game():
             #self.polygon.DrawFilled()
 
             #self.canvas.DrawCircle(Vector2(100,100),10)
+
+            self.renderer.RenderScene()
 
 
 

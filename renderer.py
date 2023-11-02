@@ -8,6 +8,8 @@ from math import pi
 import canvas
 from typing import List
 import copy
+import polygon as pg
+from Vec import Vector2
 
 
 class Renderer():
@@ -100,8 +102,8 @@ class Renderer():
                 #position after applying the transform.
                 tPos = transformMatrix @ pos
 
-                XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))(tPos[2]))
-                YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))(tPos[2]))
+                XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
+                YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
 
                 # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas
                 sPos = ar([(XsPos+1)*self.canvas.pixelAmountX/2,
@@ -109,6 +111,30 @@ class Renderer():
                            tPos[2]])
                 
                 vertex.position = sPos
+
+        return transformedObjectList
+    
+
+
+    def RenderScene(self):
+
+        self.canvas.polygonList = []
+
+        objectList = self.GetTransformedObjectList()
+
+        for object in objectList:
+            for polygon in object.faceList:
+
+                newVertexList = []
+                for vertex in polygon.vertexList:
+                    newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
+
+                self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas))
+
+        self.canvas.RenderAllPolygons()
+
+        
+
                 
             
 
