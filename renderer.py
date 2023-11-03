@@ -27,6 +27,8 @@ class Renderer():
         # test tetrahedron
         self.tetrahedron = O3D.CreateTetrahedron(ar([6,1,2,1]),ar([6,2,1,1]),ar([6,3,3,1]),ar([5,0,0,1]))
         self.objectList.append(self.tetrahedron)
+        self.tetrahedron2 = O3D.CreateTetrahedron(ar([6,6,2,1]),ar([6,7,1,1]),ar([6,8,3,1]),ar([5,5,0,1]))
+        self.objectList.append(self.tetrahedron2)
 
     def GetNearClipCenter(self):
         fp = self.camera.position + self.camera.GetViewDirectionVector() * self.camera.nearClipPlaneDistance
@@ -54,10 +56,12 @@ class Renderer():
                                         [-sin(-yaw),0,cos(-yaw),0],
                                         [0,0,0,1]])
         
-        rotateXAxisArray =          ar([[1,0,0,0],
-                                        [0,cos(-pitch),-sin(-pitch),0],
-                                        [0,sin(-pitch),cos(-pitch),0],
-                                        [0,0,0,1]])
+        rotateXAxisArray =          ar([
+                                        [cos(-pitch),sin(-pitch),0,0],
+                                        [-sin(-pitch),cos(-pitch),0,0],
+                                        [0,0,1,0],
+                                        [0,0,0,1]
+                                        ])
         
         #Array that rotates a vector 90 degrees on the y-axis, so that z will be depth of the furstrum
         rotateToZAxisArray =          ar([[0,0,-1,0],

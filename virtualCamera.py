@@ -33,6 +33,9 @@ class VirtualCamera():
 
     def MoveCamera(self):
         moveInputVector = inputHandler.GetMoveInputVector() * 0.1
+        vv = self.GetViewDirectionVector()
+        
+
         self.position.z -= moveInputVector.x
         self.position.x -= moveInputVector.y
 

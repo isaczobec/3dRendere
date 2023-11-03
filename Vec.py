@@ -62,13 +62,13 @@ class Vector3:
 
         return Vector3(newX,newY,newZ)
 
-    def __subtract__(self,otherVector):
+    def __sub__(self,otherVector):
         """Subtracts another vector to this one"""
         newX = self.x - otherVector.x
         newY = self.y - otherVector.y
         newZ = self.z - otherVector.z
 
-        return Vector2(newX,newY)
+        return Vector3(newX,newY,newZ)
     
     def __mul__(self,scalar:float):
         newX = self.x * scalar
