@@ -57,7 +57,6 @@ class Game():
             self.renderer.RenderScene()
 
 
-            print(self.renderer.GetNearClipCenter())
             
 
             self.canvas.Refresh(self.displaySurface)
