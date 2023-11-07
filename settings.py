@@ -4,7 +4,9 @@ PIXELYAMOUNT,PIXELXAMOUNT = 360,640
 
 HEIGHT,WIDTH = 720,1280
 
-keymap = {"up":pygame.K_w,
+keymap = {
+            
+            "up":pygame.K_w,
             "left":pygame.K_a,
             "right":pygame.K_d,
             "down":pygame.K_s,
@@ -12,4 +14,9 @@ keymap = {"up":pygame.K_w,
             "turnup":pygame.K_UP,
             "turnleft":pygame.K_LEFT,
             "turnright":pygame.K_RIGHT,
-            "turndown":pygame.K_DOWN,}
+            "turndown":pygame.K_DOWN,
+
+            "zoomIn":pygame.K_o,
+            "zoomOut":pygame.K_l,
+            
+            }

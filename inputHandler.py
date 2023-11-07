@@ -35,4 +35,15 @@ def GetTurnInputVector():
 
     return inputVector
 
+def GetZoomInput() -> float:
+    keys = pygame.key.get_pressed()
+
+    returnInput = 0;
+    if keys[settings.keymap.get("zoomIn")]:
+        returnInput += 1
+    if keys[settings.keymap.get("zoomOut")]:
+        returnInput -= 1
+
+    return returnInput
+
 

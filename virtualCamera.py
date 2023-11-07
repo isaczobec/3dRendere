@@ -4,7 +4,7 @@ import inputHandler
 
 class VirtualCamera():
     def __init__(self,
-            aspectRatio = (1.6,0.9),
+            aspectRatio = [1.6,0.9],
             nearClipPlaneDistance: float = 1,
             farClipPlaneDistance: float = 100,
             position = V3(0,0,0),
@@ -21,10 +21,21 @@ class VirtualCamera():
         self.nearClipPlaneDistance = nearClipPlaneDistance
         self.farClipPlaneDistance = farClipPlaneDistance
 
+
+        self.zoomFactor = 0.1
+        """How fast the camera changes aspect ratio"""
+
     def GetViewDirectionVector(self) -> V3:
-        x = math.cos(self.pitch) * math.cos(self.yaw)
-        y = math.sin(self.pitch)
-        z = math.cos(self.pitch) * math.sin(self.yaw)
+
+        #x = math.cos(self.pitch) * math.cos(self.yaw)
+        #y = math.sin(self.pitch)
+        #z = math.cos(self.pitch) * math.sin(self.yaw)
+
+
+        x = math.cos(-self.yaw) * math.cos(-self.pitch)
+        y = math.sin(-self.pitch)
+        z = math.sin(-self.yaw) * math.cos(-self.pitch)
+
         returnVector = V3(x,y,z)
         returnVector.Normalize()
         return returnVector
@@ -53,6 +64,10 @@ class VirtualCamera():
         turnInputVector = inputHandler.GetTurnInputVector() * 0.03
         self.yaw += turnInputVector.x
         self.pitch += turnInputVector.y
+
+        zoomInput = inputHandler.GetZoomInput()
+        self.aspectRatio[0] *= (1 + zoomInput * self.zoomFactor)
+        self.aspectRatio[1] *= (1 + zoomInput * self.zoomFactor)
         
     
         

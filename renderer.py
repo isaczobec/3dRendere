@@ -40,12 +40,14 @@ class Renderer():
         """Gets the 4x4 matrix that will transform 3d space from the furstrum into the clip volume."""
         
         # furstrum point
-        fp = self.GetNearClipCenter()
+        #fp = self.GetNearClipCenter()
+
+        cp = self.camera.position;
 
         # move the furstrums center to 0,0,0
-        moveMatrix =         ar([[1,0,0,-fp.x],
-                                 [0,1,0,-fp.y],
-                                 [0,0,1,-fp.z],
+        moveMatrix =         ar([[1,0,0,-cp.x],
+                                 [0,1,0,-cp.y],
+                                 [0,0,1,-cp.z],
                                  [0,0,0,1]])
         
         # rotate transform based on the cameras rotation, rotate it back to normal
@@ -70,6 +72,11 @@ class Renderer():
                                           [0,0,0,1],
                                           ])
         
+        moveFurstrumToZeroArray = ar([[1,0,0,0],
+                                      [0,1,0,0],
+                                      [0,0,1,-self.camera.nearClipPlaneDistance],
+                                      [0,0,0,1]])
+        
         nc = self.camera.nearClipPlaneDistance
         fc = self.camera.farClipPlaneDistance
         scaleFactor = 1/(fc-nc) # by which factor the furstrum should be scaled down on the z axis to fit in the clipping volume (z from 0 to 1)
@@ -81,7 +88,7 @@ class Renderer():
                                      ])
         
         # might be some errors here based on order of multiplication maybe
-        M = scalingMatrix @ rotateToZAxisArray @ rotateXAxisArray @ rotateYAxisArray @ moveMatrix
+        M = scalingMatrix @ moveFurstrumToZeroArray @ rotateToZAxisArray @ rotateXAxisArray @ rotateYAxisArray @ moveMatrix
         #M = moveMatrix @ rotateXAxisArray @ rotateYAxisArray @ rotateToZAxisArray @ scalingMatrix
 
 
