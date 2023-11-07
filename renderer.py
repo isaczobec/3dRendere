@@ -130,6 +130,10 @@ class Renderer():
 
     def RenderScene(self):
 
+        for pixelRow in self.canvas.pixelList:
+            for pixel in pixelRow:
+                pixel.depthBuffer = 1
+
         self.camera.MoveCamera() # move around the camera
 
         self.canvas.polygonList = []
@@ -150,7 +154,9 @@ class Renderer():
                     newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
 
                 if oneVertInClipVolume == True:
-                    self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color))
+
+                    planeNormalVector = polygon.GetPlaneEquation()
+                    self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector))
 
         self.canvas.RenderAllPolygons()
 

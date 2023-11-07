@@ -3,7 +3,7 @@ from Vec import Vector2
 import pygame
 
 class Pixel():
-    def __init__(self,canvas,xpos,ypos,xCoord: int, yCoord: int,color=(0,0,0),depthBuffer: float = 0): # canvas is a class defined in canvas.py
+    def __init__(self,canvas,xpos,ypos,xCoord: int, yCoord: int,color=(0,0,0),depthBuffer: float = 1): # canvas is a class defined in canvas.py
 
         self.canvas = canvas
 

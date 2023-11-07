@@ -19,4 +19,7 @@ keymap = {
             "zoomIn":pygame.K_o,
             "zoomOut":pygame.K_l,
             
+            "flyUp":pygame.K_x,
+            "flyDown":pygame.K_c,
+
             }

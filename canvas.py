@@ -30,7 +30,7 @@ class Canvas():
                 pixelRowList.append(Pixel(self,x * self.pixelStepX,y * self.pixelStepY,color=(0,0,0),yCoord=settings.PIXELYAMOUNT-y,xCoord=x)) # multiply the pixels positions with the step value
             self.pixelList.append(pixelRowList)
 
-    def Refresh(self,displaySurface):
+    def Refresh(self,displaySurface) -> Pixel:
         
         for pixel in self.updatedPixelList:
             pixel.Render(displaySurface)

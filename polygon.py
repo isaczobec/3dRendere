@@ -1,6 +1,7 @@
 from Vec import Vector2
 from slopeEquation import SlopeEquation
 import settings
+import numpy as np
 
 class Vertex():
     def __init__(self,xpos,ypos):
@@ -8,13 +9,15 @@ class Vertex():
         
 
 class Polygon():
-    def __init__(self,vertexList,canvas,color = (255,255,255)):
+    def __init__(self,vertexList,canvas,color = (255,255,255), equationVector = np.array([0,0,0])):
         self.vertexList = vertexList
         self.canvas = canvas
 
         self.color = color
 
         self.equationList = []
+
+        self.equationVector = equationVector
 
         for index,vertex in enumerate(self.vertexList):
 
@@ -121,5 +124,13 @@ class Polygon():
                 if draw:
                     touchedPixel = self.canvas.getPixel(x,y)
                     if touchedPixel != None:
-                        touchedPixel.color = self.color
-                        self.canvas.updatedPixelList.append(touchedPixel)
+
+                        depth = (self.equationVector[3] - self.equationVector[0] * x - self.equationVector[1] * y) / self.equationVector[2]
+
+                        #only render the pixel if it is in front of the last rendered pixel
+                        if touchedPixel.depthBuffer > depth:
+
+                            touchedPixel.depthBuffer = depth
+
+                            touchedPixel.color = self.color
+                            self.canvas.updatedPixelList.append(touchedPixel)

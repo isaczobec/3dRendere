@@ -15,6 +15,28 @@ class Face():
         self.vertexList = vertexList;
         self.color = color
 
+
+    def GetPlaneEquation(self) -> numpy.array:
+        """returns a 4 dimensional vector, where the first 3 numbers is the normal vector of the plane. The 4th is the right hand side of the equation."""
+
+        basePoint = self.vertexList[0].position
+        
+        point1Vector: numpy.array = self.vertexList[1].position - self.vertexList[0].position
+        point2Vector: numpy.array = self.vertexList[-1].position - self.vertexList[0].position
+
+        planeNormalVector = numpy.cross(point1Vector,point2Vector)
+
+        # calculate what the right side of the planes equation should be, based on the fact that the base point should be on the plane
+        equationResult = planeNormalVector[0] * basePoint[0] + planeNormalVector[1] * basePoint[1] + planeNormalVector[2] * basePoint[2]
+
+        equationVector = numpy.array([planeNormalVector[0],planeNormalVector[1],planeNormalVector[2],equationResult])
+        
+
+        return equationVector
+
+
+        
+
 class R3Object():
     """three-dimensional object consisting of a bunch of vertexes. Created by inputting a list of Faces."""
     def __init__(self, faceList: List[Face]) -> None:

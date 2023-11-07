@@ -25,6 +25,9 @@ class VirtualCamera():
         self.zoomFactor = 0.1
         """How fast the camera changes aspect ratio"""
 
+        self.flyUpFactor = 0.1
+        """How fast the camera flies up"""
+
     def GetViewDirectionVector(self) -> V3:
 
         #x = math.cos(self.pitch) * math.cos(self.yaw)
@@ -68,6 +71,8 @@ class VirtualCamera():
         zoomInput = inputHandler.GetZoomInput()
         self.aspectRatio[0] *= (1 + zoomInput * self.zoomFactor)
         self.aspectRatio[1] *= (1 + zoomInput * self.zoomFactor)
+
+        self.position.y += inputHandler.GetFlyInput() * self.flyUpFactor
         
     
         
