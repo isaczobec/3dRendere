@@ -39,11 +39,14 @@ class Face():
 
 class R3Object():
     """three-dimensional object consisting of a bunch of vertexes. Created by inputting a list of Faces."""
-    def __init__(self, faceList: List[Face]) -> None:
+    def __init__(self, faceList: List[Face], position: numpy.array) -> None:
 
         self.faceList = faceList
 
         self.vertexList = self.CreateVertexList()
+
+        self.position = position
+        
 
     def CreateVertexList(self):
         vertexList = []
@@ -52,6 +55,10 @@ class R3Object():
                 if vertex not in vertexList:
                     vertexList.append(vertex)
         return vertexList
+    
+    def Move(self,
+             addedPosition : numpy.array = numpy.array([0,0,0])):
+        self.position += numpy.array([addedPosition[0],addedPosition[1],addedPosition[2],1])
         
 
 
@@ -61,7 +68,8 @@ class R3Object():
 def CreateTetrahedron(p1: numpy.array,
                    p2: numpy.array,
                    p3: numpy.array,
-                   p4: numpy.array) -> R3Object:
+                   p4: numpy.array,
+                   position: numpy.array = numpy.array([0,0,0,1])) -> R3Object:
     V1 = Vertex(p1)
     V2 = Vertex(p2)
     V3 = Vertex(p3)
@@ -72,7 +80,7 @@ def CreateTetrahedron(p1: numpy.array,
     for i in range(len(vertexList)):
         faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]],color=(50+i*50,50+i*50,50+i*50)))
     
-    return R3Object(faceList)
+    return R3Object(faceList,position)
         
        
 

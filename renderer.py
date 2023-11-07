@@ -21,15 +21,18 @@ class Renderer():
         self.canvas = canvas
         self.camera = camera
 
-        self.objectList = []
+        self.objectList: List[ar] = []
         """List of 3d objects that this renderer can render."""
 
-        # test tetrahedron
-        self.tetrahedron = O3D.CreateTetrahedron(ar([6,1,2,1]),ar([6,2,1,1]),ar([6,3,3,1]),ar([5,0,0,1]))
+        # test tetrahedron (testrahedron :D )
+        self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 0]))
         self.objectList.append(self.tetrahedron)
-        self.tetrahedron2 = O3D.CreateTetrahedron(ar([6,6,2,1]),ar([6,7,1,1]),ar([6,8,3,1]),ar([5,5,0,1]))
-        self.objectList.append(self.tetrahedron2)
 
+        self.baba = O3D.CreateTetrahedron(ar([6, 6, 2, 1]), ar([6, 7, 1, 1]), ar([6, 8, 3, 1]), ar([5, 5, 0, 1]), position=ar([0, 0, 0, 0]))
+        self.objectList.append(self.baba)
+
+
+        self.objectList[0].position += ar([50,0,0,0])
     def GetNearClipCenter(self):
         fp = self.camera.position + self.camera.GetViewDirectionVector() * self.camera.nearClipPlaneDistance
         return fp
@@ -105,11 +108,13 @@ class Renderer():
 
         # list of all objects after they have been transformed
         transformedObjectList = copy.deepcopy(self.objectList)
+        
 
-        for object in transformedObjectList:
+        for index,object in enumerate(transformedObjectList):
             for vertex in object.vertexList:
 
-                pos = vertex.position
+                pos = vertex.position + self.objectList[index].position
+                print(self.objectList[index].position)
 
                 #position after applying the transform.
                 tPos = transformMatrix @ pos
