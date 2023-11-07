@@ -8,6 +8,8 @@ from polygon import Polygon,Vertex
 from Vec import Vector2
 from renderer import Renderer
 import Time
+import math
+import numpy
 
 class Game():
     def __init__(self):
@@ -63,6 +65,7 @@ class Game():
             self.canvas.Refresh(self.displaySurface)
             
             Time.deltaTime = (time.time() - self.lastFrameTime)
+            Time.passedTime += Time.deltaTime
             self.lastFrameTime = time.time()
 
             #print("FPS:",1/self.deltaTime)

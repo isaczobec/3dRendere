@@ -10,6 +10,8 @@ from typing import List
 import copy
 import polygon as pg
 from Vec import Vector2
+import math
+import Time
 
 
 class Renderer():
@@ -27,12 +29,13 @@ class Renderer():
         # test tetrahedron (testrahedron :D )
         self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 0]))
         self.objectList.append(self.tetrahedron)
+        self.objectList[0].position += ar([1,0,0,0])
 
-        self.baba = O3D.CreateTetrahedron(ar([6, 6, 2, 1]), ar([6, 7, 1, 1]), ar([6, 8, 3, 1]), ar([5, 5, 0, 1]), position=ar([0, 0, 0, 0]))
+        self.baba = O3D.CreateTetrahedron(ar([1, -1, 1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 0]))
         self.objectList.append(self.baba)
+        self.objectList[1].position += ar([0,5,0,0])
 
 
-        self.objectList[0].position += ar([50,0,0,0])
     def GetNearClipCenter(self):
         fp = self.camera.position + self.camera.GetViewDirectionVector() * self.camera.nearClipPlaneDistance
         return fp
@@ -114,7 +117,6 @@ class Renderer():
             for vertex in object.vertexList:
 
                 pos = vertex.position + self.objectList[index].position
-                print(self.objectList[index].position)
 
                 #position after applying the transform.
                 tPos = transformMatrix @ pos
@@ -164,6 +166,8 @@ class Renderer():
                     self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector))
 
         self.canvas.RenderAllPolygons()
+
+        
 
         
 

@@ -10,10 +10,18 @@ class Vertex():
         
 
 class Face():
-    def __init__(self,vertexList: List[numpy.array],color: (float,float,float) = (255,255,255)) -> None:
+    def __init__(self,vertexList: List[numpy.array],color: (float,float,float) = (255,255,255), triangulate: bool = True) -> None:
 
         self.vertexList = vertexList;
         self.color = color
+
+    def Triangulate(self):
+        """Divides this face into triangles, returns a list of triangle faces."""
+
+        triangleFaceList = []
+
+        for i in range(len(self.vertexList)):
+            triangleFaceList.append()
 
 
     def GetPlaneEquation(self) -> numpy.array:
