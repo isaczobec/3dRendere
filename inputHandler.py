@@ -40,9 +40,9 @@ def GetZoomInput() -> float:
 
     returnInput = 0;
     if keys[settings.keymap.get("zoomIn")]:
-        returnInput += 1
-    if keys[settings.keymap.get("zoomOut")]:
         returnInput -= 1
+    if keys[settings.keymap.get("zoomOut")]:
+        returnInput += 1
 
     return returnInput
 
@@ -51,9 +51,9 @@ def GetFlyInput() -> float:
 
     returnInput = 0;
     if keys[settings.keymap.get("flyUp")]:
-        returnInput -= 1
-    if keys[settings.keymap.get("flyDown")]:
         returnInput += 1
+    if keys[settings.keymap.get("flyDown")]:
+        returnInput -= 1
 
     return returnInput
 

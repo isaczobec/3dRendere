@@ -16,10 +16,10 @@ keymap = {
             "turnright":pygame.K_RIGHT,
             "turndown":pygame.K_DOWN,
 
-            "zoomIn":pygame.K_o,
-            "zoomOut":pygame.K_l,
+            "zoomIn":pygame.K_c,
+            "zoomOut":pygame.K_x,
             
-            "flyUp":pygame.K_x,
-            "flyDown":pygame.K_c,
+            "flyUp":pygame.K_SPACE,
+            "flyDown":pygame.K_LSHIFT,
 
             }
