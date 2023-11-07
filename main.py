@@ -7,6 +7,7 @@ from slopeEquation import SlopeEquation
 from polygon import Polygon,Vertex
 from Vec import Vector2
 from renderer import Renderer
+import Time
 
 class Game():
     def __init__(self):
@@ -61,14 +62,15 @@ class Game():
 
             self.canvas.Refresh(self.displaySurface)
             
-            self.deltaTime = (time.time() - self.lastFrameTime)
+            Time.deltaTime = (time.time() - self.lastFrameTime)
             self.lastFrameTime = time.time()
 
-            print("FPS:",1/self.deltaTime)
+            #print("FPS:",1/self.deltaTime)
             self.clock.tick(60)
 
             #updatera skärmen och med intervaller bestämda av spelets fps
             pygame.display.update()
+
 
 
 if __name__ == "__main__":
