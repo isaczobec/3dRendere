@@ -4,7 +4,7 @@ import inputHandler
 
 class VirtualCamera():
     def __init__(self,
-            aspectRatio = (8,4.5),
+            aspectRatio = (1.6,0.9),
             nearClipPlaneDistance: float = 1,
             farClipPlaneDistance: float = 100,
             position = V3(0,0,0),
@@ -29,6 +29,14 @@ class VirtualCamera():
         returnVector.Normalize()
         return returnVector
     
+    def GetPerpMovementVector(self) -> V3:
+        z = -math.cos(self.yaw)
+        x = -math.sin(self.yaw)
+        
+        returnVector = V3(x,0,z)
+        returnVector.Normalize()
+        return returnVector
+    
 
 
     def MoveCamera(self):
@@ -36,8 +44,11 @@ class VirtualCamera():
         vv = self.GetViewDirectionVector()
         
 
-        self.position.z -= moveInputVector.x
-        self.position.x -= moveInputVector.y
+        #self.position.z -= moveInputVector.x
+        #self.position.x -= moveInputVector.y
+        self.position += self.GetPerpMovementVector() * moveInputVector.x
+        self.position -= vv * moveInputVector.y
+        
 
         turnInputVector = inputHandler.GetTurnInputVector() * 0.03
         self.yaw += turnInputVector.x
