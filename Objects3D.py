@@ -65,8 +65,15 @@ class R3Object():
         return vertexList
     
     def Move(self,
-             addedPosition : numpy.array = numpy.array([0,0,0])):
-        self.position += numpy.array([addedPosition[0],addedPosition[1],addedPosition[2],1])
+             x,y,z):
+        
+        moveMatrix =numpy.array([[1,0,0,x],
+                                 [0,1,0,y],
+                                 [0,0,1,z],
+                                 [0,0,0,1]])
+        print(moveMatrix)
+        print(self.position)
+        self.position = moveMatrix @ self.position
         
 
 

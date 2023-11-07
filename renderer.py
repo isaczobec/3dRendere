@@ -27,11 +27,11 @@ class Renderer():
         """List of 3d objects that this renderer can render."""
 
         # test tetrahedron (testrahedron :D )
-        self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 0]))
+        self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
         self.objectList.append(self.tetrahedron)
         self.objectList[0].position += ar([1,0,0,0])
 
-        self.baba = O3D.CreateTetrahedron(ar([1, -1, 1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 0]))
+        self.baba = O3D.CreateTetrahedron(ar([1, -1, 1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
         self.objectList.append(self.baba)
         self.objectList[1].position += ar([0,5,0,0])
 
@@ -116,7 +116,14 @@ class Renderer():
         for index,object in enumerate(transformedObjectList):
             for vertex in object.vertexList:
 
-                pos = vertex.position + self.objectList[index].position
+                moveMatrix = ar([[1,0,0,self.objectList[index].position[0]],
+                                 [0,1,0,self.objectList[index].position[1]],
+                                 [0,0,1,self.objectList[index].position[2]],
+                                 [0,0,0,1]])
+                
+
+
+                pos = moveMatrix @ vertex.position
 
                 #position after applying the transform.
                 tPos = transformMatrix @ pos

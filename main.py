@@ -68,6 +68,8 @@ class Game():
             Time.passedTime += Time.deltaTime
             self.lastFrameTime = time.time()
 
+            self.renderer.objectList[0].Move(0.1,0,0)
+
             #print("FPS:",1/self.deltaTime)
             self.clock.tick(60)
 
