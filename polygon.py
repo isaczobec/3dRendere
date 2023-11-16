@@ -125,7 +125,7 @@ class Polygon():
                     touchedPixel = self.canvas.getPixel(x,y)
                     if touchedPixel != None:
 
-                        depth = (self.equationVector[3] - self.equationVector[0] * x - self.equationVector[1] * y) / self.equationVector[2]
+                        depth = self.GetDepth(x,y)
 
                         #only render the pixel if it is in front of the last rendered pixel
                         if touchedPixel.depthBuffer > depth:
@@ -134,3 +134,48 @@ class Polygon():
 
                             touchedPixel.color = self.color
                             self.canvas.updatedPixelList.append(touchedPixel)
+
+    def GetDepth(self,x,y) -> float:
+        """returns the depth of a point on this polygon"""
+
+        depth = (self.equationVector[3] - self.equationVector[0] * x - self.equationVector[1] * y) / self.equationVector[2]
+        return depth
+
+    def CheckIfPointInPolygon(self,x: float,y: float) -> bool:
+        """Checks if x,y lies in the polygon. Returns a bool"""
+
+
+        verticalLine = SlopeEquation()
+        verticalLine.vertical = True
+        verticalLine.xVerticalPosition = x/2
+
+        horizontalLine = SlopeEquation(0, y/2)
+
+        HIntersections = []
+        VIntersections = []
+        for equation in self.equationList:
+
+            Hint = horizontalLine.GetIntersection(equation)
+            if Hint != None:
+                if Hint.x >= equation.minXLimit and Hint.x <= equation.maxXLimit:
+                    HIntersections.append(Hint)
+
+
+            Vint = verticalLine.GetIntersection(equation)
+            if Vint != None:
+                if Vint.x >= equation.minXLimit and Vint.x <= equation.maxXLimit:
+                    VIntersections.append(Vint)
+
+            
+
+
+        if len(HIntersections) == 0 or len(VIntersections) == 0:
+            return False
+        else:
+            return True
+        # Obviously not done yet, just want to see if this works
+        
+
+
+
+

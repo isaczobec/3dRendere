@@ -3,8 +3,7 @@ from numpy import array as ar
 from virtualCamera import VirtualCamera 
 import Objects3D as O3D
 from Vec import Vector3 as V3
-from math import cos,sin
-from math import pi
+from math import cos,sin,pi,isnan,isinf
 import canvas
 from typing import List
 import copy
@@ -12,6 +11,7 @@ import polygon as pg
 from Vec import Vector2
 import math
 import Time
+import inputHandler
 
 
 class Renderer():
@@ -31,9 +31,14 @@ class Renderer():
         self.objectList.append(self.tetrahedron)
         self.objectList[0].position += ar([1,0,0,0])
 
-        self.baba = O3D.CreateTetrahedron(ar([1, -1, 1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
+        self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
         self.objectList.append(self.baba)
-        self.objectList[1].position += ar([0,5,0,0])
+        self.objectList[1].position += ar([0,0,0,0])
+
+
+        
+        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))])],position=ar([0,1,0,1]))
+        self.objectList.append(self.quad)
 
 
     def GetNearClipCenter(self):
@@ -131,6 +136,12 @@ class Renderer():
                 XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
                 YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
 
+                
+                if math.isnan(XsPos) or math.isinf(XsPos):
+                    XsPos = 0
+                if math.isnan(YsPos) or math.isinf(YsPos):
+                    YsPos = 0
+
                 # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas
                 sPos = ar([(XsPos+1)*self.canvas.pixelAmountX/2,
                            (YsPos+1)*self.canvas.pixelAmountY/2,
@@ -154,7 +165,17 @@ class Renderer():
 
         objectList = self.GetTransformedObjectList()
 
-        for object in objectList:
+
+            
+        mouseInput = inputHandler.GetMouseInput() # None if the player didnt click this frame
+
+        clickedObject: O3D.R3Object = None
+        """The object that was clicked this frame. None if no object was clicked."""
+
+        clickedObjectDepthBuffer = 1
+        """The depth of the clicked object. Used to get the first object in the line of sight clicked."""
+
+        for objectIndex, object in enumerate(objectList):
             for polygon in object.faceList:
 
                 newVertexList = []
@@ -170,7 +191,38 @@ class Renderer():
                 if oneVertInClipVolume == True:
 
                     planeNormalVector = polygon.GetPlaneEquation()
-                    self.canvas.polygonList.append(pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector))
+
+                    
+                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector)
+                    self.canvas.polygonList.append(canvasPolygon)
+
+                    # Check if this polygon was clicked
+                    if mouseInput != None:
+
+                        if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
+
+                            polyonDepth = canvasPolygon.GetDepth(mouseInput[0],mouseInput[1])
+                            if polyonDepth < clickedObjectDepthBuffer:
+                                clickedObjectDepthBuffer = polyonDepth
+
+                                clickedObject = self.objectList[objectIndex]
+
+                            
+        if clickedObject != None:
+
+            print(clickedObject)
+
+            for face in clickedObject.faceList:
+                face.color = (255,0,0)
+
+                            
+
+                            
+                    
+                    
+
+
+
 
         self.canvas.RenderAllPolygons()
 

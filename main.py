@@ -10,6 +10,7 @@ from renderer import Renderer
 import Time
 import math
 import numpy
+from game import GameManager
 
 class Game():
     def __init__(self):
@@ -29,6 +30,7 @@ class Game():
             self.canvas = Canvas(self)
 
             self.renderer = Renderer(self.canvas)
+            self.gameManager = GameManager(self.renderer)
             
             #self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
@@ -68,7 +70,6 @@ class Game():
             Time.passedTime += Time.deltaTime
             self.lastFrameTime = time.time()
 
-            self.renderer.objectList[0].Move(0.1,0,0)
 
             #print("FPS:",1/self.deltaTime)
             self.clock.tick(60)

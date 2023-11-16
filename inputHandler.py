@@ -38,7 +38,7 @@ def GetTurnInputVector():
 def GetZoomInput() -> float:
     keys = pygame.key.get_pressed()
 
-    returnInput = 0;
+    returnInput = 0
     if keys[settings.keymap.get("zoomIn")]:
         returnInput -= 1
     if keys[settings.keymap.get("zoomOut")]:
@@ -49,11 +49,23 @@ def GetZoomInput() -> float:
 def GetFlyInput() -> float:
     keys = pygame.key.get_pressed()
 
-    returnInput = 0;
+    returnInput = 0
     if keys[settings.keymap.get("flyUp")]:
         returnInput += 1
     if keys[settings.keymap.get("flyDown")]:
         returnInput -= 1
 
     return returnInput
+
+
+def GetMouseInput():
+    """Returns a tuple of the mouse position if M1 was clicked this frame. Otherwise, returns null."""
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_b]:
+        pos = pygame.mouse.get_pos()
+        return [pos[0],settings.HEIGHT - pos[1]]
+    
+    else:
+        return None
+
 

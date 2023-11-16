@@ -41,6 +41,16 @@ class Face():
         
 
         return equationVector
+    
+    def GetNormalVector(self):
+        point1Vector: numpy.array = self.vertexList[1].position - self.vertexList[0].position
+        point2Vector: numpy.array = self.vertexList[-1].position - self.vertexList[0].position
+
+
+        planeNormalVector = numpy.cross(point1Vector,point2Vector)
+
+        planeNormalVector = planeNormalVector / numpy.linalg.norm(planeNormalVector) # normalize the vector
+        return planeNormalVector
 
 
         
@@ -71,8 +81,6 @@ class R3Object():
                                  [0,1,0,y],
                                  [0,0,1,z],
                                  [0,0,0,1]])
-        print(moveMatrix)
-        print(self.position)
         self.position = moveMatrix @ self.position
         
 
