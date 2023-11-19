@@ -165,6 +165,7 @@ class Polygon():
                             self.canvas.updatedPixelList.append(touchedPixel)
 
 
+    # Got the inverse functions for the perspective equations from chatgpt cause those would be annoying to figure out myself
     def ReversePerspectiveForPixel(self,x,y, depth, camera) -> List[float]:
         """Return x and y position of a pixel BEFORE its position was transformed for perspective"""
 

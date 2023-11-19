@@ -80,6 +80,11 @@ class VirtualCamera():
         self.aspectRatio[1] *= (1 + zoomInput * self.zoomFactor * Time.deltaTime)
 
         self.position.y += inputHandler.GetFlyInput() * self.flyUpFactor * Time.deltaTime
+
+
+    def GetScalingFactor(self):
+        """Get the factor by which the clip volume needs to be scaled to have a depth of 1"""
+        return 1/(self.farClipPlaneDistance-self.nearClipPlaneDistance)
         
     
         

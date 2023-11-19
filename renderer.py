@@ -39,7 +39,7 @@ class Renderer():
 
 
         
-        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))])],position=ar([0,1,0,1]),triangulate=False)
+        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))],virtualCamera=self.camera)],position=ar([0,1,0,1]),triangulate=False)
         self.objectList.append(self.quad)
 
         self.clickedObject = None

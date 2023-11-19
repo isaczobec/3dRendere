@@ -53,20 +53,24 @@ class Face():
 
             # normal vector for this plane
             nV = self.GetNormalVector()
-            print(nV)
+            print("original normal vector: ",nV)
             
             # the forward vector, the direction we want the plane to be facing
             fV = numpy.array([0,0,1]) # the vector the normal vector should be facing after 
 
             # angle between the two vectors
             ang = acos((numpy.dot(nV,fV)) / (numpy.linalg.norm(fV) * numpy.linalg.norm(nV)))
+            print(ang)
 
             # rotation axis, perpendicular to both nV and fV
             rA = numpy.cross(nV,fV)
+            rA = rA / numpy.linalg.norm(rA)
+
+            print("rotation axis:",rA)
 
             # copied this matrix from wikipedia (by hand D: ) (https://en.wikipedia.org/wiki/Rotation_matrix)
             rotationMatrix = numpy.array([
-                                          [cos(ang) + rA[0]**2 * (1-cos(ang)), rA[0] * rA[1] * (1-cos(ang))-rA[2]*sin(ang), rA[0]*rA[2]*(1-cos(ang))+rA[1]*sin(ang),0],
+                                          [cos(ang) + ((rA[0]**2) * (1-cos(ang))), (rA[0] * rA[1] * (1-cos(ang)))-(rA[2]*sin(ang)), rA[0]*rA[2]*(1-cos(ang))+rA[1]*sin(ang),0],
                                           [rA[1]*rA[0]*(1-cos(ang))+rA[2]*sin(ang), cos(ang)+ rA[1]**2 * (1-cos(ang)), rA[1]*rA[2]*(1-cos(ang))-rA[0]*sin(ang),0],
                                           [rA[2]*rA[0]*(1-cos(ang)) - rA[1]*sin(ang), rA[2]*rA[1]*(1-cos(ang))+rA[0]*sin(ang), cos(ang) + rA[2]**2 * (1-cos(ang)),0],
                                           [0,0,0,1]
@@ -239,9 +243,8 @@ def CreateTetrahedron(p1: numpy.array,
 v1 = Vertex(numpy.array([1,1,1,1]))
 v2 = Vertex(numpy.array([1,-1,-1,1]))
 v3 = Vertex(numpy.array([-1,-1,-1,1]))
-v4 = Vertex(numpy.array([-1,1,1,1]))
 
-face = Face([v1,v2,v3,v4],virtualCamera=1)
+face = Face([v1,v2,v3],virtualCamera=1)
    
 face.GetImageTransformMatrix()
 
