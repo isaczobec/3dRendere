@@ -1,12 +1,14 @@
 from Vec import Vector3 as V3
 import numpy
 from typing import List
-from math import cos,sin
+from math import cos,sin,acos
 from image import PlaneImage
+from virtualCamera import VirtualCamera
+import copy
 
 class Vertex():
     def __init__(self,
-            position: numpy.array = numpy.array([0,0,0])) -> None:
+            position: numpy.array = numpy.array([0,0,0,1])) -> None:
         
         self.position = position
         
@@ -15,6 +17,7 @@ class Face():
     def __init__(self,vertexList: List[numpy.array], # list of vertexes making up this plane
                  color: (float,float,float) = (255,255,255), 
                  planeImage: PlaneImage = None, # the planeImage to render onto this face
+                 virtualCamera: VirtualCamera = None,
                  ) -> None: # how man image points this plane should have; which resolution it should render with
 
         self.vertexList = vertexList
@@ -22,6 +25,66 @@ class Face():
 
 
         self.planeImage = planeImage
+
+        self.virtualCamera = virtualCamera
+
+        
+    def GetImageTransformMatrix(self):
+
+        #Needs a reference to the camera to get the scaling factor (difference between near and far clip plane)
+        if self.virtualCamera != None:
+
+            # scalingFactor = 1/self.virtualCamera.GetScalingFactor()
+            scalingFactor = 1
+
+            scalingMatrix = numpy.array([
+                                        [1,0,0,0],
+                                        [0,1,0,0],
+                                        [0,0,scalingFactor,0],
+                                        [0,0,0,1],
+                                         ])
+            
+
+            savedOldVertexList: List[Vertex] = copy.deepcopy(self.vertexList)
+
+            #needs to do this before calculating the rotation matrix because the normal vector will be different
+            for vertex in self.vertexList:
+                vertex.position = scalingMatrix @ vertex.position
+
+            # normal vector for this plane
+            nV = self.GetNormalVector()
+            print(nV)
+            
+            # the forward vector, the direction we want the plane to be facing
+            fV = numpy.array([0,0,1]) # the vector the normal vector should be facing after 
+
+            # angle between the two vectors
+            ang = acos((numpy.dot(nV,fV)) / (numpy.linalg.norm(fV) * numpy.linalg.norm(nV)))
+
+            # rotation axis, perpendicular to both nV and fV
+            rA = numpy.cross(nV,fV)
+
+            # copied this matrix from wikipedia (by hand D: ) (https://en.wikipedia.org/wiki/Rotation_matrix)
+            rotationMatrix = numpy.array([
+                                          [cos(ang) + rA[0]**2 * (1-cos(ang)), rA[0] * rA[1] * (1-cos(ang))-rA[2]*sin(ang), rA[0]*rA[2]*(1-cos(ang))+rA[1]*sin(ang),0],
+                                          [rA[1]*rA[0]*(1-cos(ang))+rA[2]*sin(ang), cos(ang)+ rA[1]**2 * (1-cos(ang)), rA[1]*rA[2]*(1-cos(ang))-rA[0]*sin(ang),0],
+                                          [rA[2]*rA[0]*(1-cos(ang)) - rA[1]*sin(ang), rA[2]*rA[1]*(1-cos(ang))+rA[0]*sin(ang), cos(ang) + rA[2]**2 * (1-cos(ang)),0],
+                                          [0,0,0,1]
+                                          ])
+            
+            for vertex in self.vertexList:
+                vertex.position = rotationMatrix @ vertex.position
+
+            
+            print("new normal vector:",self.GetNormalVector())
+            for vertex in self.vertexList:
+                print(vertex.position)
+
+
+            self.vertexList = savedOldVertexList
+            pass
+        else:
+            print("This plane needs a reference to a camera to get the image transform matrix!") 
 
 
 
@@ -71,8 +134,9 @@ class Face():
         point1Vector: numpy.array = self.vertexList[1].position - self.vertexList[0].position
         point2Vector: numpy.array = self.vertexList[-1].position - self.vertexList[0].position
 
-
-        planeNormalVector = numpy.cross(point1Vector,point2Vector)
+        
+        # Cannot cross 4d vectors
+        planeNormalVector = numpy.cross(numpy.array([point1Vector[0],point1Vector[1],point1Vector[2]]),numpy.array([point2Vector[0],point2Vector[1],point2Vector[2]]))
 
         planeNormalVector = planeNormalVector / numpy.linalg.norm(planeNormalVector) # normalize the vector
         return planeNormalVector
@@ -172,7 +236,14 @@ def CreateTetrahedron(p1: numpy.array,
         
        
 
+v1 = Vertex(numpy.array([1,1,1,1]))
+v2 = Vertex(numpy.array([1,-1,-1,1]))
+v3 = Vertex(numpy.array([-1,-1,-1,1]))
+v4 = Vertex(numpy.array([-1,1,1,1]))
+
+face = Face([v1,v2,v3,v4],virtualCamera=1)
    
+face.GetImageTransformMatrix()
 
 
 
