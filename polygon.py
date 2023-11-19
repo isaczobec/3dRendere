@@ -2,6 +2,10 @@ from Vec import Vector2
 from slopeEquation import SlopeEquation
 import settings
 import numpy as np
+from image import PlaneImage
+from typing import List
+
+
 
 class Vertex():
     def __init__(self,xpos,ypos):
@@ -9,7 +13,14 @@ class Vertex():
         
 
 class Polygon():
-    def __init__(self,vertexList,canvas,color = (255,255,255), equationVector = np.array([0,0,0])):
+    def __init__(self,
+                 vertexList,
+                 canvas,
+                 color = (255,255,255), 
+                 equationVector = np.array([0,0,0]),
+                 planeImage = None,
+                 camera = None):
+        
         self.vertexList = vertexList
         self.canvas = canvas
 
@@ -18,6 +29,10 @@ class Polygon():
         self.equationList = []
 
         self.equationVector = equationVector
+
+        self.planeImage = planeImage
+
+        self.camera = camera
 
         for index,vertex in enumerate(self.vertexList):
 
@@ -87,10 +102,14 @@ class Polygon():
     def DrawOutlinesWithEquations(self):
         for equation in self.equationList:
             equation.DrawSlopeLine(self.canvas)
+
+
+    def GetImageColorAtCoordinate(self,planeImage : PlaneImage,x,y):
+        pass
     
 
 
-    def DrawFilled(self) -> None:
+    def DrawFilled(self, planeImage: PlaneImage = None) -> None:
         minY = self.bounds[0].y
         minX = self.bounds[0].x
         maxY = self.bounds[1].y
@@ -132,8 +151,36 @@ class Polygon():
 
                             touchedPixel.depthBuffer = depth
 
+
+                            if self.planeImage != None:
+                                # get the color of the planeImage at this pixel
+                                pass
+                                
+
+
+
+
+
                             touchedPixel.color = self.color
                             self.canvas.updatedPixelList.append(touchedPixel)
+
+
+    def ReversePerspectiveForPixel(self,x,y, depth, camera) -> List[float]:
+        """Return x and y position of a pixel BEFORE its position was transformed for perspective"""
+
+        dimensions = [self.canvas.pixelAmountX,self.canvas.pixelAmountY]
+
+        returnList = []
+        for index, var in enumerate([x,y]):
+            var *= 2/dimensions[index]
+            term1 = var * (camera.aspectRatio[0] / 2) * (1 - depth)
+            term2 = var * (camera.farClipPlaneDistance * camera.aspectRatio[0]) / (camera.nearClipPlaneDistance * 2) * depth
+            tPos = term1 + term2
+
+            returnList.append(tPos)
+        return returnList
+
+
 
     def GetDepth(self,x,y) -> float:
         """returns the depth of a point on this polygon"""

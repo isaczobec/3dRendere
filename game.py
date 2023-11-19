@@ -9,4 +9,4 @@ class GameManager():
     def run(self):
         
         if self.renderer.clickedObject != None:
-            self.renderer.clickedObject.Rotate(0,1*Time.deltaTime,0)
+            self.renderer.clickedObject.Rotate(1*Time.deltaTime,0,0)

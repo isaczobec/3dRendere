@@ -13,6 +13,8 @@ import math
 import Time
 import inputHandler
 
+import image
+
 
 class Renderer():
     def __init__(self,
@@ -37,8 +39,10 @@ class Renderer():
 
 
         
-        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))])],position=ar([0,1,0,1]))
+        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))])],position=ar([0,1,0,1]),triangulate=False)
         self.objectList.append(self.quad)
+
+        self.clickedObject = None
 
 
     def GetNearClipCenter(self):
@@ -53,7 +57,7 @@ class Renderer():
         # furstrum point
         #fp = self.GetNearClipCenter()
 
-        cp = self.camera.position;
+        cp = self.camera.position
 
         # move the furstrums center to 0,0,0
         moveMatrix =         ar([[1,0,0,-cp.x],
@@ -106,6 +110,8 @@ class Renderer():
         return M
     
 
+    
+
     def GetTransformedObjectList(self) -> List[O3D.R3Object]:
         """Get a list of all the objects in this renderer transformed, to render."""
 
@@ -121,18 +127,20 @@ class Renderer():
         for index,object in enumerate(transformedObjectList):
             for vertex in object.vertexList:
 
+
                 moveMatrix = ar([[1,0,0,self.objectList[index].position[0]],
                                  [0,1,0,self.objectList[index].position[1]],
                                  [0,0,1,self.objectList[index].position[2]],
                                  [0,0,0,1]])
                 
-
-
                 pos = moveMatrix @ vertex.position
+
 
                 #position after applying the transform.
                 tPos = transformMatrix @ pos
 
+                # use a formula to get to move every point to account for perspective
+                # Every point that is withing the clip volume has a x,y value within -1 to 1
                 XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
                 YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
 
@@ -182,6 +190,7 @@ class Renderer():
                 oneVertInClipVolume = False
                 for vertex in polygon.vertexList:
                     
+                    #Check if the polygon is inside the clip volume, and only render it if it is
                     if oneVertInClipVolume == False:
                         if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
                             oneVertInClipVolume = True
@@ -192,8 +201,10 @@ class Renderer():
 
                     planeNormalVector = polygon.GetPlaneEquation()
 
+
+
                     
-                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector)
+                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=polygon.planeImage,camera=self.camera)
                     self.canvas.polygonList.append(canvasPolygon)
 
                     # Check if this polygon was clicked
@@ -208,23 +219,17 @@ class Renderer():
                                 clickedObject = self.objectList[objectIndex]
 
                             
-        if clickedObject != None:
+        self.clickedObject = clickedObject
+        #if clickedObject != None:
 
-            print(clickedObject)
-
-            for face in clickedObject.faceList:
-                face.color = (255,0,0)
-
-                            
-
-                            
-                    
-                    
-
-
+            #print(clickedObject)
+            #for face in clickedObject.faceList:
+            #   face.color = (255,0,0)
 
 
         self.canvas.RenderAllPolygons()
+
+
 
         
 

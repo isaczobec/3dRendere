@@ -59,6 +59,7 @@ class Game():
 
             #self.canvas.DrawCircle(Vector2(100,100),10)
 
+            self.gameManager.run()
             self.renderer.RenderScene()
 
 
