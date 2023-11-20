@@ -141,9 +141,8 @@ class Renderer():
             for face in object.faceList:
                 if face.planeImage != None:
 
-                    newFace = copy.deepcopy(face)
 
-                    face.imageTransformMatrix = newFace.GetImageTransformMatrix()
+                    face.imageTransformMatrix = face.GetImageTransformMatrix()
 
 
             for vertex in object.vertexList:

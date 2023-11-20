@@ -1,7 +1,7 @@
 from Vec import Vector3 as V3
 import numpy
 from typing import List
-from math import cos,sin,acos
+from math import cos,sin,acos,asin,atan
 from image import PlaneImage
 from virtualCamera import VirtualCamera
 import copy
@@ -36,10 +36,12 @@ class Face():
 
         #Needs a reference to the camera to get the scaling factor (difference between near and far clip plane)
         if self.virtualCamera != None:
-            
-            savedOldVertexList: List[Vertex] = copy.deepcopy(self.vertexList)
 
-            scalingFactor = 1/(self.virtualCamera.GetScalingFactor())
+            copyFace = copy.deepcopy(self)
+
+
+
+            scalingFactor = 1/(copyFace.virtualCamera.GetScalingFactor())
             
 
 
@@ -53,11 +55,11 @@ class Face():
 
 
             #needs to do this before calculating the rotation matrix because the normal vector will be different
-            for vertex in self.vertexList:
+            for vertex in copyFace.vertexList:
                 vertex.position = scalingMatrix @ vertex.position
 
             # normal vector for this plane
-            nV = self.GetNormalVector()
+            nV = copyFace.GetNormalVector()
             if debug: print("original normal vector: ",nV)
             
             # the forward vector, the direction we want the plane to be facing
@@ -85,7 +87,7 @@ class Face():
 
                 # apply the rotation matrix, needs to be done to correctly calculate the move matrix
                 
-                for vertex in self.vertexList:
+                for vertex in copyFace.vertexList:
                     vertex.position = rotationMatrix @ vertex.position
 
             else:
@@ -97,7 +99,7 @@ class Face():
                                               ])
 
 
-            firstVertexOffset = self.vertexList[0].position
+            firstVertexOffset = copyFace.vertexList[0].position
 
             # matrix that will move the first vertex in the polygon to 0,0,0
             moveMatrix = numpy.array([
@@ -107,32 +109,60 @@ class Face():
                                         [0,0,0,1],
                                          ])
             
-            # apply the moveMatrix (not necessary, this is for debugging only)
-            for vertex in self.vertexList:
-                vertex.position = moveMatrix @ vertex.position
+
+            
+            
+
+
+            # matrix to rotate the polygon to be straight
+            zAngle = -self.virtualCamera.yaw
+            rotateToCameraMatrix = numpy.array([
+                                                [cos(zAngle),-sin(zAngle),0,0],
+                                                [sin(zAngle),cos(zAngle),0,0],
+                                                [0,0,1,0],
+                                                [0,0,0,1]
+                                                ])
+                                                
 
             
             if debug: 
-                print("new normal vector:",self.GetNormalVector())
+                print("new normal vector:",copyFace.GetNormalVector())
             
                 print("New vertex positions:")
-                for vertex in self.vertexList:
+                for vertex in copyFace.vertexList:
                     print(vertex.position)
 
             # the finished matrix we want to return
-            matrix = moveMatrix @ rotationMatrix @ scalingMatrix
+            matrix = rotateToCameraMatrix @ moveMatrix @ rotationMatrix @ scalingMatrix
+
+            v1pos = matrix @ self.vertexList[1].position
+
+
+            # Rotate the matrix so that the second vertex always is straight above the 
+            angToUp = -1 * atan(v1pos[1]/v1pos[0])
+
+            contAng = numpy.unwrap([angToUp], discont=numpy.pi) # make the values from the arctan function continous. Found out how to do this from this stack overflow thread: https://stackoverflow.com/questions/41917393/making-arctan2-continuous-beyond-2pi
+            
+
+
+            rotateToStraightMatrix = numpy.array([
+                                                [cos(contAng),-sin(contAng),0,0],
+                                                [sin(contAng),cos(contAng),0,0],
+                                                [0,0,1,0],
+                                                [0,0,0,1]
+                                                ])
+            matrix = rotateToStraightMatrix @ matrix
 
             if debug: 
                 print("finnished matrix:")
                 print(matrix)
 
                 print("transformed vertex positions:")
-                for vertex in savedOldVertexList:
+                for vertex in self.vertexList:
                     print(matrix @ vertex.position)
             
 
 
-            self.vertexList = savedOldVertexList
             
 
             return matrix
