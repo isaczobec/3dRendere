@@ -16,7 +16,16 @@ class PlaneImage():
 
     def SampleRGB(self,x,y):
         """Returns the RGB-Value at the specefied position of the image."""
-        return self.pixels[x,y]
+        return self.pixels[round(x)%self.image.size[0],round(y)%self.image.size[1]]
+    
+testImage = PlaneImage("images/cat.jpg")
+
+def testGetPixelColor(x,y,scale = 1):
+    color = testImage.SampleRGB(x*scale,y*scale)
+    return color
+    
+
+
 
 
 

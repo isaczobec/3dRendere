@@ -18,7 +18,8 @@ class Face():
                  color: (float,float,float) = (255,255,255), 
                  planeImage: PlaneImage = None, # the planeImage to render onto this face
                  virtualCamera: VirtualCamera = None,
-                 ) -> None: # how man image points this plane should have; which resolution it should render with
+                 imageTransformMatrix = None,
+                ) -> None: # how man image points this plane should have; which resolution it should render with
 
         self.vertexList = vertexList
         self.color = color
@@ -28,13 +29,18 @@ class Face():
 
         self.virtualCamera = virtualCamera
 
+        self.imageTransformMatrix = imageTransformMatrix
+
         
-    def GetImageTransformMatrix(self):
+    def GetImageTransformMatrix(self,debug = False):
 
         #Needs a reference to the camera to get the scaling factor (difference between near and far clip plane)
         if self.virtualCamera != None:
+            
+            savedOldVertexList: List[Vertex] = copy.deepcopy(self.vertexList)
 
             scalingFactor = 1/(self.virtualCamera.GetScalingFactor())
+            
 
 
             scalingMatrix = numpy.array([
@@ -45,28 +51,21 @@ class Face():
                                          ])
             
 
-            savedOldVertexList: List[Vertex] = copy.deepcopy(self.vertexList)
 
             #needs to do this before calculating the rotation matrix because the normal vector will be different
             for vertex in self.vertexList:
-
-                print("VertexPosition:")
-                print(vertex.position)
-                print("matrix:")
-                print(scalingMatrix)
-
                 vertex.position = scalingMatrix @ vertex.position
 
             # normal vector for this plane
             nV = self.GetNormalVector()
-            print("original normal vector: ",nV)
+            if debug: print("original normal vector: ",nV)
             
             # the forward vector, the direction we want the plane to be facing
             fV = numpy.array([0,0,1]) # the vector the normal vector should be facing after 
 
             # angle between the two vectors
             ang = acos((numpy.dot(nV,fV)) / (numpy.linalg.norm(fV) * numpy.linalg.norm(nV)))
-            print(ang)
+            if debug: print("ang:",ang)
 
             if ang != 0: # do not do a rotation transform if the polygons normal is already facing the right way. also stops a mathematical error
 
@@ -74,7 +73,7 @@ class Face():
                 rA = numpy.cross(nV,fV)
                 rA = rA / numpy.linalg.norm(rA)
 
-                print("rotation axis:",rA)
+                if debug: print("rotation axis:",rA)
 
                 # copied this matrix from wikipedia (by hand D: ) (https://en.wikipedia.org/wiki/Rotation_matrix)
                 rotationMatrix = numpy.array([
@@ -113,12 +112,24 @@ class Face():
                 vertex.position = moveMatrix @ vertex.position
 
             
-            print("new normal vector:",self.GetNormalVector())
-            for vertex in self.vertexList:
-                print(vertex.position)
+            if debug: 
+                print("new normal vector:",self.GetNormalVector())
+            
+                print("New vertex positions:")
+                for vertex in self.vertexList:
+                    print(vertex.position)
 
             # the finished matrix we want to return
             matrix = moveMatrix @ rotationMatrix @ scalingMatrix
+
+            if debug: 
+                print("finnished matrix:")
+                print(matrix)
+
+                print("transformed vertex positions:")
+                for vertex in savedOldVertexList:
+                    print(matrix @ vertex.position)
+            
 
 
             self.vertexList = savedOldVertexList
@@ -276,6 +287,17 @@ def CreateTetrahedron(p1: numpy.array,
         faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]],color=(50+i*50,50+i*50,50+i*50)))
     
     return R3Object(faceList,position)
+
+
+#v1 = Vertex(numpy.array([1,0,0,1]))
+#v2 = Vertex(numpy.array([2,0,0,1]))
+#v3 = Vertex(numpy.array([2,1,2,1]))
+#v4 = Vertex(numpy.array([1,1,2,1]))
+
+#face = Face([v1,v2,v3,v4],planeImage=True,virtualCamera=1)
+#face.GetImageTransformMatrix(debug=True)
+
+
         
        
 

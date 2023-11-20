@@ -2,6 +2,7 @@ from Vec import Vector2
 from slopeEquation import SlopeEquation
 import settings
 import numpy as np
+import image
 from image import PlaneImage
 from typing import List
 
@@ -162,15 +163,12 @@ class Polygon():
                                 rP = self.ReversePerspectiveForPixel(x,y,depth,self.camera) # reverse the perspective of this pixel and get the original x,y position of it
 
                                 pixelPosition = self.imageTransformMatrix @ np.array([rP[0],rP[1],depth,1]) # transform this pixels position to get the x,y of the image it is supposed to display
+                                imageColor = image.testGetPixelColor(pixelPosition[0],pixelPosition[1],300)
+                                touchedPixel.color = imageColor
 
-                                print(pixelPosition)
+                            else:
+                                touchedPixel.color = self.color
                                 
-
-
-
-
-
-                            touchedPixel.color = self.color
                             self.canvas.updatedPixelList.append(touchedPixel)
 
 
@@ -178,17 +176,22 @@ class Polygon():
     def ReversePerspectiveForPixel(self,x,y, depth, camera) -> List[float]:
         """Return x and y position of a pixel BEFORE its position was transformed for perspective"""
 
+
         dimensions = [self.canvas.pixelAmountX,self.canvas.pixelAmountY]
 
         returnList = []
         for index, var in enumerate([x,y]):
-            var *= 2/dimensions[index]
-            term1 = var * (camera.aspectRatio[0] / 2) * (1 - depth)
-            term2 = var * (camera.farClipPlaneDistance * camera.aspectRatio[0]) / (camera.nearClipPlaneDistance * 2) * depth
-            tPos = term1 + term2
 
-            returnList.append(tPos)
-        return returnList
+            # reverse the scaling to fit the screen of the position
+            var *= (2/dimensions[index])
+            var -= 1
+
+            var = var * ((camera.aspectRatio[index]/2)*(1-depth)+(camera.farClipPlaneDistance*camera.aspectRatio[index]/(camera.nearClipPlaneDistance*2))*(depth))
+
+
+
+            returnList.append(var)
+        return returnList 
 
 
 

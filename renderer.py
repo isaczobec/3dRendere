@@ -92,9 +92,7 @@ class Renderer():
                                       [0,0,1,-self.camera.nearClipPlaneDistance],
                                       [0,0,0,1]])
         
-        nc = self.camera.nearClipPlaneDistance
-        fc = self.camera.farClipPlaneDistance
-        scaleFactor = 1/(fc-nc) # by which factor the furstrum should be scaled down on the z axis to fit in the clipping volume (z from 0 to 1)
+        scaleFactor = self.camera.GetScalingFactor() # by which factor the furstrum should be scaled down on the z axis to fit in the clipping volume (z from 0 to 1)
         scalingMatrix =           ar([
                                      [1,0,0,0],
                                      [0,1,0,0],
@@ -104,12 +102,11 @@ class Renderer():
         
         # might be some errors here based on order of multiplication maybe
         M = scalingMatrix @ moveFurstrumToZeroArray @ rotateToZAxisArray @ rotateXAxisArray @ rotateYAxisArray @ moveMatrix
-        #M = moveMatrix @ rotateXAxisArray @ rotateYAxisArray @ rotateToZAxisArray @ scalingMatrix
+        # M = moveMatrix @ rotateXAxisArray @ rotateYAxisArray @ rotateToZAxisArray @ scalingMatrix
 
 
         return M
     
-
     
 
     def GetTransformedObjectList(self) -> List[O3D.R3Object]:
@@ -121,7 +118,7 @@ class Renderer():
         transformMatrix = self.GetClipVolumeTransformMatrix()
 
         # list of all objects after they have been transformed
-        transformedObjectList = copy.deepcopy(self.objectList)
+        transformedObjectList: List[O3D.R3Object] = copy.deepcopy(self.objectList)
         
 
         for index,object in enumerate(transformedObjectList):
@@ -138,6 +135,20 @@ class Renderer():
 
                 #position after applying the transform.
                 tPos = transformMatrix @ pos
+
+                vertex.position = tPos
+
+            for face in object.faceList:
+                if face.planeImage != None:
+
+                    newFace = copy.deepcopy(face)
+
+                    face.imageTransformMatrix = newFace.GetImageTransformMatrix()
+
+
+            for vertex in object.vertexList:
+
+                tPos = vertex.position
 
                 # use a formula to get to move every point to account for perspective
                 # Every point that is withing the clip volume has a x,y value within -1 to 1
@@ -205,13 +216,13 @@ class Renderer():
 
                     planeNormalVector = polygon.GetPlaneEquation()
 
-                    # if this polygon has an image, get the matrix used to get pixel positions of the image
-                    imageTransformMatrix = None
-                    if polygon.planeImage != None:
-                        imageTransformMatrix = polygon.GetImageTransformMatrix()
+                    
+
+                        #for vertex in polygon.vertexList:
+                        #    print("vertPos:",vertex.position)
 
                     
-                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=polygon.planeImage,camera=self.camera,imageTransformMatrix=imageTransformMatrix)
+                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=polygon.planeImage,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
                     self.canvas.polygonList.append(canvasPolygon)
 
                     # Check if this polygon was clicked
