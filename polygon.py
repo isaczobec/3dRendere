@@ -18,8 +18,9 @@ class Polygon():
                  canvas,
                  color = (255,255,255), 
                  equationVector = np.array([0,0,0]),
-                 planeImage = None,
-                 camera = None):
+                 planeImage = None, # the image to be rendered onto this polygon. None if this polygon has no image.
+                 camera = None, # the camera used to render this polygon
+                 imageTransformMatrix: np.array = None): # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
         
         self.vertexList = vertexList
         self.canvas = canvas
@@ -33,6 +34,8 @@ class Polygon():
         self.planeImage = planeImage
 
         self.camera = camera
+
+        self.imageTransformMatrix = imageTransformMatrix
 
         for index,vertex in enumerate(self.vertexList):
 
@@ -109,7 +112,7 @@ class Polygon():
     
 
 
-    def DrawFilled(self, planeImage: PlaneImage = None) -> None:
+    def DrawFilled(self) -> None:
         minY = self.bounds[0].y
         minX = self.bounds[0].x
         maxY = self.bounds[1].y
@@ -153,8 +156,14 @@ class Polygon():
 
 
                             if self.planeImage != None:
+                                
                                 # get the color of the planeImage at this pixel
-                                pass
+
+                                rP = self.ReversePerspectiveForPixel(x,y,depth,self.camera) # reverse the perspective of this pixel and get the original x,y position of it
+
+                                pixelPosition = self.imageTransformMatrix @ np.array([rP[0],rP[1],depth,1]) # transform this pixels position to get the x,y of the image it is supposed to display
+
+                                print(pixelPosition)
                                 
 
 

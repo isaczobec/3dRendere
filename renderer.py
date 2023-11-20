@@ -39,7 +39,7 @@ class Renderer():
 
 
         
-        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))],virtualCamera=self.camera)],position=ar([0,1,0,1]),triangulate=False)
+        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))],virtualCamera=self.camera,planeImage=True)],position=ar([0,1,0,1]),triangulate=False)
         self.objectList.append(self.quad)
 
         self.clickedObject = None
@@ -151,9 +151,13 @@ class Renderer():
                     YsPos = 0
 
                 # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas
-                sPos = ar([(XsPos+1)*self.canvas.pixelAmountX/2,
-                           (YsPos+1)*self.canvas.pixelAmountY/2,
-                           tPos[2]])
+                sPos = ar([
+                            (XsPos+1)*self.canvas.pixelAmountX/2,
+                            (YsPos+1)*self.canvas.pixelAmountY/2,
+                            tPos[2],
+                            1
+                           ]
+                           )
                 
                 vertex.position = sPos
 
@@ -201,10 +205,13 @@ class Renderer():
 
                     planeNormalVector = polygon.GetPlaneEquation()
 
-
+                    # if this polygon has an image, get the matrix used to get pixel positions of the image
+                    imageTransformMatrix = None
+                    if polygon.planeImage != None:
+                        imageTransformMatrix = polygon.GetImageTransformMatrix()
 
                     
-                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=polygon.planeImage,camera=self.camera)
+                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=polygon.planeImage,camera=self.camera,imageTransformMatrix=imageTransformMatrix)
                     self.canvas.polygonList.append(canvasPolygon)
 
                     # Check if this polygon was clicked

@@ -34,8 +34,8 @@ class Face():
         #Needs a reference to the camera to get the scaling factor (difference between near and far clip plane)
         if self.virtualCamera != None:
 
-            # scalingFactor = 1/self.virtualCamera.GetScalingFactor()
-            scalingFactor = 1
+            scalingFactor = 1/(self.virtualCamera.GetScalingFactor())
+
 
             scalingMatrix = numpy.array([
                                         [1,0,0,0],
@@ -49,6 +49,12 @@ class Face():
 
             #needs to do this before calculating the rotation matrix because the normal vector will be different
             for vertex in self.vertexList:
+
+                print("VertexPosition:")
+                print(vertex.position)
+                print("matrix:")
+                print(scalingMatrix)
+
                 vertex.position = scalingMatrix @ vertex.position
 
             # normal vector for this plane
@@ -62,31 +68,64 @@ class Face():
             ang = acos((numpy.dot(nV,fV)) / (numpy.linalg.norm(fV) * numpy.linalg.norm(nV)))
             print(ang)
 
-            # rotation axis, perpendicular to both nV and fV
-            rA = numpy.cross(nV,fV)
-            rA = rA / numpy.linalg.norm(rA)
+            if ang != 0: # do not do a rotation transform if the polygons normal is already facing the right way. also stops a mathematical error
 
-            print("rotation axis:",rA)
+                # rotation axis, perpendicular to both nV and fV
+                rA = numpy.cross(nV,fV)
+                rA = rA / numpy.linalg.norm(rA)
 
-            # copied this matrix from wikipedia (by hand D: ) (https://en.wikipedia.org/wiki/Rotation_matrix)
-            rotationMatrix = numpy.array([
-                                          [cos(ang) + ((rA[0]**2) * (1-cos(ang))), (rA[0] * rA[1] * (1-cos(ang)))-(rA[2]*sin(ang)), rA[0]*rA[2]*(1-cos(ang))+rA[1]*sin(ang),0],
-                                          [rA[1]*rA[0]*(1-cos(ang))+rA[2]*sin(ang), cos(ang)+ rA[1]**2 * (1-cos(ang)), rA[1]*rA[2]*(1-cos(ang))-rA[0]*sin(ang),0],
-                                          [rA[2]*rA[0]*(1-cos(ang)) - rA[1]*sin(ang), rA[2]*rA[1]*(1-cos(ang))+rA[0]*sin(ang), cos(ang) + rA[2]**2 * (1-cos(ang)),0],
-                                          [0,0,0,1]
-                                          ])
+                print("rotation axis:",rA)
+
+                # copied this matrix from wikipedia (by hand D: ) (https://en.wikipedia.org/wiki/Rotation_matrix)
+                rotationMatrix = numpy.array([
+                                            [cos(ang) + ((rA[0]**2) * (1-cos(ang))), (rA[0] * rA[1] * (1-cos(ang)))-(rA[2]*sin(ang)), rA[0]*rA[2]*(1-cos(ang))+rA[1]*sin(ang),0],
+                                            [rA[1]*rA[0]*(1-cos(ang))+rA[2]*sin(ang), cos(ang)+ rA[1]**2 * (1-cos(ang)), rA[1]*rA[2]*(1-cos(ang))-rA[0]*sin(ang),0],
+                                            [rA[2]*rA[0]*(1-cos(ang)) - rA[1]*sin(ang), rA[2]*rA[1]*(1-cos(ang))+rA[0]*sin(ang), cos(ang) + rA[2]**2 * (1-cos(ang)),0],
+                                            [0,0,0,1]
+                                            ])
+
+                # apply the rotation matrix, needs to be done to correctly calculate the move matrix
+                
+                for vertex in self.vertexList:
+                    vertex.position = rotationMatrix @ vertex.position
+
+            else:
+                rotationMatrix = numpy.array([
+                                                [1,0,0,0],
+                                                [0,1,0,0],
+                                                [0,0,1,0],
+                                                [0,0,0,1],
+                                              ])
+
+
+            firstVertexOffset = self.vertexList[0].position
+
+            # matrix that will move the first vertex in the polygon to 0,0,0
+            moveMatrix = numpy.array([
+                                        [1,0,0,-firstVertexOffset[0]],
+                                        [0,1,0,-firstVertexOffset[1]],
+                                        [0,0,1,-firstVertexOffset[2]],
+                                        [0,0,0,1],
+                                         ])
             
+            # apply the moveMatrix (not necessary, this is for debugging only)
             for vertex in self.vertexList:
-                vertex.position = rotationMatrix @ vertex.position
+                vertex.position = moveMatrix @ vertex.position
 
             
             print("new normal vector:",self.GetNormalVector())
             for vertex in self.vertexList:
                 print(vertex.position)
 
+            # the finished matrix we want to return
+            matrix = moveMatrix @ rotationMatrix @ scalingMatrix
+
 
             self.vertexList = savedOldVertexList
-            pass
+            
+
+            return matrix
+
         else:
             print("This plane needs a reference to a camera to get the image transform matrix!") 
 
@@ -240,13 +279,7 @@ def CreateTetrahedron(p1: numpy.array,
         
        
 
-v1 = Vertex(numpy.array([1,1,1,1]))
-v2 = Vertex(numpy.array([1,-1,-1,1]))
-v3 = Vertex(numpy.array([-1,-1,-1,1]))
 
-face = Face([v1,v2,v3],virtualCamera=1)
-   
-face.GetImageTransformMatrix()
 
 
 
