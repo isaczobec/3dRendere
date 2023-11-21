@@ -10,3 +10,4 @@ class GameManager():
         
         if self.renderer.clickedObject != None:
             self.renderer.clickedObject.Rotate(1*Time.deltaTime,0,0)
+            self.renderer.clickedObject.Move(1*Time.deltaTime,0,0)

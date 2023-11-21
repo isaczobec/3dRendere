@@ -72,8 +72,9 @@ class Game():
             self.lastFrameTime = time.time()
 
 
+
             #print("FPS:",1/self.deltaTime)
-            self.clock.tick(60)
+            self.clock.tick(30)
 
             #updatera skärmen och med intervaller bestämda av spelets fps
             pygame.display.update()

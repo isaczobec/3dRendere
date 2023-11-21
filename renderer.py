@@ -1,4 +1,3 @@
-import numpy
 from numpy import array as ar
 from virtualCamera import VirtualCamera 
 import Objects3D as O3D
@@ -8,9 +7,7 @@ import canvas
 from typing import List
 import copy
 import polygon as pg
-from Vec import Vector2
 import math
-import Time
 import inputHandler
 
 import image
@@ -39,10 +36,17 @@ class Renderer():
 
 
         
-        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([0,0,1,1])),O3D.Vertex(ar([0,0,-1,1])),O3D.Vertex(ar([1,0,-1,1])),O3D.Vertex(ar([1,0,1,1]))],virtualCamera=self.camera,planeImage=True)],position=ar([0,1,0,1]),triangulate=False)
+        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([-1,1,0,1])),O3D.Vertex(ar([-1,-1,0,1])),O3D.Vertex(ar([1,-1,0,1])),O3D.Vertex(ar([1,1,0,1]))],virtualCamera=self.camera,planeImage="cat")],position=ar([0,1,0,1]),triangulate=False)
         self.objectList.append(self.quad)
 
         self.clickedObject = None
+
+
+        # Create an image reference list. 
+        self.imageHandler = image.ImageHandler({
+            "cat":"images/cat.jpg",
+            "dora":"images/goofy.jpg"
+        })
 
 
     def GetNearClipCenter(self):
@@ -221,11 +225,14 @@ class Renderer():
                         #    print("vertPos:",vertex.position)
 
                     
-                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=polygon.planeImage,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
+                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
+
                     self.canvas.polygonList.append(canvasPolygon)
 
                     # Check if this polygon was clicked
                     if mouseInput != None:
+
+                        
 
                         if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
 

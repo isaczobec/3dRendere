@@ -19,7 +19,7 @@ class Polygon():
                  canvas,
                  color = (255,255,255), 
                  equationVector = np.array([0,0,0]),
-                 planeImage = None, # the image to be rendered onto this polygon. None if this polygon has no image.
+                 planeImage: PlaneImage = None, # the image to be rendered onto this polygon. None if this polygon has no image.
                  camera = None, # the camera used to render this polygon
                  imageTransformMatrix: np.array = None): # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
         
@@ -139,9 +139,10 @@ class Polygon():
 
             draw = False
 
+            intersectXSet = set(intersectXList) # convert the list to a set for faster list searching
             for xOffset in range(maxX-minX):
                 x = xOffset + minX
-                if x in intersectXList:
+                if x in intersectXSet:
                     draw = not draw
 
                 if draw:
@@ -163,7 +164,7 @@ class Polygon():
                                 rP = self.ReversePerspectiveForPixel(x,y,depth,self.camera) # reverse the perspective of this pixel and get the original x,y position of it
 
                                 pixelPosition = self.imageTransformMatrix @ np.array([rP[0],rP[1],depth,1]) # transform this pixels position to get the x,y of the image it is supposed to display
-                                imageColor = image.testGetPixelColor(pixelPosition[0],pixelPosition[1],300)
+                                imageColor = self.planeImage.SampleRGB(pixelPosition[0],pixelPosition[1],600)
                                 touchedPixel.color = imageColor
 
                             else:
@@ -208,6 +209,8 @@ class Polygon():
         verticalLine = SlopeEquation()
         verticalLine.vertical = True
         verticalLine.xVerticalPosition = x/2
+
+        
 
         horizontalLine = SlopeEquation(0, y/2)
 

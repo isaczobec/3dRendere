@@ -1,6 +1,6 @@
 import pygame
 
-PIXELYAMOUNT,PIXELXAMOUNT = 360,640
+PIXELYAMOUNT,PIXELXAMOUNT = 180,320
 
 HEIGHT,WIDTH = 720,1280
 
@@ -21,5 +21,7 @@ keymap = {
             
             "flyUp":pygame.K_SPACE,
             "flyDown":pygame.K_LSHIFT,
+
+            "click":pygame.K_b
 
             }

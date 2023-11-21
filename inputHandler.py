@@ -1,6 +1,8 @@
 import pygame,settings
 from Vec import Vector2 as Vec2
 
+holdingClick = False
+
 def GetMoveInputVector():
     keys = pygame.key.get_pressed()
 
@@ -59,11 +61,13 @@ def GetFlyInput() -> float:
 
 
 def GetMouseInput():
-    """Returns a tuple of the mouse position if M1 was clicked this frame. Otherwise, returns null."""
+    """Returns a tuple of the mouse position (converted from screen pixel position to canvas pixel position) if M1 was clicked this frame. Otherwise, returns null."""
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_b]:
+    if keys[settings.keymap.get("click")]:
         pos = pygame.mouse.get_pos()
-        return [pos[0],settings.HEIGHT - pos[1]]
+
+
+        return [pos[0]/(settings.WIDTH/settings.PIXELXAMOUNT/2),(settings.HEIGHT - pos[1])/(settings.HEIGHT/settings.PIXELYAMOUNT/2)]
     
     else:
         return None

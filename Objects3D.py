@@ -139,15 +139,11 @@ class Face():
 
 
             # Rotate the matrix so that the second vertex always is straight above the 
-            angToUp = -1 * atan(v1pos[1]/v1pos[0])
-
-            contAng = numpy.unwrap([angToUp], discont=numpy.pi) # make the values from the arctan function continous. Found out how to do this from this stack overflow thread: https://stackoverflow.com/questions/41917393/making-arctan2-continuous-beyond-2pi
-            
-
+            angToUp = -1 * numpy.arctan(v1pos[1]/v1pos[0])
 
             rotateToStraightMatrix = numpy.array([
-                                                [cos(contAng),-sin(contAng),0,0],
-                                                [sin(contAng),cos(contAng),0,0],
+                                                [cos(angToUp),-sin(angToUp),0,0],
+                                                [sin(angToUp),cos(angToUp),0,0],
                                                 [0,0,1,0],
                                                 [0,0,0,1]
                                                 ])
@@ -232,7 +228,7 @@ class R3Object():
     """three-dimensional object consisting of a bunch of vertexes. Created by inputting a list of Faces."""
     def __init__(self, faceList: List[Face], position: numpy.array, rotation: numpy.array = numpy.array([0,0,0]), triangulate: bool = True) -> None:
 
-        self.faceList = []
+        self.faceList: List[Face] = []
 
         # if we want to triangulate every face in this object:
         if triangulate == True:
