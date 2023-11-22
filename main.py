@@ -53,7 +53,7 @@ class Game():
                     pygame.quit()
                     sys.exit()
 
-            self.displaySurface.fill('black')
+            self.displaySurface.fill((255,200,200))
 
             #self.polygon.DrawFilled()
 

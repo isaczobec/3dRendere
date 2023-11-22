@@ -1,10 +1,11 @@
 from Vec import Vector3 as V3
 import numpy
 from typing import List
-from math import cos,sin,acos,asin,atan
+from math import cos,sin,acos,asin,atan,pi
 from image import PlaneImage
 from virtualCamera import VirtualCamera
 import copy
+
 
 class Vertex():
     def __init__(self,
@@ -266,8 +267,15 @@ class R3Object():
         self.position = moveMatrix @ self.position
 
     
-    def Rotate(self,x: float,y: float,z: float):
+    def Rotate(self,x: float,y: float,z: float, 
+               degrees = True): # if the input is in degrees or radians
         """Rotate this vector said radians on every respective axis."""
+
+        if degrees:
+            
+            x = x * pi/180
+            y = y * pi/180
+            z = z * pi/180
         
         XMatrix = numpy.array([[1,0,0,0],
                                [0,cos(x),-sin(x),0],
@@ -290,6 +298,13 @@ class R3Object():
             vertex.position = XMatrix @ vertex.position
             vertex.position = YMatrix @ vertex.position
             vertex.position = ZMatrix @ vertex.position
+    
+    def Update(self):
+        """Function that can be overrided in child classes. Ran every frame in the renderer class."""
+        pass
+
+    def ObjectClicked(self):
+        """Function that is called in the game class when this object is clicked. Overrided in child classes."""
         
 
 

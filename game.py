@@ -3,28 +3,41 @@ import Objects3D as obj
 import numpy as np
 from numpy import array as ar
 import Time
-
+from memoryCard import MemoryCard
+import gameSettings
+from typing import List
 
 
 class GameManager():
     def __init__(self,rendererObject: r.Renderer) -> None:
         self.renderer: r.Renderer = rendererObject
 
-        quad = obj.R3Object([obj.Face([obj.Vertex(ar([-1.364,1,0,1])),
-                                            obj.Vertex(ar([-1.364,-1,0,1])),
-                                            obj.Vertex(ar([1.364,-1,0,1])),
-                                            obj.Vertex(ar([1.364,1,0,1]))],
-                                            virtualCamera=self.renderer.camera,
-                                            planeImage="cardBackside",
-                                            planeImageScale=95)],
-                                            position=ar([5,1,0,1]),
-                                            
-                                            triangulate=False)
-        
-        self.renderer.objectList.append(quad)
+        self.memoryCardList: List[MemoryCard] = []
+        """List that contains all memorycards in this game."""
+
+        self.CreateBoard()
+
+
+
+    def CreateBoard(self):
+        """Creates memory cards in a grid."""
+
+        for x in range(gameSettings.boardSize[0]):
+            for y in range(gameSettings.boardSize[1]):
+                memoryCard = MemoryCard((x,y),virtualCamera = self.renderer.camera)
+                self.memoryCardList.append(memoryCard)
+                self.renderer.objectList.append(memoryCard)
+
 
     def run(self):
         
         if self.renderer.clickedObject != None:
-            self.renderer.clickedObject.Rotate(1*Time.deltaTime,0,0)
+            self.renderer.clickedObject.ObjectClicked()
+            
+
+            #self.renderer.clickedObject.Rotate(70*Time.deltaTime,0,0)
+
+        for obj in self.renderer.objectList: # update every object
+            obj.Update()
+            
 

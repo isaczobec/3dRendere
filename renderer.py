@@ -22,6 +22,8 @@ class Renderer():
         self.canvas = canvas
         self.camera = camera
 
+        self.mouseInputHandler = inputHandler.MouseInputHandler()
+
         self.objectList: List[ar] = []
         """List of 3d objects that this renderer can render."""
 
@@ -35,7 +37,6 @@ class Renderer():
         #elf.objectList[1].position += ar([0,0,0,0])
 
 
-        
         
 
         self.clickedObject = None
@@ -193,7 +194,7 @@ class Renderer():
 
 
             
-        mouseInput = inputHandler.GetMouseInput() # None if the player didnt click this frame
+        mouseInput = self.mouseInputHandler.GetMouseInput() # None if the player didnt click this frame
 
         clickedObject: O3D.R3Object = None
         """The object that was clicked this frame. None if no object was clicked."""
