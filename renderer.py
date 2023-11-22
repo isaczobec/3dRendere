@@ -26,24 +26,24 @@ class Renderer():
         """List of 3d objects that this renderer can render."""
 
         # test tetrahedron (testrahedron :D )
-        self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
-        self.objectList.append(self.tetrahedron)
-        self.objectList[0].position += ar([1,0,0,0])
+        #self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
+        #self.objectList.append(self.tetrahedron)
+        #self.objectList[0].position += ar([1,0,0,0])
 
-        self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
-        self.objectList.append(self.baba)
-        self.objectList[1].position += ar([0,0,0,0])
+        #self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
+        #self.objectList.append(self.baba)
+        #elf.objectList[1].position += ar([0,0,0,0])
 
 
         
-        self.quad = O3D.R3Object([O3D.Face([O3D.Vertex(ar([-1,1,0,1])),O3D.Vertex(ar([-1,-1,0,1])),O3D.Vertex(ar([1,-1,0,1])),O3D.Vertex(ar([1,1,0,1]))],virtualCamera=self.camera,planeImage="cat")],position=ar([0,1,0,1]),triangulate=False)
-        self.objectList.append(self.quad)
+        
 
         self.clickedObject = None
 
 
         # Create an image reference list. 
         self.imageHandler = image.ImageHandler({
+            "cardBackside":"images/cardBackside.jpeg",
             "cat":"images/cat.jpg",
             "dora":"images/goofy.jpg"
         })
@@ -225,7 +225,7 @@ class Renderer():
                         #    print("vertPos:",vertex.position)
 
                     
-                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
+                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
 
                     self.canvas.polygonList.append(canvasPolygon)
 

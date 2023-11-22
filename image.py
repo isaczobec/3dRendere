@@ -38,11 +38,6 @@ class ImageHandler():
             return None
     
     
-testImage = PlaneImage("images/goofy.jpg")
-
-def testGetPixelColor(x,y,scale = 1):
-    color = testImage.SampleRGB(x*scale,y*scale)
-    return color
     
 
 

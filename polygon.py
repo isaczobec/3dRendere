@@ -20,6 +20,7 @@ class Polygon():
                  color = (255,255,255), 
                  equationVector = np.array([0,0,0]),
                  planeImage: PlaneImage = None, # the image to be rendered onto this polygon. None if this polygon has no image.
+                 planeImageScale: float = 1, # The scale at which the plane image is rendered
                  camera = None, # the camera used to render this polygon
                  imageTransformMatrix: np.array = None): # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
         
@@ -33,9 +34,8 @@ class Polygon():
         self.equationVector = equationVector
 
         self.planeImage = planeImage
-
+        self.planeImageScale = planeImageScale
         self.camera = camera
-
         self.imageTransformMatrix = imageTransformMatrix
 
         for index,vertex in enumerate(self.vertexList):
@@ -164,7 +164,7 @@ class Polygon():
                                 rP = self.ReversePerspectiveForPixel(x,y,depth,self.camera) # reverse the perspective of this pixel and get the original x,y position of it
 
                                 pixelPosition = self.imageTransformMatrix @ np.array([rP[0],rP[1],depth,1]) # transform this pixels position to get the x,y of the image it is supposed to display
-                                imageColor = self.planeImage.SampleRGB(pixelPosition[0],pixelPosition[1],600)
+                                imageColor = self.planeImage.SampleRGB(pixelPosition[0],pixelPosition[1],scale=self.planeImageScale)
                                 touchedPixel.color = imageColor
 
                             else:
