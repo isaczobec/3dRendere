@@ -4,6 +4,7 @@ import numpy as np
 from numpy import array as ar
 import Time
 from memoryCard import MemoryCard
+import memoryCard as mc
 import gameSettings
 from typing import List
 
@@ -24,7 +25,7 @@ class GameManager():
 
         for x in range(gameSettings.boardSize[0]):
             for y in range(gameSettings.boardSize[1]):
-                memoryCard = MemoryCard((x,y),virtualCamera = self.renderer.camera)
+                memoryCard = MemoryCard((x,y),virtualCamera = self.renderer.camera,cardType=mc.textCard,cardText="hej")
                 self.memoryCardList.append(memoryCard)
                 self.renderer.objectList.append(memoryCard)
 

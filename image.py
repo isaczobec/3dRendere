@@ -15,9 +15,10 @@ class PlaneImage():
 
         self.pixels = self.image.load()
 
-    def SampleRGB(self,x,y,scale = 1):
+    def SampleRGB(self,x: float,y: float,
+                  scale: tuple[float] = (1,1)):
         """Returns the RGB-Value at the specefied position of the image."""
-        return self.pixels[round(x * scale)%self.image.size[0],round(y * scale)%self.image.size[1]]
+        return self.pixels[round(x * scale[0])%self.image.size[0],round(y * scale[1])%self.image.size[1]]
     
 
 class ImageHandler():

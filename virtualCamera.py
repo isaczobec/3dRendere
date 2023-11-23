@@ -86,7 +86,6 @@ class VirtualCamera():
         """Get the factor by which the clip volume needs to be scaled to have a depth of 1"""
         return 1/(self.farClipPlaneDistance-self.nearClipPlaneDistance)
         
-    
         
     
 virtualCamera = VirtualCamera()

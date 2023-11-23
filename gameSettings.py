@@ -11,5 +11,8 @@ cardOffset: tuple[int] = (3,3)
 """The position offset (x,z) between every memorycard. Used when the board is generated."""
 
 
-flipCardSpeed = 50
+flipCardSpeed = 150
 """How fast the cards will turn around."""
+
+cardDimensionRatio: tuple = (1.364,1)
+"""What dimensions (x,z) a memory card should have."""

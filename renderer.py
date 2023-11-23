@@ -28,9 +28,9 @@ class Renderer():
         """List of 3d objects that this renderer can render."""
 
         # test tetrahedron (testrahedron :D )
-        #self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
-        #self.objectList.append(self.tetrahedron)
-        #self.objectList[0].position += ar([1,0,0,0])
+        self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
+        self.objectList.append(self.tetrahedron)
+        self.objectList[0].position += ar([1,0,0,0])
 
         #self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
         #self.objectList.append(self.baba)
@@ -46,7 +46,33 @@ class Renderer():
         self.imageHandler = image.ImageHandler({
             "cardBackside":"images/cardBackside.jpeg",
             "cat":"images/cat.jpg",
-            "dora":"images/goofy.jpg"
+            "dora":"images/goofy.jpg",
+            "a":"images/letters/a (1).png",
+            "b":"images/letters/b (1).png",
+            "c":"images/letters/c (1).png",
+            "d":"images/letters/d (1).png",
+            "e":"images/letters/e (1).png",
+            "f":"images/letters/f (1).png",
+            "g":"images/letters/g (1).png",
+            "h":"images/letters/h (1).png",
+            "i":"images/letters/i (1).png",
+            "j":"images/letters/j (1).png",
+            "k":"images/letters/k (1).png",
+            "l":"images/letters/l (1).png",
+            "m":"images/letters/m (1).png",
+            "n":"images/letters/n (1).png",
+            "o":"images/letters/o (1).png",
+            "p":"images/letters/p (1).png",
+            "q":"images/letters/q (1).png",
+            "r":"images/letters/r (1).png",
+            "s":"images/letters/s (1).png",
+            "t":"images/letters/t (1).png",
+            "u":"images/letters/u (1).png",
+            "v":"images/letters/v (1).png",
+            "w":"images/letters/w (1).png",
+            "x":"images/letters/x (1).png",
+            "y":"images/letters/y (1).png",
+            "z":"images/letters/z (1).png",
         })
 
 
