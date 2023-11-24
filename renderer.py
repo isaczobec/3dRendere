@@ -73,6 +73,9 @@ class Renderer():
             "x":"images/letters/x (1).png",
             "y":"images/letters/y (1).png",
             "z":"images/letters/z (1).png",
+            "å":"images/letters/å (1).png",
+            "ä":"images/letters/ä (1).png",
+            "ö":"images/letters/ö (1).png",
         })
 
 
