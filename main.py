@@ -53,10 +53,10 @@ class Game():
                     pygame.quit()
                     sys.exit()
 
-            r = (math.sin(Time.passedTime * 30)+1) / 2 * 255
-            g = (math.sin(Time.passedTime/3 * 30 + 6)+1) / 2 * 255
-            b = (math.sin(Time.passedTime * 30 +23)+1) / 2 * 255
-            self.displaySurface.fill((r*0.3,g*0.3,b*0.3))
+            r = (math.sin(Time.passedTime * 0.5)+1) / 2 * 255
+            g = (math.sin(Time.passedTime/3 * 0.5 + 6)+1) / 2 * 255
+            b = (math.sin(Time.passedTime * 0.5 +23)+1) / 2 * 255
+            self.displaySurface.fill((r,g,b))
 
             #self.polygon.DrawFilled()
 

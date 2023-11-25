@@ -153,57 +153,59 @@ class Renderer():
 
         # list of all objects after they have been transformed
         transformedObjectList: List[O3D.R3Object] = copy.deepcopy(self.objectList)
-        
 
         for index,object in enumerate(transformedObjectList):
-            for vertex in object.vertexList:
+
+            if object != None: # only do the transformations if the object is enabled
+
+                for vertex in object.vertexList:
 
 
-                moveMatrix = ar([[1,0,0,self.objectList[index].position[0]],
-                                 [0,1,0,self.objectList[index].position[1]],
-                                 [0,0,1,self.objectList[index].position[2]],
-                                 [0,0,0,1]])
-                
-                pos = moveMatrix @ vertex.position
+                    moveMatrix = ar([[1,0,0,self.objectList[index].position[0]],
+                                    [0,1,0,self.objectList[index].position[1]],
+                                    [0,0,1,self.objectList[index].position[2]],
+                                    [0,0,0,1]])
+                    
+                    pos = moveMatrix @ vertex.position
 
 
-                #position after applying the transform.
-                tPos = transformMatrix @ pos
+                    #position after applying the transform.
+                    tPos = transformMatrix @ pos
 
-                vertex.position = tPos
+                    vertex.position = tPos
 
-            for face in object.faceList:
-                if face.planeImage != None:
-
-
-                    face.imageTransformMatrix = face.GetImageTransformMatrix()
+                for face in object.faceList:
+                    if face.planeImage != None:
 
 
-            for vertex in object.vertexList:
+                        face.imageTransformMatrix = face.GetImageTransformMatrix()
 
-                tPos = vertex.position
 
-                # use a formula to get to move every point to account for perspective
-                # Every point that is withing the clip volume has a x,y value within -1 to 1
-                XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
-                YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
+                for vertex in object.vertexList:
 
-                
-                if math.isnan(XsPos) or math.isinf(XsPos):
-                    XsPos = 0
-                if math.isnan(YsPos) or math.isinf(YsPos):
-                    YsPos = 0
+                    tPos = vertex.position
 
-                # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas
-                sPos = ar([
-                            (XsPos+1)*self.canvas.pixelAmountX/2,
-                            (YsPos+1)*self.canvas.pixelAmountY/2,
-                            tPos[2],
-                            1
-                           ]
-                           )
-                
-                vertex.position = sPos
+                    # use a formula to get to move every point to account for perspective
+                    # Every point that is withing the clip volume has a x,y value within -1 to 1
+                    XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
+                    YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
+
+                    
+                    if math.isnan(XsPos) or math.isinf(XsPos):
+                        XsPos = 0
+                    if math.isnan(YsPos) or math.isinf(YsPos):
+                        YsPos = 0
+
+                    # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas
+                    sPos = ar([
+                                (XsPos+1)*self.canvas.pixelAmountX/2,
+                                (YsPos+1)*self.canvas.pixelAmountY/2,
+                                tPos[2],
+                                1
+                            ]
+                            )
+                    
+                    vertex.position = sPos
 
         return transformedObjectList
     
@@ -211,6 +213,7 @@ class Renderer():
 
     def RenderScene(self):
 
+        # reset the depth buffer of all pixels
         for pixelRow in self.canvas.pixelList:
             for pixel in pixelRow:
                 pixel.depthBuffer = 1
@@ -232,45 +235,48 @@ class Renderer():
         """The depth of the clicked object. Used to get the first object in the line of sight clicked."""
 
         for objectIndex, object in enumerate(objectList):
-            for polygon in object.faceList:
 
-                newVertexList = []
-                oneVertInClipVolume = False
-                for vertex in polygon.vertexList:
-                    
-                    #Check if the polygon is inside the clip volume, and only render it if it is
-                    if oneVertInClipVolume == False:
-                        if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
-                            oneVertInClipVolume = True
+            if object != None: # only render the object if it is enabled; is not None:
+            
+                for polygon in object.faceList:
 
-                    newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
+                    newVertexList = []
+                    oneVertInClipVolume = False
+                    for vertex in polygon.vertexList:
+                        
+                        #Check if the polygon is inside the clip volume, and only render it if it is
+                        if oneVertInClipVolume == False:
+                            if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
+                                oneVertInClipVolume = True
 
-                if oneVertInClipVolume == True:
+                        newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
 
-                    planeNormalVector = polygon.GetPlaneEquation()
+                    if oneVertInClipVolume == True:
 
-                    
-
-                        #for vertex in polygon.vertexList:
-                        #    print("vertPos:",vertex.position)
-
-                    
-                    canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
-
-                    self.canvas.polygonList.append(canvasPolygon)
-
-                    # Check if this polygon was clicked
-                    if mouseInput != None:
+                        planeNormalVector = polygon.GetPlaneEquation()
 
                         
 
-                        if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
+                            #for vertex in polygon.vertexList:
+                            #    print("vertPos:",vertex.position)
 
-                            polyonDepth = canvasPolygon.GetDepth(mouseInput[0],mouseInput[1])
-                            if polyonDepth < clickedObjectDepthBuffer:
-                                clickedObjectDepthBuffer = polyonDepth
+                        
+                        canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
 
-                                clickedObject = self.objectList[objectIndex]
+                        self.canvas.polygonList.append(canvasPolygon)
+
+                        # Check if this polygon was clicked
+                        if mouseInput != None:
+
+                            
+
+                            if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
+
+                                polyonDepth = canvasPolygon.GetDepth(mouseInput[0],mouseInput[1])
+                                if polyonDepth < clickedObjectDepthBuffer:
+                                    clickedObjectDepthBuffer = polyonDepth
+
+                                    clickedObject = self.objectList[objectIndex]
 
                             
         self.clickedObject = clickedObject

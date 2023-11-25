@@ -21,6 +21,7 @@ class Face():
                  planeImageScale: float = (100,100), # The scale at which the plane image is rendered
                  virtualCamera: VirtualCamera = None,
                  imageTransformMatrix = None,
+                 enabled = True # if this face should be rendered or not
                 ) -> None: # how man image points this plane should have; which resolution it should render with
 
         self.vertexList = vertexList
@@ -31,6 +32,7 @@ class Face():
         self.planeImageScale = planeImageScale
         self.virtualCamera = virtualCamera
         self.imageTransformMatrix = imageTransformMatrix
+        self.enabled = enabled
 
         
     def GetImageTransformMatrix(self,debug = False):
@@ -227,7 +229,13 @@ class Face():
 
 class R3Object():
     """three-dimensional object consisting of a bunch of vertexes. Created by inputting a list of Faces."""
-    def __init__(self, faceList: List[Face], position: numpy.array, rotation: numpy.array = numpy.array([0,0,0]), triangulate: bool = True) -> None:
+    def __init__(self, 
+                 faceList: List[Face], 
+                 position: numpy.array, 
+                 rotation: numpy.array = numpy.array([0,0,0]), 
+                 triangulate: bool = False,
+                 enabled = True, # if the object should be rendered
+                 ) -> None:
 
         self.faceList: List[Face] = []
 
@@ -238,6 +246,8 @@ class R3Object():
                     self.faceList.append(triangulatedFace)
         else:
             self.faceList = faceList
+
+        self.enabled = enabled
 
         self.vertexList: List[Vertex] = self.CreateVertexList()
 
@@ -305,6 +315,19 @@ class R3Object():
 
     def ObjectClicked(self):
         """Function that is called in the game class when this object is clicked. Overrided in child classes."""
+
+    def __deepcopy__(self,memo):
+        """Override the deepcopy method. Only copy this object if it is enabled and only copy the faces that are enabled."""
+        if self.enabled == True:
+            facesToCopy = [face for face in self.faceList if face.enabled == True]
+            copiedFaces = copy.deepcopy(facesToCopy)
+            return R3Object(copiedFaces,self.position)
+        else:
+            return None
+
+
+
+    
         
 
 

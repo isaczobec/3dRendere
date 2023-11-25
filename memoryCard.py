@@ -14,6 +14,8 @@ import virtualCamera
 imageCard = "imageCard"
 textCard = "textCard"
 
+cardBacksideStr = "cardBackside"
+
 class MemoryCard(obj.R3Object):
     """Class that extends the r3object class (because it is a 3d object) and that contains logic for flipping, matching with other cards, etc."""
 
@@ -23,7 +25,8 @@ class MemoryCard(obj.R3Object):
                  virtualCamera: virtualCamera.VirtualCamera, # the camera used to render this object
                  cardType: str = imageCard, # if this card has an image or text on its upside
                  planeImageName: str = None, # the name of the image if this card is an imageCard
-                 cardText: str = None) -> None: # the text displayed on this card if it is a textcard
+                 cardText: str = None,# the text displayed on this card if it is a textcard
+                 turnedUp: bool = False) -> None: 
         
         self.gridPos = gridPos
         self.cardType = cardType
@@ -45,6 +48,9 @@ class MemoryCard(obj.R3Object):
         self.found = False
         """if this memorycard has been found."""
 
+        self.turnedUp = turnedUp
+        """if this card is currently turned up."""
+
         if cardType == imageCard:
 
             super().__init__(                   [obj.Face([
@@ -54,7 +60,7 @@ class MemoryCard(obj.R3Object):
                                                 obj.Vertex(ar([cardDim[0]*backScale,0,cardDim[1]*backScale,1])),
                                                 ],
                                                 virtualCamera=virtualCamera,
-                                                planeImage="cardBackside",
+                                                planeImage=cardBacksideStr,
                                                 planeImageScale=(95,95)),
                                                 obj.Face([
                                                 obj.Vertex(ar([-cardDim[0],-0.01,cardDim[1],1])),
@@ -93,6 +99,7 @@ class MemoryCard(obj.R3Object):
                                                 virtualCamera=virtualCamera,
                                                 planeImage=c,
                                                 planeImageScale=(95,95*wordLength),
+                                                enabled=False
                                                 ),
                                                 )
                 
@@ -104,7 +111,7 @@ class MemoryCard(obj.R3Object):
                                                 obj.Vertex(ar([cardDim[0]*backScale,0.3,cardDim[1]*backScale,1])),
                                                 ],
                                                 virtualCamera=virtualCamera,
-                                                planeImage="cardBackside",
+                                                planeImage=cardBacksideStr,
                                                 planeImageScale=(95,95)))
             
             super().__init__(letterFaceList,
@@ -119,6 +126,9 @@ class MemoryCard(obj.R3Object):
         if not self.isTurning:
             self.degreesTurned = 0
             self.isTurning = True
+
+            self.turnedUp = not self.turnedUp # turn around this card
+            
 
 
     def AnimateFlip(self,turnSpeed = gameSettings.flipCardSpeed) -> None:
@@ -135,17 +145,31 @@ class MemoryCard(obj.R3Object):
             self.degreesTurned = 0
             self.isTurning = False
 
+            if self.turnedUp == False:
+                self.SetEnabledContentFace(False)
+
     def Update(self):
         if self.isTurning:
             self.AnimateFlip()
 
     def ObjectClicked(self):
 
-        if len(self.game.selectedCards) < 2 and self.isTurning != True and self.found == False: # do not let this card be selected if it is already turning
+        if len(self.game.selectedCards) < 2 and self.isTurning == False and self.found == False and self not in self.game.selectedCards: # do not let this card be selected if it is already turning
             self.game.selectedCards.append(self)
 
 
             self.StartFlip()
+
+            if self.turnedUp == True:
+                self.SetEnabledContentFace(True)
+
+    def SetEnabledContentFace(self,enabled):
+        """Enables or disables the faces containing the card content of this memory card."""
+        for obj in self.faceList:
+            if obj.planeImage != cardBacksideStr:
+                obj.enabled = enabled
+
+            
 
             
 

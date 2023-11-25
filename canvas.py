@@ -6,6 +6,7 @@ import random
 from typing import List
 from pixel import Pixel
 from slopeEquation import SlopeEquation
+from polygon import Polygon
 
 
 class Canvas():
@@ -13,7 +14,7 @@ class Canvas():
         self.game  = game
 
         self.pixelList = []
-        self.polygonList = []
+        self.polygonList: List[Polygon] = []
 
         self.updatedPixelList = [] # list of pixels to re-render this frame, updated pixels
 
