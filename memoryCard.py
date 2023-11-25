@@ -70,7 +70,8 @@ class MemoryCard(obj.R3Object):
                                                 ],
                                                 virtualCamera=virtualCamera,
                                                 planeImage=planeImageName,
-                                                planeImageScale=(95,95))],
+                                                planeImageScale=(95,95),
+                                                flipNormal=True)],
                                                 position=ar([self.gridPos[0]*gameSettings.cardOffset[0],-9,self.gridPos[1]*gameSettings.cardOffset[1],1]), # make sure this cards world position is consistent with its grid position
                                                 
                                                 
@@ -99,7 +100,8 @@ class MemoryCard(obj.R3Object):
                                                 virtualCamera=virtualCamera,
                                                 planeImage=c,
                                                 planeImageScale=(95,95*wordLength),
-                                                enabled=False
+                                                enabled=False,
+                                                flipNormal=True
                                                 ),
                                                 )
                 

@@ -7,7 +7,7 @@ from typing import List
 from pixel import Pixel
 from slopeEquation import SlopeEquation
 from polygon import Polygon
-
+from renderingInformation import RenderingInformation
 
 class Canvas():
     def __init__(self,game,pixelAmountX: int = settings.PIXELXAMOUNT,pixelAmountY: int = settings.PIXELYAMOUNT) -> None:
@@ -63,9 +63,13 @@ class Canvas():
 
         return returnList
     
-    def RenderAllPolygons(self):
+
+
+    def RenderAllPolygons(self,
+                          renderingInformation = None, # class containing information used to render this face
+                          ) -> None:
         for polygon in self.polygonList:
-            polygon.DrawFilled()
+            polygon.DrawFilled(renderingInformation)
 
 
 

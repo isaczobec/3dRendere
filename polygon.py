@@ -5,8 +5,10 @@ import numpy as np
 import image
 from image import PlaneImage
 from typing import List
+from virtualCamera import VirtualCamera
+from renderingInformation import RenderingInformation
 
-
+import rgbBlendModes as rgbBlend
 
 class Vertex():
     def __init__(self,xpos,ypos):
@@ -19,9 +21,10 @@ class Polygon():
                  canvas,
                  color = (255,255,255), 
                  equationVector = np.array([0,0,0]),
+                 normalVector = np.array([0,0,0]),
                  planeImage: PlaneImage = None, # the image to be rendered onto this polygon. None if this polygon has no image.
                  planeImageScale: float = 1, # The scale at which the plane image is rendered
-                 camera = None, # the camera used to render this polygon
+                 camera: VirtualCamera = None, # the camera used to render this polygon
                  imageTransformMatrix: np.array = None): # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
         
         self.vertexList = vertexList
@@ -32,6 +35,7 @@ class Polygon():
         self.equationList = []
 
         self.equationVector = equationVector
+        self.normalVector = normalVector
 
         self.planeImage = planeImage
         self.planeImageScale = planeImageScale
@@ -113,11 +117,24 @@ class Polygon():
     
 
 
-    def DrawFilled(self) -> None:
+    def DrawFilled(self, 
+                   renderingInformation: RenderingInformation = None, # a class containing rendering information used to draw the polygons
+                   ) -> None:
+
         minY = self.bounds[0].y
         minX = self.bounds[0].x
         maxY = self.bounds[1].y
         maxX = self.bounds[1].x
+
+        
+
+        sunLightFactor = np.clip(np.dot(self.normalVector,renderingInformation.sunLightDirection),renderingInformation.sunCap,1) # clamp the value because light can not be negative
+        #print(f"normalvector: {self.normalVector} sunLightVector: {renderingInformation.sunLightDirection} factor: {sunLightFactor}")
+
+        
+        #normalFactor = np.clip(np.dot(self.normalVector,renderingInformation.cameraDirectionVector),0,1)
+        
+
 
         for yOffset in range(maxY-minY):
             y = minY + yOffset
@@ -168,9 +185,22 @@ class Polygon():
                                 touchedPixel.color = imageColor
 
                             else:
+
+                                
+
                                 touchedPixel.color = self.color
+
+                            # apply sunlight
+                            finalSunColor = rgbBlend.ScalarMultiply(renderingInformation.sunColor,sunLightFactor)
+                            touchedPixel.color = rgbBlend.Multiply(touchedPixel.color,finalSunColor)
+
+
+
+
+                            
                                 
                             self.canvas.updatedPixelList.append(touchedPixel)
+
 
 
     # Got the inverse functions for the perspective equations from chatgpt cause those would be annoying to figure out myself

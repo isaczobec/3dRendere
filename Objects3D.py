@@ -21,7 +21,8 @@ class Face():
                  planeImageScale: float = (100,100), # The scale at which the plane image is rendered
                  virtualCamera: VirtualCamera = None,
                  imageTransformMatrix = None,
-                 enabled = True # if this face should be rendered or not
+                 enabled = True, # if this face should be rendered or not
+                 flipNormal = False
                 ) -> None: # how man image points this plane should have; which resolution it should render with
 
         self.vertexList = vertexList
@@ -33,6 +34,8 @@ class Face():
         self.virtualCamera = virtualCamera
         self.imageTransformMatrix = imageTransformMatrix
         self.enabled = enabled
+
+        self.flipNormal = flipNormal
 
         
     def GetImageTransformMatrix(self,debug = False):
@@ -222,7 +225,14 @@ class Face():
         planeNormalVector = numpy.cross(numpy.array([point1Vector[0],point1Vector[1],point1Vector[2]]),numpy.array([point2Vector[0],point2Vector[1],point2Vector[2]]))
 
         planeNormalVector = planeNormalVector / numpy.linalg.norm(planeNormalVector) # normalize the vector
-        return planeNormalVector
+
+        
+
+        if self.flipNormal:
+            return planeNormalVector * -1
+        else:
+            return planeNormalVector
+
 
 
         
@@ -261,9 +271,10 @@ class R3Object():
         """Creates and returns a linear list of vertexes for this object."""
         vertexList = []
         for face in self.faceList:
-            for vertex in face.vertexList:
-                if vertex not in vertexList:
-                    vertexList.append(vertex)
+            if face != None: # Do not create a vertex list from faces that are disabled
+                for vertex in face.vertexList:
+                    if vertex not in vertexList:
+                        vertexList.append(vertex)
         return vertexList
     
     def Move(self,
@@ -318,9 +329,16 @@ class R3Object():
 
     def __deepcopy__(self,memo):
         """Override the deepcopy method. Only copy this object if it is enabled and only copy the faces that are enabled."""
+
         if self.enabled == True:
-            facesToCopy = [face for face in self.faceList if face.enabled == True]
-            copiedFaces = copy.deepcopy(facesToCopy)
+
+            copiedFaces = []
+            for face in self.faceList: 
+                if face.enabled == True:
+                    copiedFaces.append(copy.deepcopy(face))
+                else:
+                    copiedFaces.append(None)
+                    
             return R3Object(copiedFaces,self.position)
         else:
             return None
@@ -348,7 +366,7 @@ def CreateTetrahedron(p1: numpy.array,
     
     faceList = []
     for i in range(len(vertexList)):
-        faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]],color=(50+i*50,50+i*50,50+i*50)))
+        faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]]))
     
     return R3Object(faceList,position)
 

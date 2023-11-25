@@ -1,4 +1,5 @@
 from numpy import array as ar
+import numpy as np
 from virtualCamera import VirtualCamera 
 import Objects3D as O3D
 from Vec import Vector3 as V3
@@ -9,18 +10,26 @@ import copy
 import polygon as pg
 import math
 import inputHandler
-
+from renderingInformation import RenderingInformation
 import image
+import Time
+
+
 
 
 class Renderer():
     def __init__(self,
                  canvas: canvas.Canvas, # the canvas this renderer will render on
-                 camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,0,0))
+                 camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,0,0)),
+                 lightDirection = ar([0,-1,0]) 
                 ) -> None:
         
         self.canvas = canvas
         self.camera = camera
+
+        self.rendenderingInformation = RenderingInformation(ar([0,-1,0]),(255,255,255),0.33,self.camera.GetViewDirectionVector())
+
+        
 
         self.mouseInputHandler = inputHandler.MouseInputHandler()
 
@@ -28,9 +37,9 @@ class Renderer():
         """List of 3d objects that this renderer can render."""
 
         # test tetrahedron (testrahedron :D )
-        self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
-        self.objectList.append(self.tetrahedron)
-        self.objectList[0].position += ar([1,0,0,0])
+        #self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
+        #self.objectList.append(self.tetrahedron)
+        #self.objectList[0].position += ar([1,0,0,0])
 
         #self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
         #self.objectList.append(self.baba)
@@ -175,10 +184,11 @@ class Renderer():
                     vertex.position = tPos
 
                 for face in object.faceList:
-                    if face.planeImage != None:
+                    if face != None:
+                        if face.planeImage != None:
 
 
-                        face.imageTransformMatrix = face.GetImageTransformMatrix()
+                            face.imageTransformMatrix = face.GetImageTransformMatrix()
 
 
                 for vertex in object.vertexList:
@@ -235,48 +245,50 @@ class Renderer():
         """The depth of the clicked object. Used to get the first object in the line of sight clicked."""
 
         for objectIndex, object in enumerate(objectList):
-
             if object != None: # only render the object if it is enabled; is not None:
             
-                for polygon in object.faceList:
+                for polygonIndex, polygon in enumerate(object.faceList):
+                    if polygon != None: # only render the polygon if it is enabled; is not None:
 
-                    newVertexList = []
-                    oneVertInClipVolume = False
-                    for vertex in polygon.vertexList:
-                        
-                        #Check if the polygon is inside the clip volume, and only render it if it is
-                        if oneVertInClipVolume == False:
-                            if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
-                                oneVertInClipVolume = True
+                        newVertexList = []
+                        oneVertInClipVolume = False
+                        for vertex in polygon.vertexList:
+                            
+                            #Check if the polygon is inside the clip volume, and only render it if it is
+                            if oneVertInClipVolume == False:
+                                if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
+                                    oneVertInClipVolume = True
 
-                        newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
+                            newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
 
-                    if oneVertInClipVolume == True:
+                        if oneVertInClipVolume == True:
 
-                        planeNormalVector = polygon.GetPlaneEquation()
 
-                        
-
-                            #for vertex in polygon.vertexList:
-                            #    print("vertPos:",vertex.position)
-
-                        
-                        canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
-
-                        self.canvas.polygonList.append(canvasPolygon)
-
-                        # Check if this polygon was clicked
-                        if mouseInput != None:
+                            planeEquation = polygon.GetPlaneEquation()
+                            unTransformedNormalVector = self.objectList[objectIndex].faceList[polygonIndex].GetNormalVector() # get the plane normal vector of from the original, untransformed face
 
                             
 
-                            if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
+                                #for vertex in polygon.vertexList:
+                                #    print("vertPos:",vertex.position)
 
-                                polyonDepth = canvasPolygon.GetDepth(mouseInput[0],mouseInput[1])
-                                if polyonDepth < clickedObjectDepthBuffer:
-                                    clickedObjectDepthBuffer = polyonDepth
+                            
+                            canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeEquation,normalVector=unTransformedNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
 
-                                    clickedObject = self.objectList[objectIndex]
+                            self.canvas.polygonList.append(canvasPolygon)
+
+                            # Check if this polygon was clicked
+                            if mouseInput != None:
+
+                                
+
+                                if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
+
+                                    polyonDepth = canvasPolygon.GetDepth(mouseInput[0],mouseInput[1])
+                                    if polyonDepth < clickedObjectDepthBuffer:
+                                        clickedObjectDepthBuffer = polyonDepth
+
+                                        clickedObject = self.objectList[objectIndex]
 
                             
         self.clickedObject = clickedObject
@@ -286,8 +298,12 @@ class Renderer():
             #for face in clickedObject.faceList:
             #   face.color = (255,0,0)
 
+        cameraVectorOtherType = self.camera.GetViewDirectionVector()
+        cameraVector = ar([cameraVectorOtherType.x,cameraVectorOtherType.y,cameraVectorOtherType.z])
+        self.rendenderingInformation.cameraDirectionVector = cameraVector # update the direction vector of the camera
 
-        self.canvas.RenderAllPolygons()
+
+        self.canvas.RenderAllPolygons(self.rendenderingInformation)
 
 
 
