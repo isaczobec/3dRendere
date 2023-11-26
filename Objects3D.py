@@ -326,6 +326,7 @@ class R3Object():
 
     def ObjectClicked(self):
         """Function that is called in the game class when this object is clicked. Overrided in child classes."""
+        self.Rotate(5,0,0)
 
     def __deepcopy__(self,memo):
         """Override the deepcopy method. Only copy this object if it is enabled and only copy the faces that are enabled."""
@@ -371,13 +372,84 @@ def CreateTetrahedron(p1: numpy.array,
     return R3Object(faceList,position)
 
 
-#v1 = Vertex(numpy.array([1,0,0,1]))
-#v2 = Vertex(numpy.array([2,0,0,1]))
-#v3 = Vertex(numpy.array([2,1,2,1]))
-#v4 = Vertex(numpy.array([1,1,2,1]))
+def CreateUVSphere(radius: float = 1, 
+                   segments: int = 32, 
+                   rings: int = 16, 
+                   position: numpy.ndarray = numpy.array([0,0,0,1]),
+                   
+                   ) -> R3Object:
+    """Creates and returns a UV sphere."""
 
-#face = Face([v1,v2,v3,v4],planeImage=True,virtualCamera=1)
-#face.GetImageTransformMatrix(debug=True)
+    ringStep = pi/rings # the difference in angle between each ring
+    segmentStep = 2*pi/segments # the difference in angle between each segment
+    
+    topVert = Vertex(numpy.array([0,radius,0,1]))
+    botVert = Vertex(numpy.array([0,-radius,0,1]))
+
+    
+    faceList: List[Face] = []
+
+    ringList: List[List[Vertex]] = [[topVert]] # the top vertex is the first ring
+
+
+    # add the square faces in the middle of the sphere
+    for ringIndex in range(1,rings):
+        ringVertList: List[Vertex] = []
+
+
+        for segmentIndex in range(segments):
+
+            ringVertList.append(Vertex(numpy.array([cos(segmentIndex*segmentStep)*sin((ringIndex)*ringStep)*radius,cos((ringIndex)*ringStep)*radius,sin(segmentIndex*segmentStep)*sin((ringIndex)*ringStep)*radius,1])))
+
+        ringList.append(ringVertList)
+
+        for segmentIndex in range(segments):
+
+            if ringIndex == 1: # if the triangle faces should be added; this is the top ring
+                faceList.append(Face([
+                    ringVertList[segmentIndex], # add this vertex to the face
+                    ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
+                    topVert
+                    ]))
+                
+            elif ringIndex == rings - 1: # if this is the last ring, add triangles
+                print("HEJ")
+                faceList.append(Face([
+                    ringVertList[segmentIndex], # add this vertex to the face
+                    ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
+                    botVert
+                    ]))
+                
+
+            else:
+
+                faceList.append(Face([
+                    ringVertList[segmentIndex], # add this vertex to the face
+                    ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
+                    ringList[ringIndex-1][(segmentIndex+1)%len(ringVertList)], # add the face 
+                    ringList[ringIndex-1][segmentIndex],
+
+                    ]))
+                
+    UVsphere = R3Object(faceList=faceList,position=position)
+
+    return UVsphere
+        
+
+
+for i in range(1,10-1):
+    print(i)
+
+
+
+
+
+
+
+    
+
+
+
 
 
         

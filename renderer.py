@@ -37,13 +37,16 @@ class Renderer():
         """List of 3d objects that this renderer can render."""
 
         # test tetrahedron (testrahedron :D )
-        #self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
-        #self.objectList.append(self.tetrahedron)
-        #self.objectList[0].position += ar([1,0,0,0])
+        # self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
+        # self.objectList.append(self.tetrahedron)
+        # self.objectList[0].position += ar([1,0,0,0])
 
         #self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
         #self.objectList.append(self.baba)
         #elf.objectList[1].position += ar([0,0,0,0])
+
+        self.sphere = O3D.CreateUVSphere(1,32,16,ar([3,3,0,1]))
+        self.objectList.append(self.sphere)
 
 
         
