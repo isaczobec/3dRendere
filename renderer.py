@@ -27,7 +27,7 @@ class Renderer():
         self.canvas = canvas
         self.camera = camera
 
-        self.rendenderingInformation = RenderingInformation(ar([0,-1,0]),(255,255,255),0.33,self.camera.GetViewDirectionVector())
+        self.rendenderingInformation = RenderingInformation(lightDirection,(255,255,255),0.33,self.camera.GetViewDirectionVector())
 
         
 
@@ -45,7 +45,7 @@ class Renderer():
         #self.objectList.append(self.baba)
         #elf.objectList[1].position += ar([0,0,0,0])
 
-        self.sphere = O3D.CreateUVSphere(1,32,16,ar([3,3,0,1]))
+        self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0))
         self.objectList.append(self.sphere)
 
 

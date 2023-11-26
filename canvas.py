@@ -8,12 +8,14 @@ from pixel import Pixel
 from slopeEquation import SlopeEquation
 from polygon import Polygon
 from renderingInformation import RenderingInformation
+import time
 
 class Canvas():
     def __init__(self,game,pixelAmountX: int = settings.PIXELXAMOUNT,pixelAmountY: int = settings.PIXELYAMOUNT) -> None:
         self.game  = game
 
         self.pixelList = []
+        
         self.polygonList: List[Polygon] = []
 
         self.updatedPixelList = [] # list of pixels to re-render this frame, updated pixels
@@ -31,12 +33,17 @@ class Canvas():
                 pixelRowList.append(Pixel(self,x * self.pixelStepX,y * self.pixelStepY,color=(0,0,0),yCoord=settings.PIXELYAMOUNT-y,xCoord=x)) # multiply the pixels positions with the step value
             self.pixelList.append(pixelRowList)
 
+
+        
+
     def Refresh(self,displaySurface) -> Pixel:
+
         
         for pixel in self.updatedPixelList:
             pixel.Render(displaySurface)
 
         self.updatedPixelList.clear()
+
 
     def getPixel(self,xpos,ypos) -> Pixel:
         if (xpos >= 0 and xpos <= self.pixelAmountX) and (ypos >= 0 and ypos <= self.pixelAmountY):
@@ -68,6 +75,9 @@ class Canvas():
     def RenderAllPolygons(self,
                           renderingInformation = None, # class containing information used to render this face
                           ) -> None:
+        
+        timeBefore = time.time_ns()
+
         for polygon in self.polygonList:
             polygon.DrawFilled(renderingInformation)
 

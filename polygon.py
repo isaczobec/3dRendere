@@ -134,12 +134,12 @@ class Polygon():
         
         #normalFactor = np.clip(np.dot(self.normalVector,renderingInformation.cameraDirectionVector),0,1)
         
-
+        drawSlope = SlopeEquation(0,0)
 
         for yOffset in range(maxY-minY):
             y = minY + yOffset
 
-            drawSlope = SlopeEquation(0,y)
+            drawSlope.offset = y
             intersectXList = []
             for equation in self.equationList:
                 intersectPoint = drawSlope.GetIntersection(equation)

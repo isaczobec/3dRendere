@@ -12,6 +12,9 @@ import math
 import numpy
 from game import GameManager
 
+import cProfile
+import pstats
+
 class Game():
     def __init__(self):
 
@@ -50,8 +53,7 @@ class Game():
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    return
 
             r = (math.sin(Time.passedTime * 0.5)+1) / 2 * 255
             g = (math.sin(Time.passedTime/3 * 0.5 + 6)+1) / 2 * 255
@@ -76,7 +78,9 @@ class Game():
 
 
 
-            #print("FPS:",1/self.deltaTime)
+            # print("FPS:",1/self.deltaTime)
+            # print("Time between frames:",Time.deltaTime)
+            
             self.clock.tick(30)
 
             #updatera skärmen och med intervaller bestämda av spelets fps
@@ -85,8 +89,19 @@ class Game():
 
 
 if __name__ == "__main__":
+
+    # with cProfile.Profile() as profile:
+
     game = Game()
     game.run()
+
+    pygame.quit()
+
+    # results = pstats.Stats(profile)
+    # results.sort_stats(pstats.SortKey.TIME)
+    # results.print_stats()
+
+    sys.exit()
     
 
             

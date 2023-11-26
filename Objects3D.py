@@ -376,6 +376,7 @@ def CreateUVSphere(radius: float = 1,
                    segments: int = 32, 
                    rings: int = 16, 
                    position: numpy.ndarray = numpy.array([0,0,0,1]),
+                   color: tuple[float] = (255,255,255),
                    
                    ) -> R3Object:
     """Creates and returns a UV sphere."""
@@ -410,15 +411,22 @@ def CreateUVSphere(radius: float = 1,
                     ringVertList[segmentIndex], # add this vertex to the face
                     ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
                     topVert
-                    ]))
+                    ],color=color))
                 
-            elif ringIndex == rings - 1: # if this is the last ring, add triangles
-                print("HEJ")
+            elif ringIndex == rings - 1: # if this is the last ring, also add triangles
+                faceList.append(Face([
+                    ringVertList[segmentIndex], # add this vertex to the face
+                    ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
+                    ringList[ringIndex-1][(segmentIndex+1)%len(ringVertList)], # add the face 
+                    ringList[ringIndex-1][segmentIndex],
+
+                    ],color=color))
+                
                 faceList.append(Face([
                     ringVertList[segmentIndex], # add this vertex to the face
                     ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
                     botVert
-                    ]))
+                    ],flipNormal=True,color=color))
                 
 
             else:
@@ -429,7 +437,7 @@ def CreateUVSphere(radius: float = 1,
                     ringList[ringIndex-1][(segmentIndex+1)%len(ringVertList)], # add the face 
                     ringList[ringIndex-1][segmentIndex],
 
-                    ]))
+                    ],color=color))
                 
     UVsphere = R3Object(faceList=faceList,position=position)
 
