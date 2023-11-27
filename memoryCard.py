@@ -162,6 +162,8 @@ class MemoryCard(obj.R3Object):
 
             self.StartFlip()
 
+            self.game.guesses += 1 # increase the guess counter
+
             if self.turnedUp == True:
                 self.SetEnabledContentFace(True)
 

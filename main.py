@@ -24,8 +24,6 @@ class Game():
             pygame.display.set_caption("Very high production value game")
             self.clock = pygame.time.Clock()
             
-            
-
             self.deltaTime = 0
 
             self.lastFrameTime = time.time()
@@ -33,7 +31,7 @@ class Game():
             self.canvas = Canvas(self)
 
             self.renderer = Renderer(self.canvas)
-            self.gameManager = GameManager(self.renderer)
+            self.gameManager = GameManager(self.renderer,self.displaySurface)
             
             #self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
@@ -64,13 +62,13 @@ class Game():
 
             #self.canvas.DrawCircle(Vector2(100,100),10)
 
-            self.gameManager.run()
             self.renderer.RenderScene()
 
 
             
 
             self.canvas.Refresh(self.displaySurface)
+            self.gameManager.run()
             
             Time.deltaTime = (time.time() - self.lastFrameTime)
             Time.passedTime += Time.deltaTime

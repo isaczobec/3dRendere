@@ -76,7 +76,6 @@ class Canvas():
                           renderingInformation = None, # class containing information used to render this face
                           ) -> None:
         
-        timeBefore = time.time_ns()
 
         for polygon in self.polygonList:
             polygon.DrawFilled(renderingInformation)

@@ -9,15 +9,23 @@ import gameSettings
 from typing import List
 import fileHandling
 import random
+import pygame as pg
+
+from texthandling import TextManager
 
 class GameManager():
-    def __init__(self,rendererObject: r.Renderer) -> None:
+    def __init__(self,
+                 rendererObject: r.Renderer,
+                 displaySurface: pg.Surface,
+                 ) -> None:
         self.renderer: r.Renderer = rendererObject
 
         self.memoryCardList: List[MemoryCard] = []
         """List that contains all memorycards in this game."""
 
         self.CreateBoard()
+
+        self.displaySurface = displaySurface # the displaySurface used to render the game
 
 
         self.selectedCards: List[MemoryCard] = []
@@ -26,7 +34,21 @@ class GameManager():
         self.timeUntilTurnBackCards: float = 0
         self.currentlyWaitingToTurnBackCards: bool = False
 
+        self.cardsRemaining: int = gameSettings.boardSize[0] * gameSettings.boardSize[1]
 
+        self.guesses: int = 0
+        """How many cards the player has turned."""
+
+        self.startTime = Time.passedTime
+
+        self.gameFinnished: bool = False
+
+        self.textManager = TextManager(self.displaySurface) # initialize the texthandler
+
+        
+        
+
+        
 
 
 
@@ -65,11 +87,10 @@ class GameManager():
                 if self.selectedCards[0].cardType == mc.textCard and self.selectedCards[1].cardType == mc.textCard:
                     if self.selectedCards[0].cardText == self.selectedCards[1].cardText:
                         self.FoundCards()
-                        print("found")
+                        
                 elif self.selectedCards[0].cardType == mc.imageCard and self.selectedCards[1].cardType == mc.imageCard:
                     if self.selectedCards[0].planeImageName == self.selectedCards[1].planeImageName:
                         self.FoundCards()
-                        print("found")
 
             
         if len(self.selectedCards) == 2 and self.currentlyWaitingToTurnBackCards == False: # check if the player has turned up 2 cards without a matching pair, then start turning them back
@@ -77,19 +98,38 @@ class GameManager():
             self.currentlyWaitingToTurnBackCards = True
 
         self.HandleCardTurnBack()
-            
-
-            
 
 
         for obj in self.renderer.objectList: # update every object
             obj.Update()
+
+
+        if self.gameFinnished: # if the player has won the game
+            self.textManager.RenderEndgameText()
+    
 
     def FoundCards(self):
         """Function that should be executed when the player finds two cards."""
         for card in self.selectedCards:
             card.found = True
         self.selectedCards.clear() # clear the list of selected cards as they have been found
+
+        self.cardsRemaining -= 2
+
+        if self.cardsRemaining <= 0:
+            self.FinishGame()
+
+
+    def FinishGame(self):
+
+        self.gameFinnished = True
+
+        totalTime: float = Time.passedTime - self.startTime
+        self.textManager.CreateStatText(totalTime,self.guesses)
+ 
+        
+        
+
 
     def HandleCardTurnBack(self):
 
