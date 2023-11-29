@@ -35,13 +35,13 @@ class TextObject():
         self.fontName = fontName
         self.fontSize = fontSize
         self._fontColor = fontColor
-        self.text = text
+        self._text = text
 
         self.defaultPosition = defaultPosition
         """The default position this textobject is rendered at."""
 
         self.GenerateFont(self.fontName,self.fontSize)
-        self.GenerateText(self.text)
+        self.GenerateText(self._text)
 
 
     def GenerateFont(self,fontName,fontSize):
@@ -66,12 +66,21 @@ class TextObject():
 
 
     def GetColor(self):
-        return self.GetColor
+        return self._fontColor
     def SetColor(self,color: tuple[float,float,float]):
-        self._fontColor = color
-        self.GenerateText(self.text)
+        self._fontColor = tuple(int(component) for component in color) # chatgpt helped me fix an error i was getting here because i was using floats
+        self.GenerateText(self._text)
 
     color = property(GetColor,SetColor)
+
+    def GetText(self):
+        return self._text
+    def SetText(self,inputText):
+        self._text = inputText
+        self.GenerateText(self._text)
+        
+    text = property(GetText,SetText)
+
 
 
 
@@ -103,8 +112,13 @@ class TextHandler():
     def RenderText(self,
                    textReferenceName: str,
                    position: tuple[float,float] = None):
+        """Render text using a text reference string."""
 
         self.textList[textReferenceName].RenderText(self.displaySurface,position)
+
+    def RenderTextobject(self,textObject: TextObject, position: tuple[float,float] = None) -> None:
+        """Renders text using a TextObject."""
+        textObject.RenderText(self.displaySurface,position)
         
 
 class WonTextManager(TextHandler):

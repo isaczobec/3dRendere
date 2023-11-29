@@ -34,7 +34,7 @@ def GetWordList(
     """Returnar en lista med alla ord från ordliste-filen."""
     
     if fileDestination == "": # om användaren inte har specefierat en directory, använd parent directoryn
-        fileDestination = "\\".join(pathlib.Path(__file__).parts[:-2]) # lärde mig hur man delade på en file path från följande stack overflow-thread: https://stackoverflow.com/questions/26724275/removing-the-first-folder-in-a-path
+        fileDestination = "\\".join(pathlib.Path(__file__).parts[:-1]) # lärde mig hur man delade på en file path från följande stack overflow-thread: https://stackoverflow.com/questions/26724275/removing-the-first-folder-in-a-path
 
     try:
         with open("\\".join([fileDestination,fileName]),"r") as file: # öppna och läs sagda fil
@@ -46,7 +46,8 @@ def GetWordList(
         if tryToDownloadFile:
             print("Trying to download the wordlist again from",MEMOURL)
             try:
-                return GetWordList()
+                DownloadWordList()
+                return GetWordList(tryToDownloadFile=False)
             except Exception:
                 print("could not download the file.")
                 return None
