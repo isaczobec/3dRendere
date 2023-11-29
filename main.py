@@ -62,13 +62,7 @@ class Game():
 
             #self.canvas.DrawCircle(Vector2(100,100),10)
 
-            self.renderer.RenderScene()
-
-
-            
-
-            self.canvas.Refresh(self.displaySurface)
-            self.gameManager.run()
+            self.RunActiveGame()
             
             Time.deltaTime = (time.time() - self.lastFrameTime)
             Time.passedTime += Time.deltaTime
@@ -83,6 +77,14 @@ class Game():
 
             #updatera skärmen och med intervaller bestämda av spelets fps
             pygame.display.update()
+
+    
+
+
+    def RunActiveGame(self):
+        self.renderer.RenderScene()
+        self.canvas.Refresh(self.displaySurface)
+        self.gameManager.run()
 
 
 

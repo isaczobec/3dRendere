@@ -1,6 +1,6 @@
 """Universal setting variables for the memory game."""
 
-boardSize: tuple = (2,4)
+boardSize: tuple = (2,2)
 """The size in cards of the memory board."""
 
 # if the amount of cards is not even, add a column

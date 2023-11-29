@@ -11,7 +11,7 @@ import fileHandling
 import random
 import pygame as pg
 
-from texthandling import TextManager
+import texthandling
 
 baseScore: int = 2000
 """The score the player gets if their time * guesses = 1"""
@@ -47,7 +47,7 @@ class GameManager():
 
         self.gameFinnished: bool = False
 
-        self.textManager = TextManager(self.displaySurface) # initialize the texthandler
+        self.textManager = texthandling.WonTextManager(self.displaySurface) # initialize the texthandler
 
         
         
