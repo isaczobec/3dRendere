@@ -24,19 +24,21 @@ statTotalScoreBaseText = "Your total score is:"
 class TextObject():
     """Class that generates and renders a line of text."""
     def __init__(self,
-                 displaySurface: pg.Surface,
                  fontName: str,
                  fontSize: int,
                  fontColor: tuple[float,float,float],
-                 text: str = ""
+                 text: str = "",
+                 defaultPosition: tuple[float,float] = (50,50)
                  ) -> None:
 
-        self.displaySurface = displaySurface
         
         self.fontName = fontName
         self.fontSize = fontSize
-        self.fontColor = fontColor
+        self._fontColor = fontColor
         self.text = text
+
+        self.defaultPosition = defaultPosition
+        """The default position this textobject is rendered at."""
 
         self.GenerateFont(self.fontName,self.fontSize)
         self.GenerateText(self.text)
@@ -48,14 +50,34 @@ class TextObject():
 
     def GenerateText(self,text,antiAilias: bool = True):
         """Creates a text surface for this textobject."""
-        self.textObject = self.font.render(text,antiAilias,self.fontColor)
+        self.textObject = self.font.render(text,antiAilias,self._fontColor)
 
 
     def RenderText(self,
-                   position: tuple[float,float]
+                   displaySurface: pg.surface,
+                   position: tuple[float,float] = None
                    ):
         """Displays this text on its displaysurface at the given position."""
-        self.displaySurface.blit(self.textObject,position)
+
+        if position == None:
+            position = self.defaultPosition
+
+        displaySurface.blit(self.textObject,position)
+
+
+    def GetColor(self):
+        return self.GetColor
+    def SetColor(self,color: tuple[float,float,float]):
+        self._fontColor = color
+        self.GenerateText(self.text)
+
+    color = property(GetColor,SetColor)
+
+
+
+
+
+        
 
 
 
@@ -76,11 +98,13 @@ class TextHandler():
                  fontColor: tuple[float,float,float],
                  text: str = ""
                  ) -> None:
-        self.textList[textReferenceName] = TextObject(self.displaySurface,fontName,fontSize,fontColor,text) # add thet textobject to the textlist
+        self.textList[textReferenceName] = TextObject(fontName,fontSize,fontColor,text) # add thet textobject to the textlist
 
-    def RenderText(self,textReferenceName,position):
+    def RenderText(self,
+                   textReferenceName: str,
+                   position: tuple[float,float] = None):
 
-        self.textList[textReferenceName].RenderText(position)
+        self.textList[textReferenceName].RenderText(self.displaySurface,position)
         
 
 class WonTextManager(TextHandler):
@@ -92,7 +116,7 @@ class WonTextManager(TextHandler):
         self.statTextReference = "statText"
         self.scoreTextReference = "scoreText"
 
-        super().__init__(displaySurface,{"wonText":TextObject(displaySurface,mainFontName,wonFontSize,wonFontColor,wonText)})
+        super().__init__(displaySurface,{"wonText":TextObject(mainFontName,wonFontSize,wonFontColor,wonText)})
 
         
 

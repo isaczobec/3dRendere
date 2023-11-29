@@ -11,6 +11,7 @@ import Time
 import math
 import numpy
 from game import GameManager
+import menu
 
 import cProfile
 import pstats
@@ -32,6 +33,8 @@ class Game():
 
             self.renderer = Renderer(self.canvas)
             self.gameManager = GameManager(self.renderer,self.displaySurface)
+
+            self.menu = menu.Menu(self.displaySurface)
             
             #self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
@@ -53,21 +56,24 @@ class Game():
                 if event.type == pygame.QUIT:
                     return
 
+
             r = (math.sin(Time.passedTime * 0.5)+1) / 2 * 255
             g = (math.sin(Time.passedTime/3 * 0.5 + 6)+1) / 2 * 255
             b = (math.sin(Time.passedTime * 0.5 +23)+1) / 2 * 255
             self.displaySurface.fill((r,g,b))
 
+            
             #self.polygon.DrawFilled()
 
             #self.canvas.DrawCircle(Vector2(100,100),10)
 
-            self.RunActiveGame()
+            # self.RunActiveGame()
             
             Time.deltaTime = (time.time() - self.lastFrameTime)
             Time.passedTime += Time.deltaTime
             self.lastFrameTime = time.time()
 
+            self.menu.Run()
 
 
             # print("FPS:",1/self.deltaTime)
