@@ -10,8 +10,9 @@ from typing import List
 import fileHandling
 import random
 import pygame as pg
-
+from inputHandler import MouseInputHandler
 import texthandling
+
 
 baseScore: int = 2000
 """The score the player gets if their time * guesses = 1"""
@@ -46,9 +47,12 @@ class GameManager():
 
         self.startTime = Time.passedTime
 
-        self.gameFinnished: bool = False
+        self.gameFinnished: bool = False # if the player has won the game
+        self.returnToMenu: bool = False # set to true when the player should return to the menu
 
         self.textManager = texthandling.WonTextManager(self.displaySurface) # initialize the texthandler
+
+        self.mouseInputHandler = MouseInputHandler() # used to check if the player clicks to exit the game after they have won
 
 
         
@@ -85,6 +89,12 @@ class GameManager():
     def run(self):
         """Runs every frame. Lets the player turn up cards and handles turning them back."""
         
+        if self.gameFinnished: # if the player has won the game
+            self.textManager.RenderEndgameText()
+
+            if self.mouseInputHandler.GetMouseInput() != None:
+                self.returnToMenu = True
+        
         if self.renderer.clickedObject != None: # if the player clicked an object this frame
             self.renderer.clickedObject.ObjectClicked()
 
@@ -110,8 +120,9 @@ class GameManager():
             obj.Update()
 
 
-        if self.gameFinnished: # if the player has won the game
-            self.textManager.RenderEndgameText()
+            
+
+
     
 
     def FoundCards(self) -> None:

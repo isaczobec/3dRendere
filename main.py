@@ -113,11 +113,22 @@ class Game():
 
         self.gameState = activeGameState
 
+    def StopActiveGame(self):
+        """Stops the memory game from running."""
+        self.menu.gameRunning = False
+        self.gameState = menuState
+
+        self.menu.menuMode = menu.mainMenuReference
+
     def RunActiveGame(self):
         """Runs the game. Should be ran every frame that the game is active."""
         self.renderer.RenderScene()
         self.canvas.Refresh(self.displaySurface)
         self.gameManager.run()
+
+        if self.gameManager.returnToMenu == True:
+            self.StopActiveGame()
+
 
 
 

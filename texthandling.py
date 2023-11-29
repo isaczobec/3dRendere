@@ -2,22 +2,6 @@ import pygame as pg
 import settings
 
 
-mainFontName: str =  "Comic Sans"
-
-wonFontSize: int = 90
-wonFontColor: tuple[float,float,float] = (255,255,255)
-wonTextPosition: tuple[float,float] = (settings.WIDTH/2,100)
-
-wonText: str = "You Won!"
-
-statFontSize: int = 30
-statFontColor: tuple[float,float,float] = (255,255,255)
-statTextPosition: tuple[float,float] = (settings.WIDTH/2,200)
-statTextRowOffset: float = 75 
-
-statTimeBaseText = "Your time:"
-statMovesBaseText = "Your amount of moves:"
-statTotalScoreBaseText = "Your total score is:"
 
 
 
@@ -87,6 +71,23 @@ class TextObject():
 
 
         
+mainFontName: str =  "Comic Sans"
+
+wonFontSize: int = 90
+wonFontColor: tuple[float,float,float] = (255,255,255)
+wonTextPosition: tuple[float,float] = (settings.WIDTH/2,100)
+
+wonText: str = "You Won!"
+returnText: str = "To return to the main menu, Press B."
+
+statFontSize: int = 30
+statFontColor: tuple[float,float,float] = (255,255,255)
+statTextPosition: tuple[float,float] = (settings.WIDTH/2,200)
+statTextRowOffset: float = 75 
+
+statTimeBaseText = "Your time:"
+statMovesBaseText = "Your amount of moves:"
+statTotalScoreBaseText = "Your total score is:"
 
 
 
@@ -129,8 +130,12 @@ class WonTextManager(TextHandler):
         self.wonTextReference = "wonText"
         self.statTextReference = "statText"
         self.scoreTextReference = "scoreText"
+        self.returnTextReference = "playAgain"
 
-        super().__init__(displaySurface,{"wonText":TextObject(mainFontName,wonFontSize,wonFontColor,wonText)})
+        super().__init__(displaySurface,{
+            self.wonTextReference:TextObject(mainFontName,wonFontSize,wonFontColor,wonText),
+            self.returnTextReference:TextObject(mainFontName,statFontSize,statFontColor,returnText),
+            })
 
         
 
@@ -141,6 +146,7 @@ class WonTextManager(TextHandler):
         self.RenderText(self.wonTextReference,wonTextPosition)
         self.RenderText(self.statTextReference,statTextPosition)
         self.RenderText(self.scoreTextReference,(statTextPosition[0],statTextPosition[1]+statTextRowOffset))
+        self.RenderText(self.returnTextReference,(statTextPosition[0],statTextPosition[1]+statTextRowOffset*2))
         
 
 
