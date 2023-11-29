@@ -27,6 +27,7 @@ class GameManager():
         self.memoryCardList: List[MemoryCard] = []
         """List that contains all memorycards in this game."""
 
+        self.fullWordList = fileHandling.GetWordList()
         self.CreateBoard()
 
         self.displaySurface = displaySurface # the displaySurface used to render the game
@@ -49,6 +50,7 @@ class GameManager():
 
         self.textManager = texthandling.WonTextManager(self.displaySurface) # initialize the texthandler
 
+
         
         
 
@@ -60,16 +62,16 @@ class GameManager():
     def CreateBoard(self):
         """Creates memory cards in a grid."""
 
-        fullWordList = fileHandling.GetWordList()
+        
 
         wordList = []
         amountOfWordsToChoose = int(gameSettings.boardSize[0] * gameSettings.boardSize[1] / 2)
         for i in range(amountOfWordsToChoose):
-            choosenWord = random.choice(fullWordList)
+            choosenWord = random.choice(self.fullWordList)
             # Append the word twice so that it will belong to two cards
             wordList.append(choosenWord)
             wordList.append(choosenWord)
-            fullWordList.remove(choosenWord)
+            self.fullWordList.remove(choosenWord)
             
 
         for x in range(gameSettings.boardSize[0]):

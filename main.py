@@ -16,6 +16,10 @@ import menu
 import cProfile
 import pstats
 
+# game states; different states the program can be in
+menuState = "MENU" 
+activeGameState = "GAME" 
+
 class Game():
     def __init__(self):
 
@@ -29,12 +33,14 @@ class Game():
 
             self.lastFrameTime = time.time()
 
-            self.canvas = Canvas(self)
-
-            self.renderer = Renderer(self.canvas)
-            self.gameManager = GameManager(self.renderer,self.displaySurface)
+            # theese are initialized when the game starts
+            self.canvas = None
+            self.renderer = None
+            self.gameManager = None
 
             self.menu = menu.Menu(self.displaySurface)
+
+            self.gameState = menuState
             
             #self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
@@ -44,7 +50,6 @@ class Game():
 
             #self.slopeEquation = SlopeEquation(0.5,100,100,200)
             #self.slopeEquation.DrawSlopeLine(self.canvas)
-
 
 
 
@@ -62,22 +67,26 @@ class Game():
             b = (math.sin(Time.passedTime * 0.5 +23)+1) / 2 * 255
             self.displaySurface.fill((r,g,b))
 
+            if self.gameState == menuState:
+                self.RunMenu()
+
+            elif self.gameState == activeGameState:
+                self.RunActiveGame()
+
             
-            #self.polygon.DrawFilled()
 
-            #self.canvas.DrawCircle(Vector2(100,100),10)
 
-            # self.RunActiveGame()
+            
+                 
+
+
             
             Time.deltaTime = (time.time() - self.lastFrameTime)
             Time.passedTime += Time.deltaTime
             self.lastFrameTime = time.time()
 
-            self.menu.Run()
 
 
-            # print("FPS:",1/self.deltaTime)
-            # print("Time between frames:",Time.deltaTime)
             
             self.clock.tick(30)
 
@@ -85,9 +94,27 @@ class Game():
             pygame.display.update()
 
     
+    def RunMenu(self):
+        """Runs the menu. Should be ran every frame that the menu is active."""
+        self.menu.Run()
+        if self.menu.gameRunning == True: 
+            self.menu.menuMode == menu.mainMenuReference # set the menu mode to main menu so that the player gets back to there when they go back to the menu after the game
+            self.StartActiveGame()
+            
+            
+    def StartActiveGame(self):
+        """Start the active memory game."""
 
+        print("Start game!")
+
+        self.canvas = Canvas(self)
+        self.renderer = Renderer(self.canvas)
+        self.gameManager = GameManager(self.renderer,self.displaySurface)
+
+        self.gameState = activeGameState
 
     def RunActiveGame(self):
+        """Runs the game. Should be ran every frame that the game is active."""
         self.renderer.RenderScene()
         self.canvas.Refresh(self.displaySurface)
         self.gameManager.run()

@@ -57,6 +57,7 @@ class MenuGrid():
 
         self.buttons = buttons
 
+
         
 
         self.buttonsDict: dict[tuple[float,float] : Button] = {}
@@ -117,9 +118,7 @@ class MenuGrid():
 
         # handle the player clicking this frame
         mouseInput = self.mouseInputHandler.GetMouseInput()
-        print(mouseInput)
         if mouseInput != None: # if the player clicked this frame
-            print("yes")
             selectedButton.Clicked()
 
         self.RenderAllButtons()
@@ -157,6 +156,8 @@ class Menu():
         self.mouseInputHandler = inputHandler.MouseInputHandler()
 
          
+        self.gameRunning = False 
+        """If the game should start. Set to true when the game is signaled by this class to start."""
 
         
         self.textHandler = th.TextHandler(self.displaySurface,
@@ -203,13 +204,16 @@ class Menu():
 
         # Play menu
 
-        self.boardSizeXText: th.TextObject = th.TextObject(mainFont,30,(255,255,255),"Board columns:",(50,50))
-        self.boardSizeXValueText = th.TextObject(mainFont,30,(255,255,255),str(gameSettings.boardSize[0]),(200,50))
-        self.boardSizeYText = th.TextObject(mainFont,30,(255,255,255),"Board rows:",(50,100))
-        self.boardSizeYValueText = th.TextObject(mainFont,30,(255,255,255),str(gameSettings.boardSize[1]),(200,100))
+        self.boardSizeXText: th.TextObject = th.TextObject(mainFont,40,(255,255,255),"Board columns: <a/d>",(50,50))
+        self.boardSizeXValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[0]),(400,50))
+        self.boardSizeYText = th.TextObject(mainFont,40,(255,255,255),"Board rows: <a/d>",(50,100))
+        self.boardSizeYValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(400,100))
     
+        self.playButtonText = th.TextObject(mainFont,60,(255,255,255),"PLAY!",(550,100))
+
         self.playMenuButtons = [[Button(self.boardSizeXText,value=gameSettings.boardSize[0],valueBounds=(2,10))],
                                 [Button(self.boardSizeYText,value=gameSettings.boardSize[1],valueBounds=(2,10),valueIncrement=2)], # valueincrement = 2 so that there isnt any risk of there being an uneven amount of cards
+                                [Button(self.playButtonText,selectedColor=(0,255,0),function=self.StartGame)]
                                  ]
 
         self.playMenuGrid = MenuGrid(self.mouseInputHandler,self.textHandler,self.playMenuButtons)
@@ -224,10 +228,16 @@ class Menu():
         """Sets the menumode to the given menu mode."""
         self.menuMode = menuMode
 
-    def ExitGame(self):
+    def ExitGame(self) -> None:
         """Safely closes the application."""
         pg.quit()
         sys.exit()
+
+    def StartGame(self) -> None:
+        """Starts the active memory game."""
+
+        gameSettings.boardSize = (int(self.playMenuButtons[0][0].value),int(self.playMenuButtons[1][0].value)) # update the board size
+        self.gameRunning = True # sends a signal to start the game
 
 
     def Run(self):
