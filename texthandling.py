@@ -13,9 +13,11 @@ wonText: str = "You Won!"
 statFontSize: int = 30
 statFontColor: tuple[float,float,float] = (255,255,255)
 statTextPosition: tuple[float,float] = (settings.WIDTH/2,200)
+statTextRowOffset: float = 75 
 
 statTimeBaseText = "Your time:"
 statMovesBaseText = "Your amount of moves:"
+statTotalScoreBaseText = "Your total score is:"
 
         
 
@@ -35,12 +37,14 @@ class TextManager():
         """Renders the text """
         self.displaySurface.blit(self.mainText,wonTextPosition)
         self.displaySurface.blit(self.statText,statTextPosition)
+        self.displaySurface.blit(self.totalScoreText,(statTextPosition[0],statTextPosition[1]+statTextRowOffset))
         
 
 
-    def CreateStatText(self, time, guesses): 
+    def CreateStatText(self, time, guesses, totalScore): 
         """Create the rendered text object for the players stats."""
         self.statText = self.statFont.render(f"{statTimeBaseText} {round(time,1)}, {statMovesBaseText} {guesses}",True,statFontColor)
+        self.totalScoreText = self.statFont.render(f"{statTotalScoreBaseText} {totalScore}",True,statFontColor)
 
 
 

@@ -18,7 +18,7 @@ class Face():
     def __init__(self,vertexList: List[numpy.array], # list of vertexes making up this plane
                  color: (float,float,float) = (255,255,255), 
                  planeImage: PlaneImage = None, # the planeImage to render onto this face
-                 planeImageScale: float = (100,100), # The scale at which the plane image is rendered
+                 planeImageScale: float = (1,1), # The scale at which the plane image is rendered
                  virtualCamera: VirtualCamera = None,
                  imageTransformMatrix = None,
                  enabled = True, # if this face should be rendered or not

@@ -13,6 +13,10 @@ import pygame as pg
 
 from texthandling import TextManager
 
+baseScore: int = 2000
+"""The score the player gets if their time * guesses = 1"""
+
+
 class GameManager():
     def __init__(self,
                  rendererObject: r.Renderer,
@@ -108,7 +112,7 @@ class GameManager():
             self.textManager.RenderEndgameText()
     
 
-    def FoundCards(self):
+    def FoundCards(self) -> None:
         """Function that should be executed when the player finds two cards."""
         for card in self.selectedCards:
             card.found = True
@@ -120,18 +124,18 @@ class GameManager():
             self.FinishGame()
 
 
-    def FinishGame(self):
+    def FinishGame(self) -> None:
 
         self.gameFinnished = True
 
         totalTime: float = Time.passedTime - self.startTime
-        self.textManager.CreateStatText(totalTime,self.guesses)
+        self.textManager.CreateStatText(totalTime,self.guesses,self.CalculateTotalScore(self.guesses,totalTime))
  
         
         
 
 
-    def HandleCardTurnBack(self):
+    def HandleCardTurnBack(self) -> None:
 
         # if the cards should be turned back this frame
         if self.timeUntilTurnBackCards <= 0 and self.currentlyWaitingToTurnBackCards == True:
@@ -148,5 +152,10 @@ class GameManager():
 
     def __deepcopy__(self,memo): # override the deepcopy method to not copy this class. 
         return self
+    
+
+    def CalculateTotalScore(self, time: float, guesses: int) -> None:
+        """Calculates the players total score."""
+        return round(baseScore/(time * guesses),1)
             
 

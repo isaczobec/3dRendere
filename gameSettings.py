@@ -1,6 +1,6 @@
 """Universal setting variables for the memory game."""
 
-boardSize: tuple = (3,2)
+boardSize: tuple = (2,4)
 """The size in cards of the memory board."""
 
 # if the amount of cards is not even, add a column
@@ -25,3 +25,6 @@ cardBackSizeScaleFactor: float = 1.05
 
 memoryCardYOffset: float = -17
 """how far down the memory cards will be placed."""
+
+maxWordLength: int = 3
+"""How long the longest word in the word list is."""
