@@ -1,8 +1,10 @@
 """Modul med funktioner som laddar ordlistan samt får en pyton-lista av ord från den."""
 
 import requests
-
 import pathlib
+import errorHandling
+
+import errorHandling as EH
 
 MEMOURL = "https://www.csc.kth.se/~lk/P/memo.txt" # Url:et ordliste-filen hämtas från
 WORDLIST_FILENAME = "DownloadedWordList.txt"
@@ -33,23 +35,53 @@ def GetWordList(
                 tryToDownloadFile:bool = True):
     """Returnar en lista med alla ord från ordliste-filen."""
     
-    if fileDestination == "": # om användaren inte har specefierat en directory, använd parent directoryn
-        fileDestination = "\\".join(pathlib.Path(__file__).parts[:-1]) # lärde mig hur man delade på en file path från följande stack overflow-thread: https://stackoverflow.com/questions/26724275/removing-the-first-folder-in-a-path
+    wordList = EH.HandleExceptions(ReadFile,[fileName,fileDestination],errorMessage="The file could not be read!",exception=FileNotFoundError)
 
-    try:
-        with open("\\".join([fileDestination,fileName]),"r") as file: # öppna och läs sagda fil
-            return file.read().split("\n") # returnera en lista med alla ord
-    except FileNotFoundError: # om filen inte kunde hittas, medela användaren och returna none
-        print("The file",fileName,"could not be found!")
+    if wordList != FileNotFoundError:
+        return wordList
+    else:
 
         # try to download the word list again
         if tryToDownloadFile:
             print("Trying to download the wordlist again from",MEMOURL)
-            try:
-                DownloadWordList()
-                return GetWordList(tryToDownloadFile=False)
-            except Exception:
-                print("could not download the file.")
+
+            dL = EH.HandleExceptions(DownloadWordList,errorMessage="Could not download the wordlist!")
+            if dL != Exception:
+                return GetWordList(tryToDownloadFile=False) # do not try to download the file more than once
+            else:
                 return None
         else:
             return None
+
+
+def ReadFile(fileName: str,
+                fileDestination: str = "",
+                splitString: str = "\n") -> list[str]:
+    """Reads a file and returns a list of its contents."""
+    if fileDestination == "": # om användaren inte har specefierat en directory, använd parent directoryn
+        fileDestination = "\\".join(pathlib.Path(__file__).parts[:-1]) # lärde mig hur man delade på en file path från följande stack overflow-thread: https://stackoverflow.com/questions/26724275/removing-the-first-folder-in-a-path
+
+
+    with open("\\".join([fileDestination,fileName]),"r") as file: # öppna och läs sagda fil
+        return file.read().split(splitString) # returnera en lista med alla ord
+    
+
+
+def AppendToFile(fileName: str,
+                 text: str = "",
+                fileDestination: str = "",
+                newLine: bool = True 
+                ) -> None:
+
+    if fileDestination == "": # om användaren inte har specefierat en directory, använd parent directoryn
+        fileDestination = "\\".join(pathlib.Path(__file__).parts[:-1]) # lärde mig hur man delade på en file path från följande stack overflow-thread: https://stackoverflow.com/questions/26724275/removing-the-first-folder-in-a-path
+    
+    with open("\\".join([fileDestination,fileName]),"a") as file:
+        if newLine:
+            file.write("\n")
+        file.write(text)
+
+
+
+
+    
