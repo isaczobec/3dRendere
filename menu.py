@@ -4,6 +4,7 @@ import inputHandler
 from typing import List
 import sys
 import gameSettings
+import Time
 
 
 mainFont = "Comic Sans"
@@ -50,12 +51,21 @@ class Button():
 
 
 class MenuGrid():
-    def __init__(self, mouseInputHandler: inputHandler.MouseInputHandler,textHandler: th.TextHandler, buttons: List[List[Button]]) -> None:
+    """class that contains a number of buttons that can be selected between and clicked, to run certain logic."""
+    def __init__(self, 
+                 mouseInputHandler: inputHandler.MouseInputHandler,
+                 textHandler: th.TextHandler, 
+                 buttons: List[List[Button]],
+                 scrollCooldown: float = 0.2 # how long between when the player can change their selected button
+                 ) -> None:
         
         self.mouseInputHandler = mouseInputHandler
         self.textHandler = textHandler
 
         self.buttons = buttons
+
+        self.scrollCooldown = scrollCooldown
+        self.currentScrollCooldown = scrollCooldown
 
 
         
@@ -85,11 +95,14 @@ class MenuGrid():
     def Run(self):
         """Method that should be run every frame on this menu. updates the position of the mousecursor and checks if the player clicked any buttons."""
         
+        self.currentScrollCooldown -= Time.deltaTime
 
         selectedButton: Button = self.buttonsDict[self.currentlySelectedPosition] # get a reference to the currently selected
 
         input = inputHandler.GetMoveInputVector()
-        if input.x != 0 or input.y != 0: # if the player actually inputted something
+        if (input.x != 0 or input.y != 0) and self.currentScrollCooldown <= 0: # if the player actually inputted something
+
+            self.currentScrollCooldown = self.scrollCooldown
 
             # change the value of a button if the player does vertical input
             if selectedButton.value != None and input.x != 0:
@@ -205,19 +218,31 @@ class Menu():
         # Play menu
 
         self.boardSizeXText: th.TextObject = th.TextObject(mainFont,40,(255,255,255),"Board columns: <a/d>",(50,50))
-        self.boardSizeXValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[0]),(400,50))
+        self.boardSizeXValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[0]),(500,50))
         self.boardSizeYText = th.TextObject(mainFont,40,(255,255,255),"Board rows: <a/d>",(50,100))
-        self.boardSizeYValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(400,100))
+        self.boardSizeYValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(500,100))
     
-        self.playButtonText = th.TextObject(mainFont,60,(255,255,255),"PLAY!",(550,100))
+        self.playButtonText = th.TextObject(mainFont,60,(255,255,255),"PLAY!",(50,200))
+
+        self.playExitText = th.TextObject(mainFont,60,(255,255,255),"Exit to main menu",(50,400))
+
 
         self.playMenuButtons = [[Button(self.boardSizeXText,value=gameSettings.boardSize[0],valueBounds=(2,10))],
                                 [Button(self.boardSizeYText,value=gameSettings.boardSize[1],valueBounds=(2,10),valueIncrement=2)], # valueincrement = 2 so that there isnt any risk of there being an uneven amount of cards
-                                [Button(self.playButtonText,selectedColor=(0,255,0),function=self.StartGame)]
+                                [Button(self.playButtonText,selectedColor=(0,255,0),function=self.StartGame)],
+                                [Button(self.playExitText,self.SetMenuMode,[mainMenuReference])]
                                  ]
 
         self.playMenuGrid = MenuGrid(self.mouseInputHandler,self.textHandler,self.playMenuButtons)
+
+        # scoreBoard
+
         
+        
+        self.scoreBoardExitText = th.TextObject(mainFont,30,(255,255,255),"Exit to main menu",(75,75))
+        self.scoreBoardMenuButtons = [[Button(self.instructionsExitText,self.SetMenuMode,[mainMenuReference])]]
+
+        self.scoreBoardMenuGrid = MenuGrid(self.mouseInputHandler,self.textHandler,self.scoreBoardMenuButtons)
     
         
 
@@ -272,6 +297,10 @@ class Menu():
 
             self.textHandler.RenderTextobject(self.boardSizeXValueText)
             self.textHandler.RenderTextobject(self.boardSizeYValueText)
+
+        elif self.menuMode == scoreboardReference:
+
+            self.scoreBoardMenuGrid.Run()
 
 
     

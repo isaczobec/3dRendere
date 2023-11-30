@@ -47,8 +47,14 @@ def AddScoreBoardEntry(name = os.getlogin(),
     errorHandling.HandleExceptions(fileHandling.AppendToFile,[SCOREBOARD_FILEPATH,entryString],errorMessage="could not write to the scoreboard file.")
 
 
-AddScoreBoardEntry()
 
+
+
+
+
+
+
+AddScoreBoardEntry()
 print(GetScoreBoardEntries())
                 
                 

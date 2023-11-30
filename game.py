@@ -28,7 +28,10 @@ class GameManager():
         self.memoryCardList: List[MemoryCard] = []
         """List that contains all memorycards in this game."""
 
-        self.fullWordList = fileHandling.GetWordList()
+        # self.fullWordList = fileHandling.GetWordList()
+        self.fullWordList = ["bajs","hejss"]
+
+
         self.CreateBoard()
 
         self.displaySurface = displaySurface # the displaySurface used to render the game

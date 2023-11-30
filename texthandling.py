@@ -1,7 +1,6 @@
 import pygame as pg
 import settings
-
-
+import scoreBoard
 
 
 
@@ -70,6 +69,7 @@ class TextObject():
 
 
 
+
         
 mainFontName: str =  "Comic Sans"
 
@@ -120,7 +120,31 @@ class TextHandler():
     def RenderTextobject(self,textObject: TextObject, position: tuple[float,float] = None) -> None:
         """Renders text using a TextObject."""
         textObject.RenderText(self.displaySurface,position)
-        
+
+
+    def GetTextObjectsFromScoreboard(
+            entryList: list[dict[str:str]],
+            topLeftPosition: tuple[float,float] = (50,50), # the position where the first entry is rendered
+            yPositionOffset: float = 50, # ho much each row is offset from the last
+
+            
+            ) -> list[TextObject]:
+        """Takes a dict with socreboard entries and returns a list of renderable text objects."""
+
+        TextObjectList = []
+        for index,entry in enumerate(entryList):
+            text = str(index+1) + ". " # the list is sorted after score (by default at least)
+            for key,value in entry.items:
+                text = text + key + ": " + value + " " # Add each attribute of the entry to a string
+
+            TextObjectList.append(TextObject(mainFontName,statFontSize,text=text,defaultPosition=topLeftPosition+index*yPositionOffset))
+
+
+        return TextObjectList
+
+
+
+
 
 class WonTextManager(TextHandler):
     """Class that renders text at the end of the memory game. Inherits from the textHandler class"""

@@ -99,6 +99,7 @@ class MemoryCard(obj.R3Object):
                                                 ],
                                                 virtualCamera=virtualCamera,
                                                 planeImage=c,
+                                                planeImageScale=(1,wordLength/3),
                                                 enabled=False,
                                                 flipNormal=True
                                                 ),
