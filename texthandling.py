@@ -106,9 +106,10 @@ class TextHandler():
                  fontName: str,
                  fontSize: int,
                  fontColor: tuple[float,float,float],
-                 text: str = ""
+                 text: str = "",
+                 defaultPosition: tuple[float,float] = (50,50)
                  ) -> None:
-        self.textList[textReferenceName] = TextObject(fontName,fontSize,fontColor,text) # add thet textobject to the textlist
+        self.textList[textReferenceName] = TextObject(fontName,fontSize,fontColor,text,defaultPosition=defaultPosition) # add thet textobject to the textlist
 
     def RenderText(self,
                    textReferenceName: str,
@@ -122,22 +123,30 @@ class TextHandler():
         textObject.RenderText(self.displaySurface,position)
 
 
-    def GetTextObjectsFromScoreboard(
+    def GetTextObjectsFromDicts(
+            self,
             entryList: list[dict[str:str]],
             topLeftPosition: tuple[float,float] = (50,50), # the position where the first entry is rendered
             yPositionOffset: float = 50, # ho much each row is offset from the last
+            maxEntries: int = 5,
 
             
             ) -> list[TextObject]:
         """Takes a dict with socreboard entries and returns a list of renderable text objects."""
 
         TextObjectList = []
+
+
         for index,entry in enumerate(entryList):
             text = str(index+1) + ". " # the list is sorted after score (by default at least)
-            for key,value in entry.items:
-                text = text + key + ": " + value + " " # Add each attribute of the entry to a string
+            for key,value in entry.items():
+                text = text + key + ": " + value + ", " # Add each attribute of the entry to a string
 
-            TextObjectList.append(TextObject(mainFontName,statFontSize,text=text,defaultPosition=topLeftPosition+index*yPositionOffset))
+            TextObjectList.append(TextObject(mainFontName,statFontSize,fontColor=statFontColor,text=text,defaultPosition=(topLeftPosition[0],topLeftPosition[1]+index*yPositionOffset)))
+
+            # stop iterating through dicts when maxentries has been reached
+            if index >= maxEntries -1:
+                break
 
 
         return TextObjectList

@@ -5,7 +5,7 @@ from typing import List
 import sys
 import gameSettings
 import Time
-
+import scoreBoard
 
 mainFont = "Comic Sans"
 
@@ -221,16 +221,23 @@ class Menu():
         self.boardSizeXValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[0]),(500,50))
         self.boardSizeYText = th.TextObject(mainFont,40,(255,255,255),"Board rows: <a/d>",(50,100))
         self.boardSizeYValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(500,100))
+        
+        self.minWordLengthText = th.TextObject(mainFont,40,(255,255,255),"Min word length: <a/d>",(50,150))
+        self.minWordLengthValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(500,150))
+        self.maxWordLengthText = th.TextObject(mainFont,40,(255,255,255),"Max word length: <a/d>",(50,200))
+        self.maxWordLengthValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(500,200))
     
-        self.playButtonText = th.TextObject(mainFont,60,(255,255,255),"PLAY!",(50,200))
+        self.playButtonText = th.TextObject(mainFont,60,(255,255,255),"PLAY!",(50,320))
 
         self.playExitText = th.TextObject(mainFont,60,(255,255,255),"Exit to main menu",(50,400))
 
 
         self.playMenuButtons = [[Button(self.boardSizeXText,value=gameSettings.boardSize[0],valueBounds=(2,10))],
                                 [Button(self.boardSizeYText,value=gameSettings.boardSize[1],valueBounds=(2,10),valueIncrement=2)], # valueincrement = 2 so that there isnt any risk of there being an uneven amount of cards
+                                [Button(self.minWordLengthText,value=3,valueBounds=(1,3),valueIncrement=1)], 
+                                [Button(self.maxWordLengthText,value=3,valueBounds=(3,8),valueIncrement=1)], 
                                 [Button(self.playButtonText,selectedColor=(0,255,0),function=self.StartGame)],
-                                [Button(self.playExitText,self.SetMenuMode,[mainMenuReference])]
+                                [Button(self.playExitText,self.SetMenuMode,[mainMenuReference])],
                                  ]
 
         self.playMenuGrid = MenuGrid(self.mouseInputHandler,self.textHandler,self.playMenuButtons)
@@ -239,19 +246,25 @@ class Menu():
 
         
         
-        self.scoreBoardExitText = th.TextObject(mainFont,30,(255,255,255),"Exit to main menu",(75,75))
-        self.scoreBoardMenuButtons = [[Button(self.instructionsExitText,self.SetMenuMode,[mainMenuReference])]]
+        self.scoreBoardExitText = th.TextObject(mainFont,30,(255,255,255),"Exit to main menu",(75,600))
+        self.scoreBoardMenuButtons = [[Button(self.scoreBoardExitText,self.SetMenuMode,[mainMenuReference])]]
 
         self.scoreBoardMenuGrid = MenuGrid(self.mouseInputHandler,self.textHandler,self.scoreBoardMenuButtons)
-    
+
+        self.UpdateScoreBoardMenu()
         
 
-
+    def UpdateScoreBoardMenu(self):
+        self.scoreBoardEntries = self.textHandler.GetTextObjectsFromDicts(scoreBoard.GetScoreBoardEntries())
+        
                                  
         
     def SetMenuMode(self, menuMode: str):
         """Sets the menumode to the given menu mode."""
         self.menuMode = menuMode
+
+        if self.menuMode == scoreboardReference:
+            self.UpdateScoreBoardMenu()
 
     def ExitGame(self) -> None:
         """Safely closes the application."""
@@ -262,6 +275,7 @@ class Menu():
         """Starts the active memory game."""
 
         gameSettings.boardSize = (int(self.playMenuButtons[0][0].value),int(self.playMenuButtons[1][0].value)) # update the board size
+        gameSettings.minMaxWordLength = (int(self.playMenuButtons[2][0].value),int(self.playMenuButtons[3][0].value)) # update the board size
         self.gameRunning = True # sends a signal to start the game
 
 
@@ -295,12 +309,21 @@ class Menu():
             self.boardSizeXValueText.text = str(self.playMenuButtons[0][0].value)
             self.boardSizeYValueText.text = str(self.playMenuButtons[1][0].value)
 
+            self.minWordLengthValueText.text = str(self.playMenuButtons[2][0].value)
+            self.maxWordLengthValueText.text = str(self.playMenuButtons[3][0].value)
+
             self.textHandler.RenderTextobject(self.boardSizeXValueText)
             self.textHandler.RenderTextobject(self.boardSizeYValueText)
+            self.textHandler.RenderTextobject(self.maxWordLengthValueText)
+            self.textHandler.RenderTextobject(self.minWordLengthValueText)
 
         elif self.menuMode == scoreboardReference:
 
             self.scoreBoardMenuGrid.Run()
+
+            # render all scoreboard entries
+            for entryTextObject in self.scoreBoardEntries:
+                self.textHandler.RenderTextobject(entryTextObject)
 
 
     

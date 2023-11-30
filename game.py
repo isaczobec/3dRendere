@@ -12,6 +12,7 @@ import random
 import pygame as pg
 from inputHandler import MouseInputHandler
 import texthandling
+import scoreBoard
 
 
 baseScore: int = 2000
@@ -28,10 +29,7 @@ class GameManager():
         self.memoryCardList: List[MemoryCard] = []
         """List that contains all memorycards in this game."""
 
-        # self.fullWordList = fileHandling.GetWordList()
-        self.fullWordList = ["bajs","hejss"]
-
-
+        self.fullWordList = fileHandling.GetWordList()
         self.CreateBoard()
 
         self.displaySurface = displaySurface # the displaySurface used to render the game
@@ -69,16 +67,29 @@ class GameManager():
     def CreateBoard(self):
         """Creates memory cards in a grid."""
 
-        
+        wordLengthRange = range(gameSettings.minMaxWordLength[0],gameSettings.minMaxWordLength[1] + 1)
+        alphabet = [chr(v) for v in range(ord('a'), ord('a') + 26)] # generate a list of the alphabet
 
         wordList = []
         amountOfWordsToChoose = int(gameSettings.boardSize[0] * gameSettings.boardSize[1] / 2)
         for i in range(amountOfWordsToChoose):
-            choosenWord = random.choice(self.fullWordList)
+
+
+            originalWord = random.choice(self.fullWordList)
+
+
+            # give the word a random length
+            choosenWord = originalWord
+            wordLength = random.choice(wordLengthRange)
+            while choosenWord.__len__() < wordLength:
+                choosenWord = choosenWord + random.choice(alphabet)
+            if choosenWord.__len__() > wordLength:
+                choosenWord = choosenWord[:wordLength]
+
             # Append the word twice so that it will belong to two cards
             wordList.append(choosenWord)
             wordList.append(choosenWord)
-            self.fullWordList.remove(choosenWord)
+            self.fullWordList.remove(originalWord)
             
 
         for x in range(gameSettings.boardSize[0]):
@@ -94,6 +105,9 @@ class GameManager():
         
         if self.gameFinnished: # if the player has won the game
             self.textManager.RenderEndgameText()
+
+            self.textManager.RenderText("placementText")
+            self.textManager.RenderText("scoreBoardMenuText")
 
             if self.mouseInputHandler.GetMouseInput() != None:
                 self.returnToMenu = True
@@ -141,11 +155,27 @@ class GameManager():
 
 
     def FinishGame(self) -> None:
+        """Ran once the player wins the game. Calculates the score and creates text for the players placement."""
 
+        # Calculate the score
         self.gameFinnished = True
-
         totalTime: float = Time.passedTime - self.startTime
-        self.textManager.CreateStatText(totalTime,self.guesses,self.CalculateTotalScore(self.guesses,totalTime))
+        score = self.CalculateTotalScore(self.guesses,totalTime)
+        self.textManager.CreateStatText(totalTime,self.guesses,score)
+
+        # create the placement text
+        placeMentText = ""
+        scoreBoardEntries = scoreBoard.GetScoreBoardEntries()
+        for index,entry in enumerate(scoreBoardEntries):
+            if float(entry["score"]) < score:
+                placeMentText = f"you placed {index+1} out of {len(scoreBoardEntries)} people who have played before you!"
+                break
+
+        scoreBoard.AddScoreBoardEntry(score=score,time = totalTime,moves=self.guesses)
+
+        self.textManager.CreateTextObject("placementText","Comic Sans",30,(255,255,255),placeMentText,defaultPosition=(50,500))
+        self.textManager.CreateTextObject("scoreBoardMenuText","Comic Sans",20,(255,255,255),"You can view highscores in the scoreboard menu!",defaultPosition=(50,550))
+        
  
         
         

@@ -3,10 +3,12 @@ import fileHandling
 import os
 import datetime
 
+
 SCOREBOARD_FILEPATH = "ScoreBoard.txt"
 SCOREBOARD_KEYVALUESEPARATOR = ":"
 SCOREBOARD_ATTRIBUTESEPARATOR = ";"
 """The separator used in the scoreboard file to separate attributes"""
+
 
 
 def GetScoreBoardEntries(sort: bool = True,
@@ -33,7 +35,8 @@ def GetScoreBoardEntries(sort: bool = True,
 
 
     if sort == True:
-        entryList.sort(key=lambda entry : entry[sortKey],reverse=True)  # sort the list
+        entryList.sort(key=lambda entry : float(entry[sortKey]),reverse=True)  # sort the list
+        
 
     return entryList
 
@@ -54,8 +57,8 @@ def AddScoreBoardEntry(name = os.getlogin(),
 
 
 
-AddScoreBoardEntry()
-print(GetScoreBoardEntries())
+
+
                 
                 
                 

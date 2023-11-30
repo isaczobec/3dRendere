@@ -27,4 +27,7 @@ memoryCardYOffset: float = -17
 """how far down the memory cards will be placed."""
 
 maxWordLength: int = 3
-"""How long the longest word in the word list is."""
+"""How long the longest word in the word list (usually) is."""
+
+minMaxWordLength: tuple[int,int] = (3,3)
+"""The min and max word length of every word."""
