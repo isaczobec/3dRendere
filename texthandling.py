@@ -128,7 +128,7 @@ class TextHandler():
             entryList: list[dict[str:str]],
             topLeftPosition: tuple[float,float] = (50,50), # the position where the first entry is rendered
             yPositionOffset: float = 50, # ho much each row is offset from the last
-            maxEntries: int = 5,
+            maxEntries: int = 10,
 
             
             ) -> list[TextObject]:

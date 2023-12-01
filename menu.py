@@ -181,7 +181,7 @@ class Menu():
                                               "splashText":th.TextObject(mainFont,30,(255,255,255),"Memory3D Extra low fps edition",(300,250)),
 
                                               "instructions1":th.TextObject(mainFont,40,(255,255,255),"... you dont know what memory is...?",(50,280)),
-                                              "instructions2":th.TextObject(mainFont,20,(255,255,255),"The goal of memory is to match all the cards. Every card has a matching other card that matches the previous card.",(50,350)),
+                                              "instructions2":th.TextObject(mainFont,20,(255,255,255),"Uhhh.. ok. The goal of memory is to match all the cards. Every card has a matching other card that matches the previous card.",(50,350)),
                                               "instructions3":th.TextObject(mainFont,20,(255,255,255),"Alas, every card has a pair you have to find. Every turn, you get to turn up two cards. If you find the matching pair,",(50,400)),
                                               "instructions4":th.TextObject(mainFont,20,(255,255,255),"The cards stay up the next turn and you have succesfully found them. Once this has happened with all cards, you win.",(50,450)),
                                               "instructions5":th.TextObject(mainFont,20,(255,255,255),"For extra replay value, you can try to increase your score by finding all cards faster or in less turns.",(50,500)),

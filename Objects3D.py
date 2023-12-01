@@ -12,6 +12,10 @@ class Vertex():
             position: numpy.array = numpy.array([0,0,0,1])) -> None:
         
         self.position = position
+
+        self.normal: numpy.ndarray = None
+
+        
         
 
 class Face():
@@ -240,11 +244,13 @@ class Face():
 class R3Object():
     """three-dimensional object consisting of a bunch of vertexes. Created by inputting a list of Faces."""
     def __init__(self, 
-                 faceList: List[Face], 
+                 faceList: list[Face], 
                  position: numpy.array, 
                  rotation: numpy.array = numpy.array([0,0,0]), 
                  triangulate: bool = False,
                  enabled = True, # if the object should be rendered
+                 hasVertexNormals: bool = False, # if this object should store information of vertex normals
+                 renderSmooth: bool = False, # if this polygon should be rendered smoothly
                  ) -> None:
 
         self.faceList: List[Face] = []
@@ -263,8 +269,15 @@ class R3Object():
 
         self.position = position
 
+        self.renderSmooth = renderSmooth
+        self.hasVertexNormals = hasVertexNormals
+        if self.hasVertexNormals:
+            self.CalculateVertexNormals()
+
         self._rotation = rotation
         self.Rotate(rotation[0],rotation[1],rotation[2])
+
+        
         
 
     def CreateVertexList(self):
@@ -276,6 +289,30 @@ class R3Object():
                     if vertex not in vertexList:
                         vertexList.append(vertex)
         return vertexList
+
+    def CalculateVertexNormals(self) -> None:
+        """Calculate all vertex normals for this polygon"""
+
+        vertexStoredNormals: dict[Vertex:list[numpy.ndarray]] = {}
+        for vertex in self.vertexList:
+            vertexStoredNormals[vertex] = [] # add empty lists for all vertexes
+
+        for face in self.faceList:
+            faceNormal = face.GetNormalVector()
+            for vertex in face.vertexList: 
+                vertexStoredNormals[vertex].append(faceNormal)
+            
+        for vertex,normalList in vertexStoredNormals.items():
+            averageVector = numpy.array([0,0,0])
+            for normal in normalList:
+                averageVector = averageVector + normal
+
+            averageVector = averageVector / len(normalList)
+
+            averageVector = averageVector / numpy.linalg.norm(averageVector) # normalize the normal
+
+            vertex.normal = averageVector
+
     
     def Move(self,
              x,y,z):
@@ -314,12 +351,37 @@ class R3Object():
                                [0,0,1,0],
                                [0,0,0,1]
                                ])
+
+        # create 3x3 matricies for rotating 3d normal vectors
+        if self.hasVertexNormals:
+            normalXMatrix = numpy.array([[1,0,0],
+                                [0,cos(x),-sin(x)],
+                                [0,sin(x),cos(x)],
+                                ])
+            
+            normalYMatrix = numpy.array([[cos(y),0,sin(y)],
+                                [0,1,0],
+                                [-sin(y),0,cos(y)],
+                                ])
+
+            normalZMatrix = numpy.array([
+                                [cos(z),-sin(z),0],
+                                [sin(z),cos(z),0],
+                                [0,0,1],
+                                ])
+
+
         
         for vertex in self.vertexList:
             vertex.position = XMatrix @ vertex.position
             vertex.position = YMatrix @ vertex.position
             vertex.position = ZMatrix @ vertex.position
     
+            if self.hasVertexNormals:
+                vertex.normal = normalXMatrix @ vertex.normal
+                vertex.normal = normalYMatrix @ vertex.normal
+                vertex.normal = normalZMatrix @ vertex.normal
+
     def Update(self):
         """Function that can be overrided in child classes. Ran every frame in the renderer class."""
         pass
@@ -377,7 +439,10 @@ def CreateUVSphere(radius: float = 1,
                    rings: int = 16, 
                    position: numpy.ndarray = numpy.array([0,0,0,1]),
                    color: tuple[float] = (255,255,255),
-                   
+
+                   triangulateFaces: bool = True, # if the spheres faces should be triangulated
+                   renderSmooth: bool = False,
+                   virtualCamera: VirtualCamera = None # the virtualcamera of the faces. used for rendering images or smooth shading
                    ) -> R3Object:
     """Creates and returns a UV sphere."""
 
@@ -411,7 +476,7 @@ def CreateUVSphere(radius: float = 1,
                     ringVertList[segmentIndex], # add this vertex to the face
                     ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
                     topVert
-                    ],color=color))
+                    ],color=color,virtualCamera=virtualCamera))
                 
             elif ringIndex == rings - 1: # if this is the last ring, also add triangles
                 faceList.append(Face([
@@ -420,13 +485,13 @@ def CreateUVSphere(radius: float = 1,
                     ringList[ringIndex-1][(segmentIndex+1)%len(ringVertList)], # add the face 
                     ringList[ringIndex-1][segmentIndex],
 
-                    ],color=color))
+                    ],color=color,virtualCamera=virtualCamera))
                 
                 faceList.append(Face([
                     ringVertList[segmentIndex], # add this vertex to the face
                     ringVertList[(segmentIndex+1)%len(ringVertList)], # add the next vertex to the face
                     botVert
-                    ],flipNormal=True,color=color))
+                    ],flipNormal=True,color=color,virtualCamera=virtualCamera))
                 
 
             else:
@@ -437,16 +502,14 @@ def CreateUVSphere(radius: float = 1,
                     ringList[ringIndex-1][(segmentIndex+1)%len(ringVertList)], # add the face 
                     ringList[ringIndex-1][segmentIndex],
 
-                    ],color=color))
+                    ],color=color,virtualCamera=virtualCamera))
                 
-    UVsphere = R3Object(faceList=faceList,position=position)
+    UVsphere = R3Object(faceList=faceList,position=position,triangulate=triangulateFaces,hasVertexNormals=renderSmooth,renderSmooth=renderSmooth)
 
     return UVsphere
         
 
 
-for i in range(1,10-1):
-    print(i)
 
 
 

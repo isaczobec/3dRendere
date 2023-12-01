@@ -7,17 +7,25 @@ from image import PlaneImage
 from typing import List
 from virtualCamera import VirtualCamera
 from renderingInformation import RenderingInformation
+import mathFunctions as MF
 
 import rgbBlendModes as rgbBlend
 
 class Vertex():
-    def __init__(self,xpos,ypos):
+    def __init__(self,
+                 xpos,ypos,
+                 worldNormal : np.ndarray = None,
+                 ):
         self.pos = Vector2(xpos,ypos)
+
+
+        self.worldPosition = None # position in the world. Used to calculate smooth lighting.
+        self.worldNormal = worldNormal # normal of this vertex.
         
 
 class Polygon():
     def __init__(self,
-                 vertexList,
+                 vertexList: list[Vertex],
                  canvas,
                  color = (255,255,255), 
                  equationVector = np.array([0,0,0]),
@@ -25,7 +33,9 @@ class Polygon():
                  planeImage: PlaneImage = None, # the image to be rendered onto this polygon. None if this polygon has no image.
                  planeImageScale: float = 1, # The scale at which the plane image is rendered
                  camera: VirtualCamera = None, # the camera used to render this polygon
-                 imageTransformMatrix: np.array = None): # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
+                 imageTransformMatrix: np.array = None, # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
+                 drawSmooth: bool = False,
+                 ): 
         
         self.vertexList = vertexList
         self.canvas = canvas
@@ -41,6 +51,8 @@ class Polygon():
         self.planeImageScale = planeImageScale
         self.camera = camera
         self.imageTransformMatrix = imageTransformMatrix
+
+        self.drawSmooth = drawSmooth
 
         for index,vertex in enumerate(self.vertexList):
 
@@ -126,9 +138,14 @@ class Polygon():
         maxY = self.bounds[1].y
         maxX = self.bounds[1].x
 
-        
+        # store world position of vertexes. Necesary for rendering smooth surfaces.
+        if self.drawSmooth:
+            for vertex in self.vertexList:
+                vertex.worldPosition = self.GetPixelPolygonPosition(vertex.pos.x,vertex.pos.y,self.GetDepth(vertex.pos.x,vertex.pos.y))
 
-        sunLightFactor = np.clip(np.dot(self.normalVector,renderingInformation.sunLightDirection),renderingInformation.sunCap,1) # clamp the value because light can not be negative
+                
+        if self.drawSmooth == False:
+            sunLightFactor = self.GetSunlightFactor(renderingInformation,self.normalVector)
         #print(f"normalvector: {self.normalVector} sunLightVector: {renderingInformation.sunLightDirection} factor: {sunLightFactor}")
 
         
@@ -178,9 +195,7 @@ class Polygon():
                                 
                                 # get the color of the planeImage at this pixel
 
-                                rP = self.ReversePerspectiveForPixel(x,y,depth,self.camera) # reverse the perspective of this pixel and get the original x,y position of it
-
-                                pixelPosition = self.imageTransformMatrix @ np.array([rP[0],rP[1],depth,1]) # transform this pixels position to get the x,y of the image it is supposed to display
+                                pixelPosition = self.GetPixelPolygonPosition(x,y,depth)
                                 imageColor = self.planeImage.SampleRGB(pixelPosition[0],pixelPosition[1],scale=self.planeImageScale)
                                 touchedPixel.color = imageColor
 
@@ -191,7 +206,13 @@ class Polygon():
                                 touchedPixel.color = self.color
 
                             # apply sunlight
-                            finalSunColor = rgbBlend.ScalarMultiply(renderingInformation.sunColor,sunLightFactor)
+                            if self.drawSmooth == True:
+
+                                finalSunColor = rgbBlend.ScalarMultiply(renderingInformation.sunColor,self.GetSunlightFactor(renderingInformation,self.InterpolateVertexNormals(x,y)))
+                            else:
+                                finalSunColor = rgbBlend.ScalarMultiply(renderingInformation.sunColor,sunLightFactor)
+
+
                             touchedPixel.color = rgbBlend.Multiply(touchedPixel.color,finalSunColor)
 
 
@@ -200,6 +221,40 @@ class Polygon():
                             
                                 
                             self.canvas.updatedPixelList.append(touchedPixel)
+
+    def GetSunlightFactor(self,renderingInformation,normal) -> float:
+        """Gets the factor (between 0 and 1) of the sunlight on the normal."""
+        sunLightFactor = np.clip(np.dot(normal,renderingInformation.sunLightDirection),renderingInformation.sunCap,1)
+        return sunLightFactor
+
+    def InterpolateVertexNormals(self,x,y) -> np.ndarray:
+        """Calculates the normal at an x,y value of this polygon using bilinear interpolation."""
+
+        pixelWorldPosition = self.GetPixelPolygonPosition(x,y,self.GetDepth(x,y))
+
+        pixelNormal = np.array([0,0,0])
+
+        for i,vertex in enumerate(self.vertexList):
+            area = np.linalg.norm(MF.PerpetualVectorOnVector(pixelWorldPosition - vertex.worldPosition,self.vertexList[(i+1)%len(self.vertexList)].worldPosition)) * np.linalg.norm(self.vertexList[(i+1)%len(self.vertexList)].worldPosition-vertex.worldPosition)/2
+            pixelNormal = pixelNormal + self.vertexList[(i+2)%(len(self.vertexList))].worldNormal * area # add the wheighted normal to the pixels normal
+
+        pixelNormal = pixelNormal / np.linalg.norm(pixelNormal)
+        return pixelNormal
+
+        
+
+
+
+    def GetPixelPolygonPosition(self,x,y,depth) -> np.ndarray:
+        """Gets the position of a pixel on its untransformed vertex. Used for rendering images and calculating smooth shading."""
+        rP = self.ReversePerspectiveForPixel(x,y,depth,self.camera) # reverse the perspective of this pixel and get the original x,y position of it
+
+        #if self.drawSmooth: print("transformMatrix:",self.imageTransformMatrix,"posvector",np.array([rP[0],rP[1],depth,1]))
+        pixelPosition = self.imageTransformMatrix @ np.array([rP[0],rP[1],depth,1]) # transform this pixels position to get the x,y of the image it is supposed to display
+
+        return pixelPosition
+
+    
 
 
 
@@ -226,7 +281,7 @@ class Polygon():
 
 
 
-    def GetDepth(self,x,y) -> float:
+    def GetDepth(self,x:float,y:float) -> float:
         """returns the depth of a point on this polygon"""
 
         depth = (self.equationVector[3] - self.equationVector[0] * x - self.equationVector[1] * y) / self.equationVector[2]

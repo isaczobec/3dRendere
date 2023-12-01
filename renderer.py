@@ -45,7 +45,8 @@ class Renderer():
         #self.objectList.append(self.baba)
         #elf.objectList[1].position += ar([0,0,0,0])
 
-        self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0))
+        
+        self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0),triangulateFaces=True,renderSmooth = True,virtualCamera=self.camera)
         self.objectList.append(self.sphere)
 
 
@@ -193,6 +194,11 @@ class Renderer():
 
                             face.imageTransformMatrix = face.GetImageTransformMatrix()
 
+                    if self.objectList[index].renderSmooth == True:
+
+                        print("Add imagetransformmatrix")
+                        face.imageTransformMatrix = face.GetImageTransformMatrix()
+
 
                 for vertex in object.vertexList:
 
@@ -262,7 +268,11 @@ class Renderer():
                                 if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
                                     oneVertInClipVolume = True
 
-                            newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
+                            if self.objectList[objectIndex].hasVertexNormals and self.objectList[objectIndex].renderSmooth:
+                                newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1]),worldNormal=vertex.normal))
+                            else:
+                                newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1])))
+
 
                         if oneVertInClipVolume == True:
 
@@ -276,7 +286,8 @@ class Renderer():
                                 #    print("vertPos:",vertex.position)
 
                             
-                            canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeEquation,normalVector=unTransformedNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix)
+                            canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeEquation,normalVector=unTransformedNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix,drawSmooth=self.objectList[objectIndex].renderSmooth)
+                            print()
 
                             self.canvas.polygonList.append(canvasPolygon)
 
