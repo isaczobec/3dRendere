@@ -419,7 +419,9 @@ def CreateTetrahedron(p1: numpy.array,
                    p2: numpy.array,
                    p3: numpy.array,
                    p4: numpy.array,
-                   position: numpy.array = numpy.array([0,0,0,1])) -> R3Object:
+                   position: numpy.array = numpy.array([0,0,0,1]),
+                   renderSmooth: bool = False
+                   ) -> R3Object:
     """Creates and returns a tetrahedron with corners on every specefied point."""
     V1 = Vertex(p1)
     V2 = Vertex(p2)
@@ -431,7 +433,7 @@ def CreateTetrahedron(p1: numpy.array,
     for i in range(len(vertexList)):
         faceList.append(Face([vertexList[i],vertexList[(i+1)%len(vertexList)],vertexList[(i+2)%len(vertexList)]]))
     
-    return R3Object(faceList,position)
+    return R3Object(faceList,position,renderSmooth=renderSmooth,hasVertexNormals=renderSmooth)
 
 
 def CreateUVSphere(radius: float = 1, 

@@ -1,7 +1,8 @@
+"""A module containing a game class
+responsible for running the game. has references
+to all memorycards."""
+
 import renderer as r
-import Objects3D as obj
-import numpy as np
-from numpy import array as ar
 import Time
 from memoryCard import MemoryCard
 import memoryCard as mc
@@ -20,10 +21,13 @@ baseScore: int = 2000
 
 
 class GameManager():
+    """A class that contains functions for running the active memory game."""
     def __init__(self,
                  rendererObject: r.Renderer,
                  displaySurface: pg.Surface,
                  ) -> None:
+        """Creates the board of memory cards and initializes variables
+        for tracking the players score."""
         self.renderer: r.Renderer = rendererObject
 
         self.memoryCardList: List[MemoryCard] = []
@@ -64,8 +68,8 @@ class GameManager():
 
 
 
-    def CreateBoard(self):
-        """Creates memory cards in a grid."""
+    def CreateBoard(self) -> None:
+        """Creates memory cards in a grid and stores references to them in this class."""
 
         wordLengthRange = range(gameSettings.minMaxWordLength[0],gameSettings.minMaxWordLength[1] + 1)
         alphabet = [chr(v) for v in range(ord('a'), ord('a') + 26)] # generate a list of the alphabet
@@ -91,42 +95,41 @@ class GameManager():
             wordList.append(choosenWord)
             self.fullWordList.remove(originalWord)
             
-
+        # create instances of the memorycard class and append them to this game's card list
         for x in range(gameSettings.boardSize[0]):
             for y in range(gameSettings.boardSize[1]):
                 memoryCard = MemoryCard(self,(x,y),virtualCamera = self.renderer.camera,cardType=mc.textCard,cardText=wordList.pop(random.randrange(0,len(wordList))))
                 self.memoryCardList.append(memoryCard)
-                self.renderer.objectList.append(memoryCard)
+                self.renderer.objectList.append(memoryCard) # add card to the renderers list of objects to render
 
     
 
-    def run(self):
+    def run(self) -> None:
         """Runs every frame. Lets the player turn up cards and handles turning them back."""
         
         if self.gameFinnished: # if the player has won the game
-            self.textManager.RenderEndgameText()
 
+            # render end of game text
+            self.textManager.RenderEndgameText()
             self.textManager.RenderText("placementText")
             self.textManager.RenderText("scoreBoardMenuText")
 
+            # return to the main menu when the player clicks
             if self.mouseInputHandler.GetMouseInput() != None:
                 self.returnToMenu = True
         
         if self.renderer.clickedObject != None: # if the player clicked an object this frame
             self.renderer.clickedObject.ObjectClicked()
 
+            
             if len(self.selectedCards) == 2:
 
-                if self.selectedCards[0].cardType == mc.textCard and self.selectedCards[1].cardType == mc.textCard:
-                    if self.selectedCards[0].cardText == self.selectedCards[1].cardText:
-                        self.FoundCards()
-                        
-                elif self.selectedCards[0].cardType == mc.imageCard and self.selectedCards[1].cardType == mc.imageCard:
-                    if self.selectedCards[0].planeImageName == self.selectedCards[1].planeImageName:
-                        self.FoundCards()
+                # check if the cards are of the same type and their content is matching
+                if ((self.selectedCards[0].cardType == mc.textCard and self.selectedCards[1].cardType == mc.textCard) and (self.selectedCards[0].cardText == self.selectedCards[1].cardText)) or ((self.selectedCards[0].cardType == mc.imageCard and self.selectedCards[1].cardType == mc.imageCard) and (self.selectedCards[0].planeImageName == self.selectedCards[1].planeImageName)):
+                    self.FoundCards()
 
-            
-        if len(self.selectedCards) == 2 and self.currentlyWaitingToTurnBackCards == False: # check if the player has turned up 2 cards without a matching pair, then start turning them back
+        # check if the player has turned up 2 cards without a matching pair, then start turning them back
+        if len(self.selectedCards) == 2 and self.currentlyWaitingToTurnBackCards == False: 
             self.timeUntilTurnBackCards = gameSettings.cardsTurnBackCooldown
             self.currentlyWaitingToTurnBackCards = True
 
@@ -144,6 +147,7 @@ class GameManager():
 
     def FoundCards(self) -> None:
         """Function that should be executed when the player finds two cards."""
+
         for card in self.selectedCards:
             card.found = True
         self.selectedCards.clear() # clear the list of selected cards as they have been found
@@ -166,13 +170,14 @@ class GameManager():
         # create the placement text
         placeMentText = ""
         scoreBoardEntries = scoreBoard.GetScoreBoardEntries()
-        for index,entry in enumerate(scoreBoardEntries):
+        for index,entry in enumerate(scoreBoardEntries): # find the players placement
             if float(entry["score"]) < score:
                 placeMentText = f"you placed {index+1} out of {len(scoreBoardEntries)} people who have played before you!"
                 break
 
         scoreBoard.AddScoreBoardEntry(score=score,time = totalTime,moves=self.guesses)
 
+        # create text to show the player
         self.textManager.CreateTextObject("placementText","Comic Sans",30,(255,255,255),placeMentText,defaultPosition=(50,500))
         self.textManager.CreateTextObject("scoreBoardMenuText","Comic Sans",20,(255,255,255),"You can view highscores in the scoreboard menu!",defaultPosition=(50,550))
         
@@ -182,6 +187,8 @@ class GameManager():
 
 
     def HandleCardTurnBack(self) -> None:
+        """Ran every frame of the game. Turns back turned up cards
+        after some time if they did not match."""
 
         # if the cards should be turned back this frame
         if self.timeUntilTurnBackCards <= 0 and self.currentlyWaitingToTurnBackCards == True:
@@ -196,12 +203,15 @@ class GameManager():
 
 
 
-    def __deepcopy__(self,memo): # override the deepcopy method to not copy this class. 
+    def __deepcopy__(self,memo):
+        """override the deepcopy method to not copy this class.""" 
         return self
     
 
-    def CalculateTotalScore(self, time: float, guesses: int) -> None:
-        """Calculates the players total score."""
+    def CalculateTotalScore(self, 
+                            time: float, 
+                            guesses: int) -> float:
+        """Calculates and returns the players total score."""
         return round(baseScore/(time * guesses),1)
             
 

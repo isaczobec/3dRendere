@@ -37,18 +37,17 @@ class Renderer():
         """List of 3d objects that this renderer can render."""
 
         # test tetrahedron (testrahedron :D )
-        # self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 0, 0, 1]))
+        # self.tetrahedron = O3D.CreateTetrahedron(ar([1, 1, 2, 1]), ar([1, 2, 1, 1]), ar([1, 3, 3, 1]), ar([0, 0, 0, 1]), position=ar([0, 5, 0, 1]),renderSmooth=True)
+        
         # self.objectList.append(self.tetrahedron)
-        # self.objectList[0].position += ar([1,0,0,0])
 
         #self.baba = O3D.CreateTetrahedron(ar([2, 1, -1, 1]), ar([-1, -1, 1, 1]), ar([-1, -1, -1, 1]), ar([1, 1, 1, 1]), position=ar([0, 0, 0, 1]))
         #self.objectList.append(self.baba)
         #elf.objectList[1].position += ar([0,0,0,0])
 
         
-        self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0),triangulateFaces=True,renderSmooth = True,virtualCamera=self.camera)
+        self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0),triangulateFaces=False)
         self.objectList.append(self.sphere)
-
 
         
 
@@ -196,7 +195,7 @@ class Renderer():
 
                     if self.objectList[index].renderSmooth == True:
 
-                        print("Add imagetransformmatrix")
+                        face.virtualCamera = self.camera
                         face.imageTransformMatrix = face.GetImageTransformMatrix()
 
 

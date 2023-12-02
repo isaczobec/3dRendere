@@ -1,24 +1,32 @@
-import pygame
+"""Module containing the canvas class, used for rendering the game."""
+
 import settings
 from Vec import Vector2
 import Vec
-import random
 from typing import List
 from pixel import Pixel
-from slopeEquation import SlopeEquation
 from polygon import Polygon
-from renderingInformation import RenderingInformation
-import time
 
 class Canvas():
-    def __init__(self,game,pixelAmountX: int = settings.PIXELXAMOUNT,pixelAmountY: int = settings.PIXELYAMOUNT) -> None:
-        self.game  = game
+    """A class used to render the 3d space onto the screen.
+    Contains referencecs to every pixel on the screen."""
+    def __init__(self,
+                 game,
+                 pixelAmountX: int = settings.PIXELXAMOUNT,
+                 pixelAmountY: int = settings.PIXELYAMOUNT) -> None:
+        """Initialize the class and create a pygame rect
+        for every pixel on the screen."""
 
-        self.pixelList = []
+        self.game = game
+
+        self.pixelList: list[Pixel] = []
+        """A list of all pixels on the screen."""
         
-        self.polygonList: List[Polygon] = []
+        self.polygonList: list[Polygon] = []
+        """A list of all polygons that should be drawn on this canvas."""
 
-        self.updatedPixelList = [] # list of pixels to re-render this frame, updated pixels
+        self.updatedPixelList: list[Pixel] = []
+        """list of pixels to re-render this frame, updated pixels."""
 
 
         self.pixelAmountX = pixelAmountX

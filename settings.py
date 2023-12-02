@@ -1,3 +1,7 @@
+"""Module containing setting variables used in 
+the program, including the resolution of 
+the canvas and the screen. Also contains a 
+changeable keymap for the players input."""
 import pygame
 
 PIXELYAMOUNT,PIXELXAMOUNT = 180,320

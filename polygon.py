@@ -212,8 +212,10 @@ class Polygon():
                             else:
                                 finalSunColor = rgbBlend.ScalarMultiply(renderingInformation.sunColor,sunLightFactor)
 
+                        
 
                             touchedPixel.color = rgbBlend.Multiply(touchedPixel.color,finalSunColor)
+
 
 
 
