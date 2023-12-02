@@ -108,12 +108,12 @@ class Polygon():
             
             if nextVertex.pos.x > vertex.pos.x:
                 while penPos.x < nextVertex.pos.x:
-                    self.canvas.getPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
+                    self.canvas.GetPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
                     penPos.x += movementVec.x
                     penPos.y += movementVec.y
             else:
                 while penPos.x > nextVertex.pos.x:
-                    self.canvas.getPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
+                    self.canvas.GetPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
                     penPos.x += movementVec.x
                     penPos.y += movementVec.y
 
@@ -180,7 +180,7 @@ class Polygon():
                     draw = not draw
 
                 if draw:
-                    touchedPixel = self.canvas.getPixel(x,y)
+                    touchedPixel = self.canvas.GetPixel(x,y)
                     if touchedPixel != None:
 
                         depth = self.GetDepth(x,y)

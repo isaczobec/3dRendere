@@ -1,3 +1,7 @@
+"""Module that contains functions for math operations."""
+
+# !!!! Unused in the final game
+
 import numpy as np
 
 def ProjectVectorOnVector(vector: np.ndarray, projectOnVector: np.ndarray):

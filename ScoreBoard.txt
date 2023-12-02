@@ -2,3 +2,7 @@ name:zobec;date:2023-12-02;score:140.2;time:3.565190315246582;moves:4
 name:zobec;date:2023-12-02;score:102.5;time:4.877774238586426;moves:4
 name:zobec;date:2023-12-02;score:13.6;time:18.347355365753174;moves:8
 name:zobec;date:2023-12-02;score:20.1;time:12.44731879234314;moves:8
+name:zobec;date:2023-12-02;score:55.8;time:8.954982995986938;moves:4
+name:zobec;date:2023-12-02;score:42.6;time:7.826690196990967;moves:6
+name:zobec;date:2023-12-02;score:50.4;time:6.61332368850708;moves:6
+name:zobec;date:2023-12-02;score:18.1;time:18.367353916168213;moves:6

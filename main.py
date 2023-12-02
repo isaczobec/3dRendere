@@ -1,15 +1,13 @@
+"""Main module of the memory game. Run this to run the game."""
+
 import pygame
 import time
 import settings
 import sys
 from canvas import Canvas
-from slopeEquation import SlopeEquation
-from polygon import Polygon,Vertex
-from Vec import Vector2
 from renderer import Renderer
 import Time
 import math
-import numpy
 from game import GameManager
 import menu
 
@@ -20,27 +18,30 @@ import pstats
 menuState = "MENU" 
 activeGameState = "GAME" 
 
-class Game():
-    def __init__(self):
+class Application():
+    """Main class. An instance is creates when the game in ran."""
+    def __init__(self) -> None:
 
+            # Initialize pygame and create the screen
             pygame.init()
             self.displaySurface = pygame.display.set_mode((settings.WIDTH,settings.HEIGHT))
             self.displaySurface.fill('black')
             pygame.display.set_caption("Very high production value game")
             self.clock = pygame.time.Clock()
             
-            self.deltaTime = 0
-
+            # capture the time of this frame
             self.lastFrameTime = time.time()
 
+            # classes that are essential to run the game
             # theese are initialized when the game starts
-            self.canvas = None
-            self.renderer = None
-            self.gameManager = None
+            self.canvas: Canvas = None
+            self.renderer: Renderer = None
+            self.gameManager: GameManager = None
 
             self.menu = menu.Menu(self.displaySurface)
 
             self.gameState = menuState
+            """Which state the game is currently in."""
             
             #self.polygon = Polygon([Vertex(50,50),Vertex(320,100),Vertex(321,200)],self.canvas)
             #self.polygon.DrawOutlinesWithEquations()
@@ -53,15 +54,19 @@ class Game():
 
 
 
-    def run(self):
+    def run(self) -> None:
+        """Run the game. Should be called every frame."""
 
-        #Spel-loopen
+        # The game loop
         while True:
+
+            # if the player tries to exit the game, safely close the application
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return
+                    return 
 
-
+            # change the color of the background dynamically to cycle through all the colors of the rainbow (almost); very beautiful
+            # purely cosmetic
             r = (math.sin(Time.passedTime * 0.5)+1) / 2 * 255
             g = (math.sin(Time.passedTime/3 * 0.5 + 6)+1) / 2 * 255
             b = (math.sin(Time.passedTime * 0.5 +23)+1) / 2 * 255
@@ -73,25 +78,14 @@ class Game():
             elif self.gameState == activeGameState:
                 self.RunActiveGame()
 
-            
-
-
-            
-                 
-
-
-            
+            # Calculate the deltatime this frame (deltatime = time between this frame and the last)
             Time.deltaTime = (time.time() - self.lastFrameTime)
             Time.passedTime += Time.deltaTime
             self.lastFrameTime = time.time()
 
+            self.clock.tick(settings.MAXFPS) # limit the games FPS
 
-
-            
-            self.clock.tick(30)
-
-            #updatera skärmen och med intervaller bestämda av spelets fps
-            pygame.display.update()
+            pygame.display.update() # update the display
 
     
     def RunMenu(self):
@@ -102,10 +96,11 @@ class Game():
             self.StartActiveGame()
             
             
-    def StartActiveGame(self):
-        """Start the active memory game."""
+    def StartActiveGame(self) -> None:
+        """Start the active memory game. Initializes the
+        canvas, renderer and gamemanager."""
 
-        print("Start game!")
+        print("Starting the game!")
 
         self.canvas = Canvas(self)
         self.renderer = Renderer(self.canvas)
@@ -113,7 +108,7 @@ class Game():
 
         self.gameState = activeGameState
 
-    def StopActiveGame(self):
+    def StopActiveGame(self) -> None:
         """Stops the memory game from running."""
         self.menu.gameRunning = False
         self.gameState = menuState
@@ -136,8 +131,8 @@ if __name__ == "__main__":
 
     # with cProfile.Profile() as profile:
 
-    game = Game()
-    game.run()
+    app = Application()
+    app.run()
 
     pygame.quit()
 

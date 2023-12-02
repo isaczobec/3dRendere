@@ -35,16 +35,20 @@ class Canvas():
         self.pixelStepX = settings.WIDTH / pixelAmountX
         self.pixelStepY = settings.HEIGHT / pixelAmountY
 
+        # Create the pixel grid, initialize all pixels
         for x in range(self.pixelAmountX):
             pixelRowList = []
             for y in range(self.pixelAmountY):
                 pixelRowList.append(Pixel(self,x * self.pixelStepX,y * self.pixelStepY,color=(0,0,0),yCoord=settings.PIXELYAMOUNT-y,xCoord=x)) # multiply the pixels positions with the step value
             self.pixelList.append(pixelRowList)
 
+    
+
 
         
 
-    def Refresh(self,displaySurface) -> Pixel:
+    def Refresh(self,displaySurface) -> None:
+        """Render every pixel on this canvas."""
 
         
         for pixel in self.updatedPixelList:
@@ -53,7 +57,8 @@ class Canvas():
         self.updatedPixelList.clear()
 
 
-    def getPixel(self,xpos,ypos) -> Pixel:
+    def GetPixel(self,xpos: int,ypos: int) -> Pixel:
+        """Returns the pixel at the specefied xpos and ypos."""
         if (xpos >= 0 and xpos <= self.pixelAmountX) and (ypos >= 0 and ypos <= self.pixelAmountY):
             try:
                 return(self.pixelList[xpos][-ypos]) # negative ypos so that increases in y value results in an increase in "altitude"
@@ -62,8 +67,9 @@ class Canvas():
         else:
             return None
     
-    def getPixelsBetween(self, point1: Vector2, point2: Vector2) -> List[Pixel]:
-        """returns a linear list of all pixels between point 1 and point 2"""
+    # Not used in the final game
+    def GetPixelsBetween(self, point1: Vector2, point2: Vector2) -> list[Pixel]:
+        """returns a linear list of all pixels in the rectangle with corners in point 1 and point 2"""
 
         returnList = []
 
@@ -83,19 +89,21 @@ class Canvas():
     def RenderAllPolygons(self,
                           renderingInformation = None, # class containing information used to render this face
                           ) -> None:
-        
+        """Renders and calculates colors for all polygons this canvas
+        has references to."""
 
         for polygon in self.polygonList:
             polygon.DrawFilled(renderingInformation)
 
 
 
-
-    def DrawCircle(self, position: Vector2, radius: float, color: str = "red"):
+    # Not used in the final game
+    def DrawCircle(self, position: Vector2, radius: float, color: str = "red") -> None:
+        """Draws a circle at a position."""
         bottomLeftCorner = Vector2(position.x - radius, position.y - radius)
         topRightcorner = Vector2(position.x + radius, position.y + radius)
 
-        pixelList = self.getPixelsBetween(bottomLeftCorner,topRightcorner)
+        pixelList = self.GetPixelsBetween(bottomLeftCorner,topRightcorner)
         for pixel in pixelList:
 
             if Vec.Distance(pixel.coordinates,position) <= radius:

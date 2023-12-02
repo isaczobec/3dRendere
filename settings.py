@@ -8,6 +8,8 @@ PIXELYAMOUNT,PIXELXAMOUNT = 180,320
 
 HEIGHT,WIDTH = 720,1280
 
+MAXFPS = 30
+
 keymap = {
             
             "up":pygame.K_w,
