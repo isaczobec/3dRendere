@@ -1,19 +1,22 @@
+"""A module containing vector classes and functions for operations with them."""
+
 import math
 
-class Vector2:
-    """Two dimensional vector"""
+class Vector2: # made and used this one before i figured out i could use numpy arrays
+    """Two dimensional vector."""
     def __init__(self,x,y):
+        
         self.x = x
         self.y = y
 
-    def __add__(self,otherVector):
+    def __add__(self,otherVector) -> None:
         """Adds another vector to this one"""
         newX = self.x + otherVector.x
         newY = self.y + otherVector.y
 
         return Vector2(newX,newY)
 
-    def __subtract__(self,otherVector):
+    def __subtract__(self,otherVector) -> None:
         """Subtracts another vector to this one"""
         newX = self.x - otherVector.x
         newY = self.y - otherVector.y
@@ -30,14 +33,16 @@ class Vector2:
 
 
 
-    def Normalize(self):
+    def Normalize(self) -> None:
+        """Normalizes this vector."""
         magnitude = math.sqrt(self.x**2 + self.y**2)
         if magnitude != 0:
             self.x = self.x/magnitude
             self.y = self.y/magnitude
 
 
-    def Magnitude(self):
+    def Magnitude(self) -> float:
+        """Gets the magnitude of this vector."""
         return math.sqrt(self.x**2 + self.y**2)
     
     def Add(self, 
@@ -47,7 +52,7 @@ class Vector2:
         self.y += otherVector.y
 
 
-class Vector3:
+class Vector3: # made and used this one before i figured out i could use numpy arrays
     """Three-dimensional vector."""
     def __init__(self,x,y,z):
         self.x = x
@@ -81,7 +86,8 @@ class Vector3:
 
 
 
-    def Normalize(self):
+    def Normalize(self) -> None:
+        """Normalizes this vector."""
         magnitude = self.Magnitude()
         if magnitude != 0:
             self.x = self.x/magnitude
@@ -89,7 +95,8 @@ class Vector3:
             self.z = self.z/magnitude
 
 
-    def Magnitude(self):
+    def Magnitude(self) -> float:
+        """Gets the magnitude of this vector."""
         return math.sqrt(self.x**2 + self.y**2 + self.z**2)
     
 
@@ -104,6 +111,7 @@ def Distance(point1: Vector2, point2 : Vector2) -> float:
 
 
 zero = Vector2(0,0) # constant vector, usefull for quicker and cleaner usage
+"""The (0,0) vector."""
 
 def Add(vector1: Vector2, vector2: Vector2) -> Vector2:
     """returns the sum of two vectors"""

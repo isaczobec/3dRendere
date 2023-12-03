@@ -1,3 +1,5 @@
+"""Module with classes used to render text onto the screen."""
+
 import pygame as pg
 import settings
 import scoreBoard
@@ -13,6 +15,7 @@ class TextObject():
                  text: str = "",
                  defaultPosition: tuple[float,float] = (50,50)
                  ) -> None:
+        """Init the textobject. Generates the font and text."""
 
         
         self.fontName = fontName
@@ -27,11 +30,11 @@ class TextObject():
         self.GenerateText(self._text)
 
 
-    def GenerateFont(self,fontName,fontSize):
+    def GenerateFont(self,fontName,fontSize) -> None:
         """Creates a font object for this textobject."""
         self.font = pg.font.SysFont(fontName,fontSize)
 
-    def GenerateText(self,text,antiAilias: bool = True):
+    def GenerateText(self,text,antiAilias: bool = True) -> None:
         """Creates a text surface for this textobject."""
         self.textObject = self.font.render(text,antiAilias,self._fontColor)
 
@@ -39,7 +42,7 @@ class TextObject():
     def RenderText(self,
                    displaySurface: pg.surface,
                    position: tuple[float,float] = None
-                   ):
+                   ) -> None:
         """Displays this text on its displaysurface at the given position."""
 
         if position == None:
@@ -48,17 +51,22 @@ class TextObject():
         displaySurface.blit(self.textObject,position)
 
 
+    
     def GetColor(self):
+        """Method that is ran when the color property is gotten."""
         return self._fontColor
     def SetColor(self,color: tuple[float,float,float]):
+        """Method that is ran when the color property is set."""
         self._fontColor = tuple(int(component) for component in color) # chatgpt helped me fix an error i was getting here because i was using floats
         self.GenerateText(self._text)
 
     color = property(GetColor,SetColor)
 
     def GetText(self):
+        """Method that is ran when the text property is gotten."""
         return self._text
     def SetText(self,inputText):
+        """Method that is ran when the text property is set."""
         self._text = inputText
         self.GenerateText(self._text)
         
@@ -78,12 +86,16 @@ mainFontName: str =  "Comic Sans"
 class TextHandler():
     """
     An object that contains references to a number
-    of textobjects and can render them
+    of textobjects and can render them.
     """
-    def __init__(self,displaySurface : pg.surface, textList: dict[str : TextObject] = {}) -> None:
+    def __init__(self,
+                 displaySurface : pg.surface, 
+                 textList: dict[str : TextObject] = {}) -> None:
 
         self.displaySurface = displaySurface
         self.textList = textList
+        """a dict of of reference strings and texobjects."""
+        
 
     def CreateTextObject(self,
                  textReferenceName: str,
@@ -93,6 +105,7 @@ class TextHandler():
                  text: str = "",
                  defaultPosition: tuple[float,float] = (50,50)
                  ) -> None:
+        """Create and add a textobject to this texthandlers textlist with a reference string."""
         self.textList[textReferenceName] = TextObject(fontName,fontSize,fontColor,text,defaultPosition=defaultPosition) # add thet textobject to the textlist
 
     def RenderText(self,
@@ -156,7 +169,7 @@ statTotalScoreBaseText = "Your total score is:"
 
 
 class WonTextManager(TextHandler):
-    """Class that renders text at the end of the memory game. Inherits from the textHandler class"""
+    """Class that renders text at the end of the memory game. Inherits from the textHandler class."""
     def __init__(self,displaySurface : pg.surface, textList: dict[str : TextObject] = {}) -> None:
         
         # reference strings for all textobjects

@@ -1,12 +1,14 @@
 import numpy as np
 
 class RenderingInformation():
+    """Class that contains information used
+    every frame for rendering."""
     def __init__(self,sunLightDirection: np.ndarray,
                  sunColor: tuple,
                  sunCap: float,
                  cameraDirectionVector: np.ndarray
                  ) -> None:
-        """Class containing information for rendering the scene. Passed to the canvas every frame."""
+        """Init the renderinginformation class. Stores all passsed in arguments."""
 
         self.sunLightDirection = sunLightDirection
         """the direction (x,y,z) the sun light is coming from. Should be normalized."""

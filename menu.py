@@ -222,8 +222,7 @@ class Menu():
                                               "instructions3":th.TextObject(mainFont,20,(255,255,255),"Alas, every card has a pair you have to find. Every turn, you get to turn up two cards. If you find the matching pair,",(50,400)),
                                               "instructions4":th.TextObject(mainFont,20,(255,255,255),"The cards stay up the next turn and you have succesfully found them. Once this has happened with all cards, you win.",(50,450)),
                                               "instructions5":th.TextObject(mainFont,20,(255,255,255),"For extra replay value, you can try to increase your score by finding all cards faster or in less turns.",(50,500)),
-                                              "instructions6":th.TextObject(mainFont,20,(255,255,255),"Or you can go outside and touch some grass. I dont make the rules. And i certainly do not touch grass.",(50,550)),
-                                              "instructions7":th.TextObject(mainFont,20,(255,255,255),"That's for certain.",(50,600)),
+                                              "instructions6":th.TextObject(mainFont,20,(255,255,255),"... but that sounds really boring. you can also go outside and touch some grass.",(50,550)),
                                             
                                               
 
@@ -337,7 +336,6 @@ class Menu():
             self.textHandler.RenderText("instructions4")
             self.textHandler.RenderText("instructions5")
             self.textHandler.RenderText("instructions6")
-            self.textHandler.RenderText("instructions7")
 
             self.instructionsMenuGrid.Run()
         

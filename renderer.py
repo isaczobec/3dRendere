@@ -1,3 +1,5 @@
+"""A module with the renderer class."""
+
 from numpy import array as ar
 import numpy as np
 from virtualCamera import VirtualCamera 
@@ -18,11 +20,16 @@ import Time
 
 
 class Renderer():
+    """The 3d renderer. Responsible for transforming 3D
+    space into a view volume and rendering all 3d objects.
+    Contains references to all 3d objects that should be rendered."""
     def __init__(self,
                  canvas: canvas.Canvas, # the canvas this renderer will render on
                  camera = VirtualCamera(pitch = 0,yaw=0,position=V3(0,0,0)),
                  lightDirection = ar([0,-1,0]) 
                 ) -> None:
+        """Init the renderer. Create the object list, camera and canvas.
+        also creates an imageHandler."""
         
         self.canvas = canvas
         self.camera = camera
@@ -52,6 +59,7 @@ class Renderer():
         
 
         self.clickedObject = None
+        """The 3d object that was clicjed this frame."""
 
 
         # Create an image reference list. 
@@ -92,13 +100,16 @@ class Renderer():
 
 
     def GetNearClipCenter(self):
+        """Returns the world space position
+        of the center of the camera's near clip plane."""
         fp = self.camera.position + self.camera.GetViewDirectionVector() * self.camera.nearClipPlaneDistance
         return fp
 
 
 
     def GetClipVolumeTransformMatrix(self):
-        """Gets the 4x4 matrix that will transform 3d space from the furstrum into the clip volume."""
+        """Gets the 4x4 matrix that will transform 3d space 
+        from the furstrum into the clip volume."""
         
         # furstrum point
         #fp = self.GetNearClipCenter()
@@ -133,6 +144,7 @@ class Renderer():
                                           [0,0,0,1],
                                           ])
         
+        # moves the center of the near clip plane to 0,0,0
         moveFurstrumToZeroArray = ar([[1,0,0,0],
                                       [0,1,0,0],
                                       [0,0,1,-self.camera.nearClipPlaneDistance],
@@ -146,24 +158,22 @@ class Renderer():
                                      [0,0,0,1],
                                      ])
         
-        # might be some errors here based on order of multiplication maybe
+        # apply all matricies one after the other
         M = scalingMatrix @ moveFurstrumToZeroArray @ rotateToZAxisArray @ rotateXAxisArray @ rotateYAxisArray @ moveMatrix
-        # M = moveMatrix @ rotateXAxisArray @ rotateYAxisArray @ rotateToZAxisArray @ scalingMatrix
-
 
         return M
     
     
 
     def GetTransformedObjectList(self) -> List[O3D.R3Object]:
-        """Get a list of all the objects in this renderer transformed, to render."""
-
-        
+        """Applies the view transforms to all objects 
+        and returns a list of them."""
 
         # the matrix all points should be transformed with
         transformMatrix = self.GetClipVolumeTransformMatrix()
 
         # list of all objects after they have been transformed
+        # copy it since the world position of all objects should stay the same
         transformedObjectList: List[O3D.R3Object] = copy.deepcopy(self.objectList)
 
         for index,object in enumerate(transformedObjectList):
@@ -172,7 +182,7 @@ class Renderer():
 
                 for vertex in object.vertexList:
 
-
+                    # move the objects according to their world position offset
                     moveMatrix = ar([[1,0,0,self.objectList[index].position[0]],
                                     [0,1,0,self.objectList[index].position[1]],
                                     [0,0,1,self.objectList[index].position[2]],
@@ -181,18 +191,17 @@ class Renderer():
                     pos = moveMatrix @ vertex.position
 
 
-                    #position after applying the transform.
+                    # Apply the view volume transform.
                     tPos = transformMatrix @ pos
 
                     vertex.position = tPos
 
                 for face in object.faceList:
-                    if face != None:
+                    if face != None: # disabled faces are copied as None; do not do anything with them
                         if face.planeImage != None:
+                            face.imageTransformMatrix = face.GetImageTransformMatrix() # save the image transform matrix for this face
 
-
-                            face.imageTransformMatrix = face.GetImageTransformMatrix()
-
+                    # !!! smooth rendering was not used in the final game !!!
                     if self.objectList[index].renderSmooth == True:
 
                         face.virtualCamera = self.camera
@@ -203,18 +212,18 @@ class Renderer():
 
                     tPos = vertex.position
 
-                    # use a formula to get to move every point to account for perspective
+                    # use a formula to move every point to account for perspective
                     # Every point that is withing the clip volume has a x,y value within -1 to 1
                     XsPos = tPos[0]/((self.camera.aspectRatio[0]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[0]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
                     YsPos = tPos[1]/((self.camera.aspectRatio[1]/2)*(1-tPos[2])+(self.camera.farClipPlaneDistance*self.camera.aspectRatio[1]/(self.camera.nearClipPlaneDistance*2))*(tPos[2]))
 
-                    
+                    # prevent a value error
                     if math.isnan(XsPos) or math.isinf(XsPos):
                         XsPos = 0
                     if math.isnan(YsPos) or math.isinf(YsPos):
                         YsPos = 0
 
-                    # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas
+                    # scaled position, scale the view clip volume to have the same dimensions as amount of pixels in the canvas (makes rendering pixels easier)
                     sPos = ar([
                                 (XsPos+1)*self.canvas.pixelAmountX/2,
                                 (YsPos+1)*self.canvas.pixelAmountY/2,
@@ -229,7 +238,8 @@ class Renderer():
     
 
 
-    def RenderScene(self):
+    def RenderScene(self) -> None:
+        """Renders objects in this scene. Should be ran every frame."""
 
         # reset the depth buffer of all pixels
         for pixelRow in self.canvas.pixelList:
@@ -252,11 +262,12 @@ class Renderer():
         clickedObjectDepthBuffer = 1
         """The depth of the clicked object. Used to get the first object in the line of sight clicked."""
 
+        # iterate through all transformed objects
         for objectIndex, object in enumerate(objectList):
-            if object != None: # only render the object if it is enabled; is not None:
+            if object != None: # only render the object if it is enabled; is not None
             
                 for polygonIndex, polygon in enumerate(object.faceList):
-                    if polygon != None: # only render the polygon if it is enabled; is not None:
+                    if polygon != None: # only render the polygon if it is enabled; is not None
 
                         newVertexList = []
                         oneVertInClipVolume = False
@@ -267,6 +278,8 @@ class Renderer():
                                 if (vertex.position[0] >= 0 and vertex.position[0] <= self.canvas.pixelAmountX) and (vertex.position[1] >= 0 and vertex.position[1] <= self.canvas.pixelAmountY) and (vertex.position[2] >= 0 and vertex.position[2] < 1):
                                     oneVertInClipVolume = True
 
+                            # create 2d screen space verticies from the 3d world space verticies
+                            # !! smooth rendering was ultimately not used in the final game !!!
                             if self.objectList[objectIndex].hasVertexNormals and self.objectList[objectIndex].renderSmooth:
                                 newVertexList.append(pg.Vertex(round(vertex.position[0]),round(vertex.position[1]),worldNormal=vertex.normal))
                             else:
@@ -275,28 +288,24 @@ class Renderer():
 
                         if oneVertInClipVolume == True:
 
-
                             planeEquation = polygon.GetPlaneEquation()
                             unTransformedNormalVector = self.objectList[objectIndex].faceList[polygonIndex].GetNormalVector() # get the plane normal vector of from the original, untransformed face
-
-                            
 
                                 #for vertex in polygon.vertexList:
                                 #    print("vertPos:",vertex.position)
 
                             
+                            # create a 2d screen space polygon for rendering and pass in all arguments
                             canvasPolygon = pg.Polygon(newVertexList,self.canvas,color=polygon.color,equationVector=planeEquation,normalVector=unTransformedNormalVector,planeImage=self.imageHandler.GetImage(polygon.planeImage),planeImageScale=polygon.planeImageScale,camera=self.camera,imageTransformMatrix=polygon.imageTransformMatrix,drawSmooth=self.objectList[objectIndex].renderSmooth)
-                            print()
 
                             self.canvas.polygonList.append(canvasPolygon)
 
                             # Check if this polygon was clicked
                             if mouseInput != None:
 
-                                
-
                                 if canvasPolygon.CheckIfPointInPolygon(mouseInput[0],mouseInput[1]):
 
+                                    # only set this object to the clicked one if it isnt behind any other object
                                     polyonDepth = canvasPolygon.GetDepth(mouseInput[0],mouseInput[1])
                                     if polyonDepth < clickedObjectDepthBuffer:
                                         clickedObjectDepthBuffer = polyonDepth
@@ -311,11 +320,12 @@ class Renderer():
             #for face in clickedObject.faceList:
             #   face.color = (255,0,0)
 
+        # pass the cameras direction vector to ther renderinginformation object
         cameraVectorOtherType = self.camera.GetViewDirectionVector()
         cameraVector = ar([cameraVectorOtherType.x,cameraVectorOtherType.y,cameraVectorOtherType.z])
         self.rendenderingInformation.cameraDirectionVector = cameraVector # update the direction vector of the camera
 
-
+        # render all 2d screen space polygons
         self.canvas.RenderAllPolygons(self.rendenderingInformation)
 
 

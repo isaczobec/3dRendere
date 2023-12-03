@@ -1,3 +1,5 @@
+"""Module with functions that get and add scoreboard entries."""
+
 import errorHandling
 import fileHandling
 import os
@@ -6,6 +8,7 @@ import datetime
 
 SCOREBOARD_FILEPATH = "ScoreBoard.txt"
 SCOREBOARD_KEYVALUESEPARATOR = ":"
+"""The separator used in the scoreboard file to separate keys and values."""
 SCOREBOARD_ATTRIBUTESEPARATOR = ";"
 """The separator used in the scoreboard file to separate attributes"""
 
@@ -13,12 +16,14 @@ SCOREBOARD_ATTRIBUTESEPARATOR = ";"
 
 def GetScoreBoardEntries(sort: bool = True,
                          sortKey: str = "score") -> list[dict[str:str]]:
+    """Returns a list of scoreboard dictionary entries [{stat:value},...]"""
     
+    # read the scoreboard file
     entries: list[str] = errorHandling.HandleExceptions(fileHandling.ReadFile,[SCOREBOARD_FILEPATH],exception=FileNotFoundError,errorMessage="the file could not be found!")
-
 
     entryList = []
 
+    # convert the entries to a list of dictionaries
     if entries != FileNotFoundError:
 
         for entry in entries:
@@ -33,9 +38,9 @@ def GetScoreBoardEntries(sort: bool = True,
             entryList.append(entryDict)
 
 
-
+    # sort the list from a sortkey
     if sort == True:
-        entryList.sort(key=lambda entry : float(entry[sortKey]),reverse=True)  # sort the list
+        entryList.sort(key=lambda entry : float(entry[sortKey]),reverse=True)  
         
 
     return entryList
