@@ -1,3 +1,5 @@
+"""Module with classes used in menus of the game."""
+
 import pygame as pg
 import texthandling as th
 import inputHandler
@@ -11,15 +13,18 @@ mainFont = "Comic Sans"
 
 
 class Button():
+    """A button object that can store a value and run a specefied
+    function when it is clicked."""
     def __init__(self,
                  textObject: th.TextObject, 
                  function = None, # the function to run when this button is clicked
-                 defaultFunctionArgs: List = [],
+                 defaultFunctionArgs: List = [], # the args this buttons function is by default ran with
                  selectedColor = (255,0,0),
                  value: float = None, # a float stored inside a button. None if it doesnt store a value.
                  valueIncrement: float = 1, # How much the value changes when it is changed.
                  valueBounds: tuple[float,float] = (-10,10) # the min and max value of this button
                  ) -> None:
+        """Initialize the button. Store the specefied values inside it."""
 
         self.textObject = textObject
         self.function = function
@@ -49,13 +54,24 @@ class Button():
         """Function that is run when this button is deselected."""
         self.textObject.color = self.notSelectedColor
 
+    def ChangeValue(self,input: float) -> None:
+        """Changes the value of this button and caps
+        it att the min and max value of this button."""
+        self.value += self.valueIncrement * input
+        if self.valueBounds != None:
+            if self.value > self.valueBounds[1]:
+                self.value = self.valueBounds[1]
+            elif self.value < self.valueBounds[0]:
+                self.value = self.valueBounds[0]
+
 
 class MenuGrid():
-    """class that contains a number of buttons that can be selected between and clicked, to run certain logic."""
+    """class that contains a number of buttons that can be 
+    selected between and clicked, to run certain logic."""
     def __init__(self, 
                  mouseInputHandler: inputHandler.MouseInputHandler,
                  textHandler: th.TextHandler, 
-                 buttons: List[List[Button]],
+                 buttons: list[list[Button]], # an arrray of all buttons contained in this menu grid
                  scrollCooldown: float = 0.2 # how long between when the player can change their selected button
                  ) -> None:
         
@@ -68,55 +84,60 @@ class MenuGrid():
         self.currentScrollCooldown = scrollCooldown
 
 
-        
-
-        self.buttonsDict: dict[tuple[float,float] : Button] = {}
-
 
         self.currentlySelectedPosition: tuple[int,int] = (0,0)
         """the currently selected position of this grid"""
         
 
+        self.buttonsDict: dict[tuple[float,float] : Button] = {}
+        """A dictionary where the keys are the grid
+        position (x,y) of a button and the value
+        is that button object."""
+
+        
+
+        # Fill the button dict
         for y,buttonRow in enumerate(self.buttons):
             for x,button in enumerate(buttonRow):
                 self.buttonsDict[(x,y)] = button
                 print(button)
 
+        # run the selected function for the first selected button
         self.buttonsDict[self.currentlySelectedPosition].Selected()
 
-
-        print("buttonsdict",self.buttonsDict)
         
     def RenderAllButtons(self):
+        """Renders the text of all buttons in this
+        MenuGrid."""
         for buttonRow in self.buttons:
             for button in buttonRow:
                 self.textHandler.RenderTextobject(button.textObject)
 
-    def Run(self):
-        """Method that should be run every frame on this menu. updates the position of the mousecursor and checks if the player clicked any buttons."""
-        
-        self.currentScrollCooldown -= Time.deltaTime
-
-        selectedButton: Button = self.buttonsDict[self.currentlySelectedPosition] # get a reference to the currently selected
+    def CalculateNewPosition(self, input) -> tuple[float,float]:
+        """Calculates and returns the new grid position
+        from the players input."""
+        newPos = ((self.currentlySelectedPosition[0] + input.x),(self.currentlySelectedPosition[1] + input.y))
+        return newPos
+    
+    def HandleButtonInteractions(self):
+        """Handles the players interaction with
+        buttons. Can change the selected button,
+        a buttons value and run their function if
+        they were clicked."""
+        selectedButton: Button = self.buttonsDict[self.currentlySelectedPosition] # get a reference to the currently selected button
 
         input = inputHandler.GetMoveInputVector()
         if (input.x != 0 or input.y != 0) and self.currentScrollCooldown <= 0: # if the player actually inputted something
+            self.currentScrollCooldown = self.scrollCooldown # reset the scroll cooldown
 
-            self.currentScrollCooldown = self.scrollCooldown
-
-            # change the value of a button if the player does vertical input
+            # change the value of a button if the player does horizontal input
             if selectedButton.value != None and input.x != 0:
-                selectedButton.value += selectedButton.valueIncrement * input.x
-                if selectedButton.valueBounds != None:
-                    if selectedButton.value > selectedButton.valueBounds[1]:
-                        selectedButton.value = selectedButton.valueBounds[1]
-                    elif selectedButton.value < selectedButton.valueBounds[0]:
-                        selectedButton.value = selectedButton.valueBounds[0]
+                selectedButton.ChangeValue(input.x)
             else:
-                newPos = ((self.currentlySelectedPosition[0] + input.x),(self.currentlySelectedPosition[1] + input.y))
+                # calculate the new selected position on the grid 
+                newPos = self.CalculateNewPosition(input)
 
                 if newPos in self.buttonsDict.keys(): # only move the cursor if the position youre trying to move it to exists
-
                     # deselect the currently selected button
                     selectedButton.DeSelected()
                     
@@ -124,7 +145,7 @@ class MenuGrid():
                     # move the cursor
                     self.currentlySelectedPosition = newPos
 
-                    # select the currently selected button
+                    # select the currently selected bustton
                     selectedButton = self.buttonsDict[self.currentlySelectedPosition]
                     selectedButton.Selected()
                 
@@ -134,7 +155,18 @@ class MenuGrid():
         if mouseInput != None: # if the player clicked this frame
             selectedButton.Clicked()
 
+    def Run(self):
+        """Method that should be run every frame on this menu. 
+        updates the position of the mousecursor 
+        and checks if the player clicked any buttons."""
+        
+        self.currentScrollCooldown -= Time.deltaTime
+
+        self.HandleButtonInteractions()
+
         self.RenderAllButtons()
+
+
 
 
     
@@ -147,7 +179,7 @@ class MenuGrid():
 
         
 
-
+# strings to refer to different menu states
 mainMenuReference = "mainMenu"
 playMenuReference = "playMenu"
 instructionsReference = "instructions"
@@ -155,9 +187,14 @@ scoreboardReference = "scoreboard"
 
 
 class Menu():
+    """The games menus. Contains menu grids with buttons
+    and renders different menu text depending on what menu
+    the player is in."""
     def __init__(self, 
                  displaySurface: pg.surface,
                  menuMode: str = mainMenuReference) -> None:
+        """Initialize the menu. Create all the text
+        and the menu grids."""
                  
                  
 
@@ -172,7 +209,7 @@ class Menu():
         self.gameRunning = False 
         """If the game should start. Set to true when the game is signaled by this class to start."""
 
-        
+        # Create a texthandler that can render text from a string reference
         self.textHandler = th.TextHandler(self.displaySurface,
                                           {
                                               # This dict is really usefull for static text
@@ -195,6 +232,8 @@ class Menu():
                                           }
                                           )
         
+        # Create the buttons and text of all the different menus:
+
         # Main menu
         
         playText = th.TextObject(mainFont,60,(255,255,255),"Play",(300,400))
@@ -244,8 +283,6 @@ class Menu():
 
         # scoreBoard
 
-        
-        
         self.scoreBoardExitText = th.TextObject(mainFont,30,(255,255,255),"Exit to main menu",(75,600))
         self.scoreBoardMenuButtons = [[Button(self.scoreBoardExitText,self.SetMenuMode,[mainMenuReference])]]
 
@@ -254,12 +291,13 @@ class Menu():
         self.UpdateScoreBoardMenu()
         
 
-    def UpdateScoreBoardMenu(self):
+    def UpdateScoreBoardMenu(self) -> None:
+        """Gets and stores a list of all scoreboard entries."""
         self.scoreBoardEntries = self.textHandler.GetTextObjectsFromDicts(scoreBoard.GetScoreBoardEntries())
         
                                  
         
-    def SetMenuMode(self, menuMode: str):
+    def SetMenuMode(self, menuMode: str) -> None:
         """Sets the menumode to the given menu mode."""
         self.menuMode = menuMode
 
@@ -279,8 +317,9 @@ class Menu():
         self.gameRunning = True # sends a signal to start the game
 
 
-    def Run(self):
-        """Method that should be ran every frame the menu is active."""
+    def Run(self) -> None:
+        """Method that should be ran every frame the menu is active.
+        renders the text of the current menu and updates it."""
         
         if self.menuMode == mainMenuReference:
 

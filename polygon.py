@@ -1,8 +1,9 @@
+"""Module that contains classes that can render a 2d polygon on the screen."""
+
 from Vec import Vector2
 from slopeEquation import SlopeEquation
 import settings
 import numpy as np
-import image
 from image import PlaneImage
 from typing import List
 from virtualCamera import VirtualCamera
@@ -12,10 +13,14 @@ import mathFunctions as MF
 import rgbBlendModes as rgbBlend
 
 class Vertex():
+    """A 2d vertex in the screen space (as opposed to in
+    the 3d world space)."""
     def __init__(self,
-                 xpos,ypos,
+                 xpos: float,ypos: float,
                  worldNormal : np.ndarray = None,
                  ):
+        """Init the vertex. Stores its values inside it."""
+        
         self.pos = Vector2(xpos,ypos)
 
 
@@ -24,6 +29,9 @@ class Vertex():
         
 
 class Polygon():
+    """A 2d polygon in the screen space (as opposed to in
+    the 3d world space). Can calculate the correct
+    color for every pixrl and be rendered onto the screen."""
     def __init__(self,
                  vertexList: list[Vertex],
                  canvas,
@@ -36,6 +44,8 @@ class Polygon():
                  imageTransformMatrix: np.array = None, # the matrix used to get pixel positions for images on this plane. None if it doesnt have an image
                  drawSmooth: bool = False,
                  ): 
+        """Init this polygon. Creates slope equations between
+        all its verticies."""
         
         self.vertexList = vertexList
         self.canvas = canvas
@@ -54,9 +64,16 @@ class Polygon():
 
         self.drawSmooth = drawSmooth
 
-        for index,vertex in enumerate(self.vertexList):
+        self.CreateSlopeEquationsBetweenVerticies()
 
-            nextVertex = self.vertexList[(index + 1) % len(self.vertexList)]
+        self.bounds = self.GetBounds()
+
+    def CreateSlopeEquationsBetweenVerticies(self) -> None:
+        """Creates slope equations between all this
+        polygons vertecies and stores them in this polygon's equationlist."""
+
+        for index,vertex in enumerate(self.vertexList):
+            nextVertex = self.vertexList[(index + 1) % len(self.vertexList)] # get the next vertex adjacent to this one
 
             if vertex.pos.x > nextVertex.pos.x:
                 equation = SlopeEquation(minXLimit=nextVertex.pos.x,maxXLimit=vertex.pos.x)
@@ -65,8 +82,6 @@ class Polygon():
             equation.AdjustToTwoPoints(vertex.pos,nextVertex.pos)
 
             self.equationList.append(equation)
-
-        self.bounds = self.GetBounds()
 
     def GetBounds(self) -> Vector2:
         """Returns a list of the bounds of the polygon, [Vector2(minX,minY),Vector2(maxX,maxY)]"""
@@ -88,51 +103,15 @@ class Polygon():
         return [Vector2(minX,minY),Vector2(maxX,maxY)]
 
 
-            
-
-
-    def DrawOutlines(self):
-        for index,vertex in enumerate(self.vertexList):
-
-            nextVertex = self.vertexList[(index + 1) % len(self.vertexList)]
-
-
-
-            deltaX = nextVertex.pos.x - vertex.pos.x
-            deltaY = nextVertex.pos.y - vertex.pos.y
-
-            movementVec = Vector2(deltaX,deltaY)
-            movementVec.Normalize()
-
-            penPos = Vector2(vertex.pos.x,vertex.pos.y)
-            
-            if nextVertex.pos.x > vertex.pos.x:
-                while penPos.x < nextVertex.pos.x:
-                    self.canvas.GetPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
-                    penPos.x += movementVec.x
-                    penPos.y += movementVec.y
-            else:
-                while penPos.x > nextVertex.pos.x:
-                    self.canvas.GetPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
-                    penPos.x += movementVec.x
-                    penPos.y += movementVec.y
-
-
-
-    def DrawOutlinesWithEquations(self):
-        for equation in self.equationList:
-            equation.DrawSlopeLine(self.canvas)
-
-
-    def GetImageColorAtCoordinate(self,planeImage : PlaneImage,x,y):
-        pass
-    
-
 
     def DrawFilled(self, 
                    renderingInformation: RenderingInformation = None, # a class containing rendering information used to draw the polygons
                    ) -> None:
+        """Calculates the color of all the pixels of this polygon.
+        calculates correct lighting and pixel color of potential images
+        to be rendered on this polygon."""
 
+        # get the bounds of this polygon
         minY = self.bounds[0].y
         minX = self.bounds[0].x
         maxY = self.bounds[1].y
@@ -328,4 +307,41 @@ class Polygon():
 
 
 
+
+
+
+            
+
+
+    def DrawOutlines(self):
+        for index,vertex in enumerate(self.vertexList):
+
+            nextVertex = self.vertexList[(index + 1) % len(self.vertexList)]
+
+
+
+            deltaX = nextVertex.pos.x - vertex.pos.x
+            deltaY = nextVertex.pos.y - vertex.pos.y
+
+            movementVec = Vector2(deltaX,deltaY)
+            movementVec.Normalize()
+
+            penPos = Vector2(vertex.pos.x,vertex.pos.y)
+            
+            if nextVertex.pos.x > vertex.pos.x:
+                while penPos.x < nextVertex.pos.x:
+                    self.canvas.GetPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
+                    penPos.x += movementVec.x
+                    penPos.y += movementVec.y
+            else:
+                while penPos.x > nextVertex.pos.x:
+                    self.canvas.GetPixel(round(penPos.x),round(penPos.y)).color = (255,255,255)
+                    penPos.x += movementVec.x
+                    penPos.y += movementVec.y
+
+
+
+    def DrawOutlinesWithEquations(self):
+        for equation in self.equationList:
+            equation.DrawSlopeLine(self.canvas)
 

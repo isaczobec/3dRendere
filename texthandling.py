@@ -73,22 +73,6 @@ class TextObject():
         
 mainFontName: str =  "Comic Sans"
 
-wonFontSize: int = 90
-wonFontColor: tuple[float,float,float] = (255,255,255)
-wonTextPosition: tuple[float,float] = (settings.WIDTH/2,100)
-
-wonText: str = "You Won!"
-returnText: str = "To return to the main menu, Press B."
-
-statFontSize: int = 30
-statFontColor: tuple[float,float,float] = (255,255,255)
-statTextPosition: tuple[float,float] = (settings.WIDTH/2,200)
-statTextRowOffset: float = 75 
-
-statTimeBaseText = "Your time:"
-statMovesBaseText = "Your amount of moves:"
-statTotalScoreBaseText = "Your total score is:"
-
 
 
 class TextHandler():
@@ -153,6 +137,22 @@ class TextHandler():
 
 
 
+
+wonFontSize: int = 90
+wonFontColor: tuple[float,float,float] = (255,255,255)
+wonTextPosition: tuple[float,float] = (settings.WIDTH/2,100)
+
+wonText: str = "You Won!"
+returnText: str = "To return to the main menu, Press P."
+
+statFontSize: int = 30
+statFontColor: tuple[float,float,float] = (255,255,255)
+statTextPosition: tuple[float,float] = (settings.WIDTH/2,200)
+statTextRowOffset: float = 75 
+
+statTimeBaseText = "Your time:"
+statMovesBaseText = "Your amount of moves:"
+statTotalScoreBaseText = "Your total score is:"
 
 
 class WonTextManager(TextHandler):

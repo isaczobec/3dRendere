@@ -25,6 +25,19 @@ def GetMoveInputVector() -> Vec2:
 
     return inputVector
 
+def GetActionsPressed() -> list[str]:
+    """Gets a list of all the actions the player performed this frame."""
+
+    pressedButtons = pygame.key.get_pressed()
+    performedActions = []
+
+    # if the player pressed the button associated with an action, append that action to the performedactions list
+    for key,value in settings.keymap.items():
+        if pressedButtons[value]:
+            performedActions.append(key)
+
+    return performedActions
+
 def GetTurnInputVector() -> Vec2:
     """Gets and returns the turn input vector of the player."""
     keys = pygame.key.get_pressed()

@@ -11,7 +11,7 @@ from typing import List
 import fileHandling
 import random
 import pygame as pg
-from inputHandler import MouseInputHandler
+import inputHandler
 import texthandling
 import scoreBoard
 
@@ -57,7 +57,6 @@ class GameManager():
 
         self.textManager = texthandling.WonTextManager(self.displaySurface) # initialize the texthandler
 
-        self.mouseInputHandler = MouseInputHandler() # used to check if the player clicks to exit the game after they have won
 
 
         
@@ -114,8 +113,8 @@ class GameManager():
             self.textManager.RenderText("placementText")
             self.textManager.RenderText("scoreBoardMenuText")
 
-            # return to the main menu when the player clicks
-            if self.mouseInputHandler.GetMouseInput() != None:
+            # return to the main menu when the player performs the exit action
+            if "exit" in inputHandler.GetActionsPressed():
                 self.returnToMenu = True
         
         if self.renderer.clickedObject != None: # if the player clicked an object this frame

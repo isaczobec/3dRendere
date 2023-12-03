@@ -28,6 +28,7 @@ keymap = {
             "flyUp":pygame.K_SPACE,
             "flyDown":pygame.K_LSHIFT,
 
-            "click":pygame.K_b
+            "click":pygame.K_b,
+            "exit":pygame.K_p,
 
             }
