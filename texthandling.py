@@ -91,6 +91,7 @@ class TextHandler():
     def __init__(self,
                  displaySurface : pg.surface, 
                  textList: dict[str : TextObject] = {}) -> None:
+        """Init the textHandler. Stores its attributes."""
 
         self.displaySurface = displaySurface
         self.textList = textList
@@ -171,6 +172,7 @@ statTotalScoreBaseText = "Your total score is:"
 class WonTextManager(TextHandler):
     """Class that renders text at the end of the memory game. Inherits from the textHandler class."""
     def __init__(self,displaySurface : pg.surface, textList: dict[str : TextObject] = {}) -> None:
+        """Inits the wontextmanager, which inits the parent texthandler class."""
         
         # reference strings for all textobjects
         self.wonTextReference = "wonText"

@@ -21,6 +21,8 @@ activeGameState = "GAME"
 class Application():
     """Main class. An instance is creates when the game in ran."""
     def __init__(self) -> None:
+            """Init the main class. Initializes pygame and creates the display. Also
+            creates references to the canvas, renderer and gamemanager."""
 
             # Initialize pygame and create the screen
             pygame.init()

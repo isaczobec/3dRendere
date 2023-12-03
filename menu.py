@@ -74,6 +74,8 @@ class MenuGrid():
                  buttons: list[list[Button]], # an arrray of all buttons contained in this menu grid
                  scrollCooldown: float = 0.2 # how long between when the player can change their selected button
                  ) -> None:
+        """init the menugrid. store all values and create a 
+        dictionary {position:button} to more easily access buttons."""
         
         self.mouseInputHandler = mouseInputHandler
         self.textHandler = textHandler
@@ -100,7 +102,6 @@ class MenuGrid():
         for y,buttonRow in enumerate(self.buttons):
             for x,button in enumerate(buttonRow):
                 self.buttonsDict[(x,y)] = button
-                print(button)
 
         # run the selected function for the first selected button
         self.buttonsDict[self.currentlySelectedPosition].Selected()

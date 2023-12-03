@@ -5,6 +5,7 @@ import math
 class Vector2: # made and used this one before i figured out i could use numpy arrays
     """Two dimensional vector."""
     def __init__(self,x,y):
+        """init the vector. Stores its position."""
         
         self.x = x
         self.y = y
@@ -55,6 +56,7 @@ class Vector2: # made and used this one before i figured out i could use numpy a
 class Vector3: # made and used this one before i figured out i could use numpy arrays
     """Three-dimensional vector."""
     def __init__(self,x,y,z):
+        """init the vector. Stores its position."""
         self.x = x
         self.y = y
         self.z = z
