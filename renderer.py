@@ -53,8 +53,8 @@ class Renderer():
         #elf.objectList[1].position += ar([0,0,0,0])
 
         
-        self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0),triangulateFaces=False)
-        self.objectList.append(self.sphere)
+        # self.sphere = O3D.CreateUVSphere(1,20,10,ar([3,0,0,1]),color=(0,255,0),triangulateFaces=False)
+        # self.objectList.append(self.sphere)
 
         
 

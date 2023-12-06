@@ -21,7 +21,7 @@ class MemoryCard(obj.R3Object):
 
     def __init__(self, 
                  game, # the game class this card belongs to
-                 gridPos: tuple[int,int], # the position of this memory card on the board
+                 gridPos: tuple[int,int,int], # the position of this memory card on the board
                  virtualCamera: virtualCamera.VirtualCamera, # the camera used to render this object
                  cardType: str = imageCard, # if this card has an image or text on its upside
                  planeImageName: str = None, # the name of the image if this card is an imageCard
@@ -79,7 +79,7 @@ class MemoryCard(obj.R3Object):
                                                 planeImage=planeImageName,
                                                 planeImageScale=(95,95),
                                                 flipNormal=True)],
-                                                position=ar([self.gridPos[0]*gameSettings.cardOffset[0],-9,self.gridPos[1]*gameSettings.cardOffset[1],1]), # make sure this cards world position is consistent with its grid position
+                                                position=ar([self.gridPos[0]*gameSettings.cardOffset[0],-9+self.gridPos[2]*gameSettings.cardOffset[2],self.gridPos[1]*gameSettings.cardOffset[1],1]), # make sure this cards world position is consistent with its grid position
                                                 
                                                 
                                                 triangulate=False)
@@ -126,7 +126,7 @@ class MemoryCard(obj.R3Object):
                                                 planeImageScale=(95,95)))
             
             super().__init__(letterFaceList,
-                             position=ar([self.gridPos[0]*gameSettings.cardOffset[0],-9,self.gridPos[1]*gameSettings.cardOffset[1],1]), # make sure this cards world position is consistent with its grid position
+                             position=ar([self.gridPos[0]*gameSettings.cardOffset[0],-9+self.gridPos[2]*gameSettings.cardOffset[2],self.gridPos[1]*gameSettings.cardOffset[1],1]), # make sure this cards world position is consistent with its grid position
                              triangulate=False)
 
 

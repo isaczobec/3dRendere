@@ -260,6 +260,8 @@ class Menu():
         self.boardSizeXValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[0]),(500,50))
         self.boardSizeYText = th.TextObject(mainFont,40,(255,255,255),"Board rows: <a/d>",(50,100))
         self.boardSizeYValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(500,100))
+        self.boardSizeZText = th.TextObject(mainFont,40,(255,255,255),"Board depth: <a/d>",(590,100))
+        self.boardSizeZValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(950,100))
         
         self.minWordLengthText = th.TextObject(mainFont,40,(255,255,255),"Min word length: <a/d>",(50,150))
         self.minWordLengthValueText = th.TextObject(mainFont,40,(255,255,255),str(gameSettings.boardSize[1]),(500,150))
@@ -273,6 +275,7 @@ class Menu():
 
         self.playMenuButtons = [[Button(self.boardSizeXText,value=gameSettings.boardSize[0],valueBounds=(2,10))],
                                 [Button(self.boardSizeYText,value=gameSettings.boardSize[1],valueBounds=(2,10),valueIncrement=2)], # valueincrement = 2 so that there isnt any risk of there being an uneven amount of cards
+                                [Button(self.boardSizeZText,value=gameSettings.boardSize[2],valueBounds=(2,10))],
                                 [Button(self.minWordLengthText,value=3,valueBounds=(1,3),valueIncrement=1)], 
                                 [Button(self.maxWordLengthText,value=3,valueBounds=(3,8),valueIncrement=1)], 
                                 [Button(self.playButtonText,selectedColor=(0,255,0),function=self.StartGame)],
@@ -312,8 +315,8 @@ class Menu():
     def StartGame(self) -> None:
         """Starts the active memory game."""
 
-        gameSettings.boardSize = (int(self.playMenuButtons[0][0].value),int(self.playMenuButtons[1][0].value)) # update the board size
-        gameSettings.minMaxWordLength = (int(self.playMenuButtons[2][0].value),int(self.playMenuButtons[3][0].value)) # update the board size
+        gameSettings.boardSize = (int(self.playMenuButtons[0][0].value),int(self.playMenuButtons[1][0].value),int(self.playMenuButtons[2][0].value)) # update the board size
+        gameSettings.minMaxWordLength = (int(self.playMenuButtons[3][0].value),int(self.playMenuButtons[4][0].value)) # update the board size
         self.gameRunning = True # sends a signal to start the game
 
 
@@ -346,12 +349,14 @@ class Menu():
 
             self.boardSizeXValueText.text = str(self.playMenuButtons[0][0].value)
             self.boardSizeYValueText.text = str(self.playMenuButtons[1][0].value)
+            self.boardSizeZValueText.text = str(self.playMenuButtons[2][0].value)
 
-            self.minWordLengthValueText.text = str(self.playMenuButtons[2][0].value)
-            self.maxWordLengthValueText.text = str(self.playMenuButtons[3][0].value)
+            self.minWordLengthValueText.text = str(self.playMenuButtons[3][0].value)
+            self.maxWordLengthValueText.text = str(self.playMenuButtons[4][0].value)
 
             self.textHandler.RenderTextobject(self.boardSizeXValueText)
             self.textHandler.RenderTextobject(self.boardSizeYValueText)
+            self.textHandler.RenderTextobject(self.boardSizeZValueText)
             self.textHandler.RenderTextobject(self.maxWordLengthValueText)
             self.textHandler.RenderTextobject(self.minWordLengthValueText)
 

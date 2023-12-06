@@ -1,13 +1,13 @@
 """Universal setting variables for the memory game."""
 
-boardSize: tuple = (2,2)
+boardSize: tuple = (2,2,4)
 """The size in cards of the memory board."""
 
 # if the amount of cards is not even, add a column
 if boardSize[0] * boardSize[1] % 2 != 0:
     boardSize = (boardSize[0] + 1, boardSize[1])
 
-cardOffset: tuple[int] = (4.5,4.5)
+cardOffset: tuple[int] = (4.5,4.5,4.5)
 """The position offset (x,z) between every memorycard. Used when the board is generated."""
 
 

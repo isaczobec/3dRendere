@@ -45,7 +45,7 @@ class GameManager():
         self.timeUntilTurnBackCards: float = 0
         self.currentlyWaitingToTurnBackCards: bool = False
 
-        self.cardsRemaining: int = gameSettings.boardSize[0] * gameSettings.boardSize[1]
+        self.cardsRemaining: int = gameSettings.boardSize[0] * gameSettings.boardSize[1] * gameSettings.boardSize[2]
 
         self.guesses: int = 0
         """How many cards the player has turned."""
@@ -74,7 +74,7 @@ class GameManager():
         alphabet = [chr(v) for v in range(ord('a'), ord('a') + 26)] # generate a list of the alphabet
 
         wordList = []
-        amountOfWordsToChoose = int(gameSettings.boardSize[0] * gameSettings.boardSize[1] / 2)
+        amountOfWordsToChoose = int(gameSettings.boardSize[0] * gameSettings.boardSize[1] * gameSettings.boardSize[2] / 2)
         for i in range(amountOfWordsToChoose):
 
 
@@ -97,9 +97,10 @@ class GameManager():
         # create instances of the memorycard class and append them to this game's card list
         for x in range(gameSettings.boardSize[0]):
             for y in range(gameSettings.boardSize[1]):
-                memoryCard = MemoryCard(self,(x,y),virtualCamera = self.renderer.camera,cardType=mc.textCard,cardText=wordList.pop(random.randrange(0,len(wordList))))
-                self.memoryCardList.append(memoryCard)
-                self.renderer.objectList.append(memoryCard) # add card to the renderers list of objects to render
+                for z in range(gameSettings.boardSize[2]):
+                    memoryCard = MemoryCard(self,(x,y,z),virtualCamera = self.renderer.camera,cardType=mc.textCard,cardText=wordList.pop(random.randrange(0,len(wordList))))
+                    self.memoryCardList.append(memoryCard)
+                    self.renderer.objectList.append(memoryCard) # add card to the renderers list of objects to render
 
     
 
