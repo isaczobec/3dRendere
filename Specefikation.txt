@@ -1,0 +1,94 @@
+Specefikation av p-uppgift Memory
+
+Skriven av Isac Zobec
+
+Sammanfattning av uppgiften:
+    Spelaren ska få skriva en en position på ett
+    N * N memory-bräde för att vända på ett kort.
+    Spelaren ska försöka hitta matchande kort, och om 
+    de gör det ska de stanna uppe, annars ska de vändas tillbaka.
+    Man kan bara vända på två kort åt gången (varje kort har bara
+    ett annat matchande kort). När spelaren har hittat
+    alla kort skrivs deras antal gissningar ut till en fil med 
+    highscores och spelarens placering av alla som har spelat
+    innan skrivs ut.
+
+
+Klass memoryKort:
+    representerar ett memoryKort.
+
+    Attribut:
+    innhehåll: str - vilket ord som står på memorykortet.
+    visa: bool = False - om kortets innehåll ska visas eller vara dolt.
+    hittad: bool = False - om kortet har hittats eller inte.
+
+
+Klass bräde:
+
+    def init(brädeStorlek x: int, brädeStorlek y: int):
+
+        beräknar antalet memorykort genom att multiplicera x med y. om det är ojämnt
+        aderas y med ett. Sedan slumpas den mängden ord delat med två från en ordlista som returneras av FåOrdLista(),
+        och sparas dubbelt (varje ord två gånger) i en lista.
+
+        Sedan skapas det en instans av memoryKort-klassen för varje x,y-koordinat på brädet. Varje memoryKort får slumpat
+        innehåll från den tidigarenämnda listan och det elementet i listan som väljs tas bort från den. referenser till alla
+        memoryKort sparas i en dictionary {(x,y) : memoryKort}.
+
+        skapar även följande Attribut:
+
+        Kortkvar: int - sätts till antalet kort som totalt finns på brädet
+        Valdakort: lista[memoryKort] = [] - vilka kort spelaren just nu har vänt upp (gissat på denna "runda"). Tom i början.
+        AntalGissningar: int = 0 - hur många kort spelaren totalt har vänt på. 
+
+    
+    def vändPåKort(x:int,y:int):
+
+        sätter visa-attributen hos kortet som har dictionary-nyckeln (x,y) till sant och lägger till kortet till 
+        Valdakort-listan (men bara om kortet som valdes inte redan tillhör valdakortlistan och inte har hittad == true) 	AntalGissningar ökas med 1.
+        Metoden SkrivUtBräde() körs.
+        om valdakortlistan nu har längd två kollas det om innhehållet hos de två korten 
+        matchar och isåfall sätts hittad-attributen hos de två korten till true. kortkvar subtraheras med 2. annars 
+        sätts visa-attributen för båda kort tillbaka till false.
+
+        om kortkvar nu är =< 0 körs AvslutaSpel().
+
+    def FrågaEfterPlats():
+        frågar spelaren efter en x,y plats att vända ett kort på och retrurnerar en tuple(x,y)
+
+
+    def SkrivUtBräde():
+        skriver ut memoryBrädet. itererar genom dictionaryn med kort och skriver ut deras innehåll på en rad
+        om deras visa-attribut == true, annars skrivs endast understreck ut på deras plats.
+
+    def AvslutaSpel():
+        ett trevligt meddelande skrivs ut, och spelarens antal gissningar skrivs ut. Spelarens placering skrivs även ut genom 
+        att funktionen SkrivUtPlacering() körs. 
+        Antalet gissningar sparas genom SparaPoäng() till high-score filen. 
+        Programmet avslutas.
+
+Fil highscores.txt:
+
+    En fil som på varje rad har en siffra med antal gissningar.
+
+Fil ordlista.txt:
+
+    En fil med ett ord på varje rad.
+
+def SkrivUtPlacering(AntalGissningar):
+    filen highscores.txt konverteras till en låg->hög sorterad lista med int-tal och börjar itereras genom.
+    för varje iteration jämförs AntalGissningar med värdet och om AntalGissningar är lägre kollas det vilken plats
+    i listan man var på, och den placecringen skrivs ut.
+
+def SparaPoäng(AntalGissningar):
+    öppnar highscores.txt och skriver AntalGissningar på en ny rad.
+
+def FåOrdLista():
+    returnerar en lista där varje element är ett ord på en rad från ordlista.txt-filen.
+
+def HuvudFunktion():
+    denna funktion körs direkt när Programmet startas.
+    En ny instans av bräde skapas.
+
+    sedan görs följande i en loop tills AvslutaSpel()-metoden körs:
+        bräde.vändPåKort(FrågaEfterPlats())

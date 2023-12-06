@@ -1,0 +1,41 @@
+Date : 2023-12-04 12:48:26
+Directory : c:\ProgrammingProjects\3dRendere
+Total : 17 files,  24 codes, 172 comments, -54 blanks, all 142 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Python   |         17 |         24 |        172 |        -54 |        142 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                     | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                        |         17 |         24 |        172 |        -54 |        142 |
++----------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                 | language | code       | comment    | blank      | total      |
++----------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\ProgrammingProjects\3dRendere\Objects3D.py            | Python   |          2 |         49 |        -27 |         24 |
+| c:\ProgrammingProjects\3dRendere\Time.py                 | Python   |          0 |          2 |          0 |          2 |
+| c:\ProgrammingProjects\3dRendere\Vec.py                  | Python   |          0 |          8 |          2 |         10 |
+| c:\ProgrammingProjects\3dRendere\game.py                 | Python   |         -1 |          0 |          0 |         -1 |
+| c:\ProgrammingProjects\3dRendere\inputHandler.py         | Python   |          7 |          2 |          4 |         13 |
+| c:\ProgrammingProjects\3dRendere\main.py                 | Python   |          0 |          2 |          0 |          2 |
+| c:\ProgrammingProjects\3dRendere\menu.py                 | Python   |         -3 |          2 |          0 |         -1 |
+| c:\ProgrammingProjects\3dRendere\pixel.py                | Python   |          0 |          8 |         -2 |          6 |
+| c:\ProgrammingProjects\3dRendere\polygon.py              | Python   |         12 |         32 |        -25 |         19 |
+| c:\ProgrammingProjects\3dRendere\printletters.py         | Python   |          0 |          1 |          0 |          1 |
+| c:\ProgrammingProjects\3dRendere\renderer.py             | Python   |         -1 |         23 |        -12 |         10 |
+| c:\ProgrammingProjects\3dRendere\renderingInformation.py | Python   |          0 |          2 |          0 |          2 |
+| c:\ProgrammingProjects\3dRendere\scoreBoard.py           | Python   |          0 |          6 |         -1 |          5 |
+| c:\ProgrammingProjects\3dRendere\settings.py             | Python   |          1 |          0 |          0 |          1 |
+| c:\ProgrammingProjects\3dRendere\slopeEquation.py        | Python   |          7 |         11 |          2 |         20 |
+| c:\ProgrammingProjects\3dRendere\texthandling.py         | Python   |          2 |         10 |          3 |         15 |
+| c:\ProgrammingProjects\3dRendere\virtualCamera.py        | Python   |         -2 |         14 |          2 |         14 |
+| Total                                                    |          |         24 |        172 |        -54 |        142 |
++----------------------------------------------------------+----------+------------+------------+------------+------------+

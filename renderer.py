@@ -99,7 +99,7 @@ class Renderer():
         })
 
 
-    def GetNearClipCenter(self):
+    def GetNearClipCenter(self) -> np.ndarray:
         """Returns the world space position
         of the center of the camera's near clip plane."""
         fp = self.camera.position + self.camera.GetViewDirectionVector() * self.camera.nearClipPlaneDistance
@@ -107,7 +107,7 @@ class Renderer():
 
 
 
-    def GetClipVolumeTransformMatrix(self):
+    def GetClipVolumeTransformMatrix(self) -> np.ndarray:
         """Gets the 4x4 matrix that will transform 3d space 
         from the furstrum into the clip volume."""
         

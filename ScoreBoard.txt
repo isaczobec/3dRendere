@@ -29,3 +29,10 @@ name:zobec;date:2023-12-03;score:6.7;time:74.08866333961487;moves:4
 name:zobec;date:2023-12-03;score:28.9;time:11.54923415184021;moves:6
 name:zobec;date:2023-12-03;score:61.0;time:8.199172019958496;moves:4
 name:zobec;date:2023-12-03;score:89.5;time:5.589464902877808;moves:4
+name:zobec;date:2023-12-04;score:46.1;time:10.840888023376465;moves:4
+name:zobec;date:2023-12-04;score:5.0;time:49.915961027145386;moves:8
+name:zobec;date:2023-12-05;score:8.5;time:58.69116282463074;moves:4
+name:zobec;date:2023-12-05;score:7.8;time:32.197617053985596;moves:8
+name:zobec;date:2023-12-05;score:7.4;time:26.847174882888794;moves:10
+name:zobec;date:2023-12-05;score:1.0;time:94.41234040260315;moves:22
+name:zobec;date:2023-12-05;score:7.1;time:35.37955904006958;moves:8

@@ -52,10 +52,10 @@ class TextObject():
 
 
     
-    def GetColor(self):
+    def GetColor(self) -> tuple[int,int,int]:
         """Method that is ran when the color property is gotten."""
         return self._fontColor
-    def SetColor(self,color: tuple[float,float,float]):
+    def SetColor(self,color: tuple[float,float,float]) -> None:
         """Method that is ran when the color property is set."""
         self._fontColor = tuple(int(component) for component in color) # chatgpt helped me fix an error i was getting here because i was using floats
         self.GenerateText(self._text)
@@ -65,7 +65,7 @@ class TextObject():
     def GetText(self):
         """Method that is ran when the text property is gotten."""
         return self._text
-    def SetText(self,inputText):
+    def SetText(self,inputText) -> None:
         """Method that is ran when the text property is set."""
         self._text = inputText
         self.GenerateText(self._text)
