@@ -117,7 +117,7 @@ class Application():
 
         self.menu.menuMode = menu.mainMenuReference
 
-    def RunActiveGame(self):
+    def RunActiveGame(self) -> None:
         """Runs the game. Should be ran every frame that the game is active."""
         self.renderer.RenderScene()
         self.canvas.Refresh(self.displaySurface)

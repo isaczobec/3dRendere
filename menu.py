@@ -224,7 +224,13 @@ class Menu():
                                               "instructions4":th.TextObject(mainFont,20,(255,255,255),"The cards stay up the next turn and you have succesfully found them. Once this has happened with all cards, you win.",(50,450)),
                                               "instructions5":th.TextObject(mainFont,20,(255,255,255),"For extra replay value, you can try to increase your score by finding all cards faster or in less turns.",(50,500)),
                                               "instructions6":th.TextObject(mainFont,20,(255,255,255),"... but that sounds really boring. you can also go outside and touch some grass.",(50,550)),
+                                              "menuControls":th.TextObject(mainFont,20,(255,255,255),"Move around menu: W/A/S/D Click: B",(25,680)),
                                             
+                                              "gameControls1":th.TextObject(mainFont,30,(255,255,255),"Game controls:",(655,200)),
+                                              "gameControls2":th.TextObject(mainFont,20,(255,255,255),"Fly around: W/A/S/D",(655,230)),
+                                              "gameControls3":th.TextObject(mainFont,20,(255,255,255),"Look around: UP/DOWN/LEFT/RIGHT",(655,260)),
+                                              "gameControls4":th.TextObject(mainFont,20,(255,255,255),"Zoom in/out: C/X",(655,290)),
+                                              "gameControls5":th.TextObject(mainFont,20,(255,255,255),"Turn card: Hover with cursor and press B",(655,320)),
                                               
 
                                               
@@ -240,6 +246,7 @@ class Menu():
         scoreBoardText = th.TextObject(mainFont,60,(255,255,255),"Scoreboard",(500,400))
         exitText = th.TextObject(mainFont,60,(255,255,255),"Exit",(300,500))
         instructionsText = th.TextObject(mainFont,60,(255,255,255),"Instructions",(500,500))
+        
 
         self.startMenuButtons = [[Button(playText,self.SetMenuMode,[playMenuReference]),Button(scoreBoardText,self.SetMenuMode,[scoreboardReference])],
                                  [Button(exitText,self.ExitGame),Button(instructionsText,self.SetMenuMode,[instructionsReference])]]
@@ -329,6 +336,7 @@ class Menu():
             self.textHandler.RenderText("title")
             self.textHandler.RenderText("byMe")
             self.textHandler.RenderText("splashText")
+            self.textHandler.RenderText("menuControls")
 
             self.mainMenuGrid.Run()
 
@@ -340,6 +348,13 @@ class Menu():
             self.textHandler.RenderText("instructions4")
             self.textHandler.RenderText("instructions5")
             self.textHandler.RenderText("instructions6")
+            self.textHandler.RenderText("menuControls")
+
+            self.textHandler.RenderText("gameControls1",(655,150))
+            self.textHandler.RenderText("gameControls2",(655,180))
+            self.textHandler.RenderText("gameControls3",(655,210))
+            self.textHandler.RenderText("gameControls4",(655,240))
+            self.textHandler.RenderText("gameControls5",(655,270))
 
             self.instructionsMenuGrid.Run()
         
@@ -359,6 +374,14 @@ class Menu():
             self.textHandler.RenderTextobject(self.boardSizeZValueText)
             self.textHandler.RenderTextobject(self.maxWordLengthValueText)
             self.textHandler.RenderTextobject(self.minWordLengthValueText)
+            self.textHandler.RenderText("menuControls")
+
+            self.textHandler.RenderText("gameControls1")
+            self.textHandler.RenderText("gameControls2")
+            self.textHandler.RenderText("gameControls3")
+            self.textHandler.RenderText("gameControls4")
+            self.textHandler.RenderText("gameControls5")
+
 
         elif self.menuMode == scoreboardReference:
 
@@ -367,6 +390,7 @@ class Menu():
             # render all scoreboard entries
             for entryTextObject in self.scoreBoardEntries:
                 self.textHandler.RenderTextobject(entryTextObject)
+            self.textHandler.RenderText("menuControls")
 
 
     
