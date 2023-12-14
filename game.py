@@ -175,6 +175,7 @@ class GameManager():
                 placeMentText = f"you placed {index+1} out of {len(scoreBoardEntries)} people who have played before you!"
                 break
 
+
         scoreBoard.AddScoreBoardEntry(score=score,time = totalTime,moves=self.guesses)
 
         # create text to show the player

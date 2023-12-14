@@ -40,3 +40,5 @@ name:zobec;date:2023-12-06;score:0.3;time:152.8044044971466;moves:42
 name:zobec;date:2023-12-06;score:6.7;time:21.23126769065857;moves:14
 name:zobec;date:2023-12-07;score:0.5;time:115.03379225730896;moves:34
 name:zobec;date:2023-12-07;score:2.8;time:44.86970496177673;moves:16
+name:zobec;date:2023-12-08;score:0.2;time:339.78951239585876;moves:24
+name:zobec;date:2023-12-08;score:7.5;time:22.30241107940674;moves:12
